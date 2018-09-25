@@ -1,8 +1,8 @@
 BEGIN_PROLOG
 
-proto_util_example:
+proto_beam_example:
 {
-   module_type:             "UtilityExample"
+   module_type:             "BeamExample"
    CalorimetryTag:          "pandoracalo"
    TrackerTag:              "pandoraTrack"
    ShowerTag:               "pandoraShower"
