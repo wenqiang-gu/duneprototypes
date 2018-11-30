@@ -1,9 +1,9 @@
 #include "services_dune.fcl"
-#include "ProtoDUNEFembFilter.fcl"
+#include "ProtoDUNEUnstableHVFilter.fcl"
 
 
 
-process_name: FembFilter
+process_name: HVFilter
 
 services:
 {
@@ -44,7 +44,7 @@ physics:
  }
   filters:
  {
- filter:   @local::pdsp_fembfilter_beamside
+ filter:   @local::HVfilter
 
   }
 
@@ -59,6 +59,3 @@ physics:
  #ie analyzers and output streams.  these all run simultaneously
  end_paths:     [ stream1 ]  
 }
-
-services.PdspChannelMapService:        @local::pdspchannelmap
-physics.filters.filter.LogLevel:        2
