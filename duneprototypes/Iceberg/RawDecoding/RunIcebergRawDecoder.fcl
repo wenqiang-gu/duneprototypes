@@ -1,6 +1,7 @@
-#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "services_dune.fcl"
 
-process_name: RunRawDecoder
+#This is the default configuration file
+#include "IcebergRawDecoder.fcl"
 
 services:
 {
@@ -9,7 +10,7 @@ services:
   TimeTracker:       {}
   RandomNumberGenerator: {}
 
-  @table::protodune_rawdecoding_services
+  @table::iceberg_rawdecoding_services
 
   TFileService: { 
    closeFileFast: true  # default
@@ -17,20 +18,16 @@ services:
    tmpDir: "<parent-path-of-filename>"  # default
   }
  
-  IFBeam:            {}
-
 }
 
 physics:
 {
   producers:
   {
-    @table::protoDUNE_rawdecoding_producers
+    tpcrawdecoder: @local::iceberg_tpc_raw_decoder
   }
 
-  #Create path to run module
-  #add ctbrawdecoder when it is tested
-  produce: [ @sequence::protoDUNE_rawdecoding ] 
+  produce: [ tpcrawdecoder ] 
   output: [ out1 ]
   trigger_paths : [ produce ]
   end_paths: [ output ]
@@ -55,4 +52,5 @@ source:
   maxEvents : -1
 }
 
+process_name: RunIcebergRawDecoder
  
