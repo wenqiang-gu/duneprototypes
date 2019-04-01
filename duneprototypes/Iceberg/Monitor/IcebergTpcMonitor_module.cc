@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-// Class:       TpcMonitor_module
+// Class:       IcebergTpcMonitor_module
 // Module type: analyzer
-// File:        TpcMonitor_module.cc
+// File:        IcebergTpcMonitor_module.cc
 // Author:      Jingbo Wang (jiowang@ucdavis.edu), February 2018.  Modifications by Tom Junk
 //
 // Modification: Maggie Greenwood July, 2018
@@ -10,8 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef TpcMonitor_module
-#define TpcMonitor_module
+#ifndef IcebergTpcMonitor_module
+#define IcebergTpcMonitor_module
 
 // LArSoft includes
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
@@ -33,7 +33,7 @@
 #include "canvas/Persistency/Common/FindManyP.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
 
 // ROOT includes.
 #include "TH1.h"
@@ -63,12 +63,12 @@
 
 namespace tpc_monitor{
 
-  class TpcMonitor : public art::EDAnalyzer{
+  class IcebergTpcMonitor : public art::EDAnalyzer{
   	
   public:
  
-    explicit TpcMonitor(fhicl::ParameterSet const& pset);
-    virtual ~TpcMonitor();
+    explicit IcebergTpcMonitor(fhicl::ParameterSet const& pset);
+    virtual ~IcebergTpcMonitor();
 
     void beginJob();
     void beginRun(const art::Run& run);
@@ -149,23 +149,6 @@ namespace tpc_monitor{
     std::vector<TProfile*> fChanRMSZ_pfx;
     std::vector<TProfile*> fChanMeanZ_pfx;
 
-    // 2D histograms of all Mean/RMS by offline channel number
-    // Intended as a color map with each bin to represent a single channel
-    TProfile2D* fAllChanMean;
-    TProfile2D* fAllChanRMS;
-
-    //2Dhistograms of bits, using same mapping as the fAllChan histos
-    //vector indexes over 0-11 bit numbers
-    std::vector<TProfile2D*> fBitValue;
-
-    
-    // profiled over events Mean/RMS by slot number
-    std::vector<TProfile*> fSlotChanMean_pfx;
-    std::vector<TProfile*> fSlotChanRMS_pfx;	
-    
-    // FFT by slot number
-    //std::vector<TH2F*> fSlotChanFFT;
-    
     // Persistent and overlay wavefroms by fiber
     //std::vector<TH2F*> fPersistentFFT_by_Fiber;
     // change to only saving these for each APA
@@ -221,24 +204,24 @@ namespace tpc_monitor{
     std::vector<unsigned int> fApaLabelNum;
 
 
-  }; // TpcMonitor
+  }; // IcebergTpcMonitor
 
   //-----------------------------------------------------------------------
 
-  TpcMonitor::TpcMonitor(fhicl::ParameterSet const& parameterSet)
-    : EDAnalyzer(parameterSet), fRebinX(1), fRebinY(1), fApaLabelNum{3,5,2,6,1,4} {
+  IcebergTpcMonitor::IcebergTpcMonitor(fhicl::ParameterSet const& parameterSet)
+    : EDAnalyzer(parameterSet), fRebinX(1), fRebinY(1), fApaLabelNum{1} {
     this->reconfigure(parameterSet);
   }
 
   //-----------------------------------------------------------------------
 
 
-  TpcMonitor::~TpcMonitor() {}
+  IcebergTpcMonitor::~IcebergTpcMonitor() {}
    
 
   //-----------------------------------------------------------------------
   
-  void TpcMonitor::beginJob() {
+  void IcebergTpcMonitor::beginJob() {
     art::ServiceHandle<art::TFileService> tfs;
     unsigned int UChMin;
     unsigned int UChMax;
@@ -249,6 +232,7 @@ namespace tpc_monitor{
 
     // Accquiring geometry data
     fNofAPA=fGeom->NTPC()*fGeom->Ncryostats()/2;
+    //fNofAPA = 1; // iceberg has just one APA.  Should come out of the geometry
     fChansPerAPA = fGeom->Nchannels()/fNofAPA;
 
     // loop through channels in the first APA to find the channel boundaries for each view
@@ -276,7 +260,7 @@ namespace tpc_monitor{
     fNZ0Ch=fZ0ChanMax-fZ0ChanMin+1;
     fNZ1Ch=fZ1ChanMax-fZ1ChanMin+1;
 
-    mf::LogVerbatim("TpcMonitor")
+    mf::LogVerbatim("IcebergTpcMonitor")
       <<"U: "<< fNUCh<<"  V:  "<<fNVCh<<"  Z0:  "<<fNZ0Ch << "  Z1:  " <<fNZ1Ch << std::endl;
     
     //Mean/RMS by offline channel for each view in each APA
@@ -359,57 +343,18 @@ namespace tpc_monitor{
 	fChanFFTZ[i]->Rebin2D(fRebinX, fRebinY);
       }
     
-    //All in one view
-    //make the histograms
-    fAllChanMean = tfs->make<TProfile2D>("fAllChanMean", "Means for all channels", 240, -0.5, 239.5, 64, -0.5, 63.5);
-    fAllChanRMS = tfs->make<TProfile2D>("fAllChanRMS", "RMS for all channels", 240, -0.5, 239.5, 64, -0.5, 63.5);
-    //set titles and bin labels
-    fAllChanMean->GetXaxis()->SetTitle("APA Number (online)"); fAllChanMean->GetYaxis()->SetTitle("Plane"); fAllChanMean->GetZaxis()->SetTitle("Raw Mean");
-    fAllChanRMS->GetXaxis()->SetTitle("APA Number (online)"); fAllChanRMS->GetYaxis()->SetTitle("Plane"); fAllChanRMS->GetZaxis()->SetTitle("Raw RMS");
-    fAllChanMean->GetXaxis()->SetLabelSize(.075); fAllChanMean->GetYaxis()->SetLabelSize(.05);
-    fAllChanRMS->GetXaxis()->SetLabelSize(.075); fAllChanRMS->GetYaxis()->SetLabelSize(.05);
-    fAllChanMean->GetXaxis()->SetBinLabel(40, "3"); fAllChanMean->GetXaxis()->SetBinLabel(120, "2"); fAllChanMean->GetXaxis()->SetBinLabel(200, "1");
-    fAllChanRMS->GetXaxis()->SetBinLabel(40, "3"); fAllChanRMS->GetXaxis()->SetBinLabel(120, "2"); fAllChanRMS->GetXaxis()->SetBinLabel(200, "1");
-    fAllChanMean->GetYaxis()->SetBinLabel(5, "U"); fAllChanMean->GetYaxis()->SetBinLabel(15, "V"); fAllChanMean->GetYaxis()->SetBinLabel(26, "Z");
-    fAllChanMean->GetYaxis()->SetBinLabel(37, "U"); fAllChanMean->GetYaxis()->SetBinLabel(47, "V"); fAllChanMean->GetYaxis()->SetBinLabel(58, "Z");
-    fAllChanRMS->GetYaxis()->SetBinLabel(5, "U"); fAllChanRMS->GetYaxis()->SetBinLabel(15, "V"); fAllChanRMS->GetYaxis()->SetBinLabel(26, "Z");
-    fAllChanRMS->GetYaxis()->SetBinLabel(37, "U"); fAllChanRMS->GetYaxis()->SetBinLabel(47, "V"); fAllChanRMS->GetYaxis()->SetBinLabel(58, "Z");
-
-    for(int i=0;i<12;i++)
-      {
-	fBitValue.push_back(tfs->make<TProfile2D>(Form("fBitValue%d",i),Form("Values for bit %d",i),240,-0.5,239.5,64,-0.5,63.5,0,1));
-	fBitValue[i]->SetStats(false);
-	fBitValue[i]->GetXaxis()->SetTitle("APA Number (online)"); fBitValue[i]->GetYaxis()->SetTitle("Plane"); fBitValue[i]->GetZaxis()->SetTitle("Bit Fraction On");
-	fBitValue[i]->GetXaxis()->SetLabelSize(.075); fBitValue[i]->GetYaxis()->SetLabelSize(.05);
-	fBitValue[i]->GetXaxis()->SetBinLabel(40, "3"); fBitValue[i]->GetXaxis()->SetBinLabel(120, "2"); fBitValue[i]->GetXaxis()->SetBinLabel(200, "1");
-	fBitValue[i]->GetYaxis()->SetBinLabel(5, "U"); fBitValue[i]->GetYaxis()->SetBinLabel(15, "V"); fBitValue[i]->GetYaxis()->SetBinLabel(26, "Z");
-	fBitValue[i]->GetYaxis()->SetBinLabel(37, "U"); fBitValue[i]->GetYaxis()->SetBinLabel(47, "V"); fBitValue[i]->GetYaxis()->SetBinLabel(58, "Z");
-      }
-
-    // Mean/RMS by slot channel number for each slot
-    for(int i=0;i<30;i++) {
-      int apaloc = fApaLabelNum[i/5];
-      int slotloc = i % 5;
-      
-      fSlotChanMean_pfx.push_back(tfs->make<TProfile>(Form("APA%d_Slot%d_Mean", apaloc, slotloc), Form("APA %d Slot%d Mean_vs_SlotChannel", apaloc, slotloc), 512, 0, 512, "s")); 
-      fSlotChanRMS_pfx.push_back(tfs->make<TProfile>(Form("APA%d_Slot%d_RMS", apaloc, slotloc), Form("APA %d Slot %d  RMS_vs_SlotChannel", apaloc, slotloc), 512, 0, 512, "s")); 
-      //fSlotChanFFT.push_back(tfs->make<TH2F>(Form("APA%d_Slot%d_FFT", apaloc, slotloc), Form("APA %d Slot %d FFT_vs_SlotChannel", apaloc, slotloc), 512, 0, 512, fNticks/2, 0, fNticks/2*fBinWidth));
-  	  
-      fSlotChanMean_pfx[i]->GetXaxis()->SetTitle("Slot Channel"); fSlotChanMean_pfx[i]->GetYaxis()->SetTitle("Profiled Mean"); 
-      fSlotChanRMS_pfx[i]->GetXaxis()->SetTitle("Slot Channel"); fSlotChanRMS_pfx[i]->GetYaxis()->SetTitle("Profiled RMS"); 
-      //fSlotChanFFT[i]->GetXaxis()->SetTitle("Slot Channel"); fSlotChanFFT[i]->GetYaxis()->SetTitle("kHz");
-    }
+    // protodune, but the first 10 are Iceberg labels
 
     unsigned int fembmap_by_fiberID[120] =
       {
-	320,315,310,305,319,314,309,304,318,313,308,303,317,312,307,302,316,311,306,301,505,510,515,520,504,509,514,519,503,508,513,518,502,507,512,517,501,506,511,516,220,215,210,205,219,
+	703,727,715,723,721,706,726,716,704,709,308,303,317,312,307,302,316,311,306,301,505,510,515,520,504,509,514,519,503,508,513,518,502,507,512,517,501,506,511,516,220,215,210,205,219,
 	214,209,204,218,213,208,203,217,212,207,202,216,211,206,201,605,610,615,620,604,609,614,619,603,608,613,618,602,607,612,617,601,606,611,616,120,115,110,105,119,114,109,104,118,113,
         108,103,117,112,107,102,116,111,106,101,405,410,415,420,404,409,414,419,403,408,413,418,402,407,412,417,401,406,411,416
       };
 
   
     // FFT's by fiber
-    for(int i=0;i<120;i++) {
+    for(int i=0;i<10;i++) {
       unsigned int imb = fembmap_by_fiberID[i];
       //fPersistentFFT_by_Fiber.push_back(tfs->make<TH2F>(Form("Persistent_FFT_FEMB_%d", imb), Form("FFT FEMB%d WIB%d", imb, ( (i/4) % 5)+1), fNticks/2, 0, fNticks/2*fBinWidth, 150, -100, 50));
       //fPersistentFFT_by_Fiber[i]->GetXaxis()->SetTitle("Frequency [kHz]"); fPersistentFFT_by_Fiber[i]->GetYaxis()->SetTitle("Amplitude [dB]"); 
@@ -418,7 +363,7 @@ namespace tpc_monitor{
       fFFT_by_Fiber_pfx[i]->GetXaxis()->SetTitle("Frequency [kHz]"); fFFT_by_Fiber_pfx[i]->GetYaxis()->SetTitle("Amplitude [dB]"); 
     }
     // persistent FFT now by APA
-    for (int i=0;i<6;++i)
+    for (unsigned int i=0;i<fNofAPA;++i)
       {
 	fPersistentFFT_by_APA.push_back(tfs->make<TH2F>(Form("Persistent_FFT_APA_%d", fApaLabelNum[i]), Form("FFT APA%d ", fApaLabelNum[i]), fNticks/2, 0, fNticks/2*fBinWidth, 150, -100, 50));
         fPersistentFFT_by_APA[i]->GetXaxis()->SetTitle("Frequency [kHz]"); 
@@ -483,12 +428,12 @@ namespace tpc_monitor{
   }
 
   //-----------------------------------------------------------------------
-  void TpcMonitor::beginRun(const art::Run& run) {
+  void IcebergTpcMonitor::beginRun(const art::Run& run) {
     // place to read databases or run independent info
   }
   //-----------------------------------------------------------------------
 
-  void TpcMonitor::reconfigure(fhicl::ParameterSet const& p){
+  void IcebergTpcMonitor::reconfigure(fhicl::ParameterSet const& p){
 
     // reconfigure without recompiling
     // read in the parameters from the .fcl file
@@ -517,12 +462,12 @@ namespace tpc_monitor{
 
   //-----------------------------------------------------------------------
 
-  void TpcMonitor::analyze(const art::Event& event) {
+  void IcebergTpcMonitor::analyze(const art::Event& event) {
     // Get channel map
-    art::ServiceHandle<dune::PdspChannelMapService> channelMap;
+    art::ServiceHandle<dune::IcebergChannelMapService> channelMap;
     // TODO Use MF_LOG_DEBUG
-    MF_LOG_INFO("TpcMonitor")
-      << "-------------------- TPC TpcMonitor -------------------";
+    MF_LOG_INFO("IcebergTpcMonitor")
+      << "-------------------- TPC IcebergTpcMonitor -------------------";
 
     // called once per event
 
@@ -545,19 +490,13 @@ namespace tpc_monitor{
     std::vector< art::Ptr<raw::RawDigit> > RawDigits;
     art::fill_ptr_vector(RawDigits, RawTPC);
 
-    //for the large all channel summary histograms these are key points for bin mapping
-    //for each offline numbered apa, the left most bin should be at the x value:
-    int xEdgeAPA[6] = {0,0,80,80,160,160}; //these numbers may be adjusted to horizontally space out the histogram
-    //for each of the apas, the bottom most bin should be at the y value:
-    int yEdgeAPA[2] = {0,32}; //these numbers may be adjusted to vertically space out the histograms
-
     // example of retrieving RDStatus word and flags
 
     for ( auto const& rdstatus : (*RDStatusHandle) )
       {
 	if (rdstatus.GetCorruptDataDroppedFlag())
 	  {
-	    MF_LOG_INFO("TpcMonitor_module: ") << "Corrupt Data Dropped Flag set in RDStatus";
+	    MF_LOG_INFO("IcebergTpcMonitor_module: ") << "Corrupt Data Dropped Flag set in RDStatus";
 	  }
 	//std::cout << "RDStatus:  Corrupt Data dropped " << rdstatus.GetCorruptDataDroppedFlag() << std::endl; 
 	//std::cout << "RDStatus:  Corrupt Data kept " << rdstatus.GetCorruptDataKeptFlag() << std::endl; 
@@ -632,34 +571,6 @@ namespace tpc_monitor{
       float mean = meanADC(uncompPed);
       float rms = rmsADC(uncompPed);
 
-      //get ready to fill the summary plots
-      //get the channel's FEMB and WIB
-      int WIB = channelMap->WIBFromOfflineChannel(chan); //0-4
-      int FEMB = channelMap->FEMBFromOfflineChannel(chan); //1-4
-      int FEMBchan = channelMap->FEMBChannelFromOfflineChannel(chan);
-      int iFEMB = ((WIB*4)+(FEMB-1)); //index of the FEMB 0-19
-      //Get the location of any FEMBchan in the hitogram
-      //put as a function for clenliness.
-      int xBin = ((FEMBchanToHistogramMap(FEMBchan,0))+(iFEMB*4)+xEdgeAPA[apa]); // (fembchan location on histogram) + shift from mobo + shift from apa
-      int yBin = ((FEMBchanToHistogramMap(FEMBchan,1))+yEdgeAPA[(apa%2)]); //(fembchan location on histogram) + shift from apa 
-
-      fAllChanMean->Fill(xBin,yBin,mean); //histogram the mean
-      fAllChanRMS->Fill(xBin,yBin,rms); //histogram the rms
-
-      for (int i=0; i<nSamples; i++) //histogram the 12 bits
-	{ 
-	  auto adc=uncompressed.at(i);
-	  int bitstring = adc;
-	  for(int mm=0;mm<12;mm++)
-	    {
-	      // get the bit value from the adc
-	      int bit = (bitstring%2);
-	      fBitValue[mm]->Fill(xBin,yBin,bit);
-	      bitstring = (bitstring/2);
-	    }
-	}
-
-	     
       // U View, induction Plane	  
       if( fGeom->View(chan) == geo::kU){	
 	fChanMeanU_pfx[apa]->Fill(chan, mean, 1);
@@ -711,20 +622,6 @@ namespace tpc_monitor{
 
       }// end of Z View
       
-      // Mean/RMS by slot
-      int SlotID = channelMap->SlotIdFromOfflineChannel(chan);
-      int FiberNumber = channelMap->FEMBFromOfflineChannel(chan) - 1;
-      int FiberChannelNumber = channelMap->FEMBChannelFromOfflineChannel(chan);
-      uint32_t SlotChannelNumber = FiberNumber*128 + FiberChannelNumber; //128 channels per fiber
-      fSlotChanMean_pfx.at(SlotID)->Fill(SlotChannelNumber, mean, 1);
-      fSlotChanRMS_pfx.at(SlotID)->Fill(SlotChannelNumber, rms, 1);
-      
-      // FFT by slot
-      for(int l=0;l<nSamples/2;l++) {
-	//for the 2D histos
-	// fSlotChanFFT.at(SlotID)->Fill(SlotChannelNumber, (l+0.5)*fBinWidth, histfft->GetBinContent(l+1));
-      }
-      
       histwav->Delete(); 
       histfft->Delete();                                                                                                                    
       
@@ -735,7 +632,7 @@ namespace tpc_monitor{
   
   //-----------------------------------------------------------------------   
   // define RMS
-  float TpcMonitor::rmsADC(std::vector< short > &uncomp)
+  float IcebergTpcMonitor::rmsADC(std::vector< short > &uncomp)
   {
     int n = uncomp.size();
     float sum = 0.;
@@ -753,7 +650,7 @@ namespace tpc_monitor{
 
   //-----------------------------------------------------------------------  
   //define Mean
-  float TpcMonitor::meanADC(std::vector< short > &uncomp)
+  float IcebergTpcMonitor::meanADC(std::vector< short > &uncomp)
   {
     int n = uncomp.size();
     float sum = 0.;
@@ -766,7 +663,7 @@ namespace tpc_monitor{
   
   //-----------------------------------------------------------------------  
   //calculate FFT
-  void TpcMonitor::calculateFFT(TH1D* hist_waveform, TH1D* hist_frequency) {
+  void IcebergTpcMonitor::calculateFFT(TH1D* hist_waveform, TH1D* hist_frequency) {
   
     int n_bins = hist_waveform->GetNbinsX();
     TH1* hist_transform = 0;
@@ -795,7 +692,7 @@ namespace tpc_monitor{
   
   //-----------------------------------------------------------------------
   // Fill dead/noisy channels tree
-  void TpcMonitor::FillChannelHistos(TProfile* h1, double mean, double sigma, int& ndeadchannels, int& nnoisychannels_sigma, int& nnoisychannels_counts){
+  void IcebergTpcMonitor::FillChannelHistos(TProfile* h1, double mean, double sigma, int& ndeadchannels, int& nnoisychannels_sigma, int& nnoisychannels_counts){
 
     double rms_threshold = mean + fNoiseLevelNSigma*sigma;
     TString htitle = h1->GetTitle();
@@ -839,7 +736,7 @@ namespace tpc_monitor{
 	      }
 	  }
 	else{
-	  mf::LogVerbatim("TpcMonitor::FillChannelHistos")
+	  mf::LogVerbatim("IcebergTpcMonitor::FillChannelHistos")
 	    << " Unknown histogram title: " << htitle.Data() << std::endl;
 	}
       }
@@ -850,7 +747,7 @@ namespace tpc_monitor{
 
   //----------------------------------------------------------------------
   //define the mapping of FEMBchans to the histogram.
-  int TpcMonitor::FEMBchanToHistogramMap(int FEMBchan, int coord){
+  int IcebergTpcMonitor::FEMBchanToHistogramMap(int FEMBchan, int coord){
     //to see the reason for this channel mapping, check DocDB 4064 Table 5
     //for one FEMB, this dictates the coordinates on the histogram as a 4X32 block.
     int FEMBchanToHistogram[128][2] = { {0,0},{0,1},{0,2},{0,3},{0,4},//for U
@@ -881,7 +778,7 @@ namespace tpc_monitor{
   }
 
   //-----------------------------------------------------------------------  
-  void TpcMonitor::endJob() {
+  void IcebergTpcMonitor::endJob() {
 
     // Find dead/noisy channels. Do this separately for each APA and for each view.
     std::vector<double> fURMS_mean; std::vector<double> fURMS_sigma;
@@ -964,9 +861,9 @@ namespace tpc_monitor{
   
 }
 
-DEFINE_ART_MODULE(tpc_monitor::TpcMonitor)
+DEFINE_ART_MODULE(tpc_monitor::IcebergTpcMonitor)
   
 
 
-#endif // TpcMonitore_module
+#endif // IcebergTpcMonitore_module
 
