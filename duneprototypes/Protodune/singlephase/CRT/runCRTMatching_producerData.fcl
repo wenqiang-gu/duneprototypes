@@ -13,7 +13,7 @@ services:
   message:              @local::dune_message_services_prod_debug
   FileCatalogMetadata:  @local::art_file_catalog_mc
                         @table::protodune_services
-  TFileService:      { fileName: "SingleCRTMatching_data.root" }
+  TFileService:      { fileName: "TwoCRTMatching_data.root" }
   IFBeam:            {}
 }
 #services.message.destinations.LogStandardOut.threshold: "INFO" 
@@ -50,13 +50,13 @@ physics:
 {
   producers:
   {
-     crttag: @local::SingleCRTMatching_producer
+     crtreco: @local::TwoCRTMatching_producerData
   }
 
   stream1: [ out1 ]
 
   #detSim: [ CRTSim ]
-  reco:  [ crttag]
+  reco:  [ crtreco]
  
 
   end_paths:     [ stream1 ]
