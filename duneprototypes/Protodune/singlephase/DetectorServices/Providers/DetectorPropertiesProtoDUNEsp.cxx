@@ -26,7 +26,7 @@
 #include <string>
 
 #include "art_root_io/RootDB/SQLite3Wrapper.h"
-#include "IFDH_service.h"
+#include "ifdh_art/IFDHService/IFDH_service.h"
 
 
 #include "dune/Protodune/singlephase/DetectorServices/Services/DetectorPropertiesServiceProtoDUNEsp.h"

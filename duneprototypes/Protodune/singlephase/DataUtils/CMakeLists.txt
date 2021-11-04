@@ -11,7 +11,7 @@ cet_find_library( IFBEAM NAMES ifbeam PATHS ENV IFBEAM_LIB   NO_DEFAULT_PATH )
 art_make( LIBRARY_NAME ProtoDUNEDataUtils
 	  LIB_LIBRARIES
                         dune_ArtSupport
-                        IFBEAM
+                        ifbeam::ifbeam
                         IFBEAMSERVICE
                         lardataobj_RawData
                         lardataobj_RecoBase

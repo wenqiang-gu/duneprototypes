@@ -14,7 +14,7 @@ art_make( NO_PLUGINS
                         ART_FRAMEWORK_SERVICES_REGISTRY
                         cetlib cetlib_except
                         canvas
-                        ifdh
+                        ifdh::ifdh
                         FHICLCPP
                         ROOT_BASIC_LIB_LIST
                         ${Boost_SYSTEM_LIBRARY}
