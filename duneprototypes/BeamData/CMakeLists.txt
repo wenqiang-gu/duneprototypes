@@ -1,18 +1,11 @@
-include_directories ( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories( $ENV{LIBWDA_FQ_DIR}/include )
-include_directories( $ENV{IFDH_ART_INC} )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
-include_directories( $ENV{IFBEAM_FQ_DIR}/include )
-
-cet_find_library( WDALIB NAMES wda PATHS ENV LIBWDA_LIB NO_DEFAULT_PATH )
 
 FILE (GLOB src_files *.cxx)
 
 art_make_library(  LIBRARY_NAME  BeamData
 		             SOURCE ${src_files}
 			     LIBRARIES			
-	                wda
-			ifbeam
+	                wda::wda
+			ifbeam::ifbeam
 #			IFBeam_service
                         ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_PRINCIPAL

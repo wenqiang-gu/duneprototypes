@@ -1,12 +1,6 @@
 add_subdirectory(data)
 add_subdirectory(alg)
 
-include_directories( $ENV{LIBWDA_FQ_DIR}/include )
-include_directories( $ENV{IFDH_ART_INC} )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
-include_directories( $ENV{IFBEAM_FQ_DIR}/include )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-
 # temporary fix for an extra semicolon in the root v6_22_06a TVirtualPaveStats header
 cet_add_compiler_flags(CXX -Wno-pedantic)
 
