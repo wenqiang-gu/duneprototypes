@@ -1,0 +1,9 @@
+BEGIN_PROLOG
+
+
+vdcoldboxtdechannelmap: {
+  MapName  : "vdcb1crp"
+  LogLevel : 1
+}
+
+END_PROLOG

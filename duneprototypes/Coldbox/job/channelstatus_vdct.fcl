@@ -1,0 +1,34 @@
+# channelstatus_vdct.fcl
+#
+# Channel status for TDE Coldbox 1
+# Vyacheslav Galymov
+# November 2021
+#
+# To be updated
+#
+
+# Dead channels.
+data.vdct1_dead_channels: [
+]
+
+# Very noisy channels.
+data.vdct1_hirms_channels: [
+]
+
+# Somewhat noisy channels.
+data.vdct1_modrms_channels: [
+]
+
+
+# Bad channels.
+data.vdct1_bad_channels: @local::data.vdct1_dead_channels
+data.vdct1_noisy_channels: [
+  @sequence::data.vdct1_hirms_channels
+]
+
+data.ChannelStatusService_vdct1: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdct1_bad_channels
+  NoisyChannels: @local::data.vdct1_noisy_channels
+}
+
