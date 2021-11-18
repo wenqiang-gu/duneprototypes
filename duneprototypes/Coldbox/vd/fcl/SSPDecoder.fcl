@@ -1,0 +1,6 @@
+BEGIN_PROLOG
+hdf_ssp_decoder: {
+  module_type: "VDColdboxPDSDecoder"
+  OutputDataLabel: "hdf5SSPDecoder"
+}
+END_PROLOG
