@@ -1,4 +1,3 @@
-###include "vdcoldbox_tools.fcl"
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
@@ -14,30 +13,17 @@ services: {
                         @table::protodune_rawdecoding_services
                         @table::protodune_data_reco_services
   message:              @local::dune_message_services_prod
-  FileCatalogMetadata: {
-#       campaign: "beam_prep"
-       metadataFromInput: [ "dunemeta.data_stream", "dunemeta.dune_data.daqconfigname", 
-                            "dunemeta.dune_data.detector_config", "dunemeta.dune_data.inconsistent_hw_config",
-                            "dunemeta.dune_data.is_fake_data", "dunemeta.dune_data.accouple",
-                            "dunemeta.dune_data.calibpulsemode", "dunemeta.dune_data.febaselinehigh",
-                            "dunemeta.dune_data.fegain", "dunemeta.dune_data.feleak10x",
-                            "dunemeta.dune_data.feleakhigh", "dunemeta.dune_data.feshapingtime", "events",
-                            "data_quality.online_good_run_list", "detector.hv_value" ]
-       applicationVersion: "v07_08_00_04"
-       fileType: "detector"
-       runType: "protodune-sp"
-
-  }
     
 
   VDColdboxChannelMapService: {
     FileName:         "vdcbce_chanmap_v1_dcchan3200.txt"
     LogLevel:         1
   }
+
   TFileService: { 
-      closeFileFast: true  # default
-      fileName: "hist_%ifb_decoder_reco1.root"
-      tmpDir: "<parent-path-of-filename>"  # default
+    closeFileFast: true  # default
+    fileName: "hist_%ifb_decoder_reco1.root"
+    tmpDir: "<parent-path-of-filename>"  # default
   }
   IFBeam:            {}
   IFDH:              {}

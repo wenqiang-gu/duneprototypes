@@ -33,7 +33,7 @@ services: {
 outputs: {
   rootout: {
     module_type: RootOutput
-    fileName: "out_raw_dataprep.root"
+    fileName: "out_tderaw_dataprep.root"
     dataTier:    "full-reconstructed"
     compressionLevel: 1
   }

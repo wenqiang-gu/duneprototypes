@@ -236,6 +236,8 @@ int VDColdboxDataInterface::retrieveDataAPAListWithLabels(
     std::vector<int> &apalist) {
   return 0;
 }
+
+
 // This is designed to read 1APA/CRU, only for VDColdBox data. The function uses "apano", handed by DataPrep,
 // as an argument.
 void VDColdboxDataInterface::getFragmentsForEvent(
@@ -320,6 +322,7 @@ void VDColdboxDataInterface::getFragmentsForEvent(
     }
   
 }
+
 
 void VDColdboxDataInterface::getMedianSigma(
     const raw::RawDigit::ADCvector_t &v_adc, float &median,
