@@ -16,7 +16,7 @@
 #include "dune/DuneObj/DUNEHDF5FileInfo.h"
 #include "dune/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib/WIBFrame.hpp"
-#include "dune/Coldbox/ChannelMap/VDColdboxChannelMapService.h"
+#include "dune/Coldbox//vd/ChannelMap/VDColdboxChannelMapService.h"
 
 
 //The file handle is from the raw::DUNEHDF5FileInfo data product that the source puts into the event. Art's getHandle<type> is usedto retrieve a data product from the event.  

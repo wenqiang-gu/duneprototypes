@@ -88,9 +88,9 @@ physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
 services.RawDigitPrepService.ToolNames: [
   digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
   adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
-  vdcbb_adcChannelPedestalPlotter,   # Plot pedestals
-  vdcbb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
+  vdccb_adcChannelPedestalPlotter,   # Plot pedestals
+  vdccb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
   adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
 ]
 
-tools.vdcbb_adcChannelRawRmsPlotter.MetricMax: 100
+tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100

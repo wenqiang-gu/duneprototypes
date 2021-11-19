@@ -1,0 +1,27 @@
+#  file: vdct_decoder.fcl
+#  Configurations for VDColdbox TDE decoder
+#  
+#  Vyacheslav Galymov
+#  November, 2021
+#
+
+vdct_channelmap: {
+  service_provider: VDColdboxTDEChannelMapService
+  MapName  : "vdcb1crp"
+  LogLevel : 1
+}
+
+
+vdctdecoder_source:
+{
+  module_type: VDColdboxTDERawInput
+  maxEvents: -1
+  fileNames: [ "np02rawdata.dat" ]
+  LogLevel: 1 
+  SamplesPerChannel:    10000
+  OutputLabelRawDigits: "tpcrawdecoder:daq"
+  OutputLabelRDTime:    "timingrawdecoder:daq"
+  OutputLabelRDStatus:  "daq"
+  InvertBaseline: [[0, 4096]]
+  SelectCRPs: []
+}

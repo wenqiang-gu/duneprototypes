@@ -1,7 +1,7 @@
 BEGIN_PROLOG
 
 
-vdcoldboxtdechannelmap: {
+vdct_channelmap: {
   MapName  : "vdcb1crp"
   LogLevel : 1
 }
