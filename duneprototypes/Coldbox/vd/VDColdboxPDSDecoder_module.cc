@@ -50,8 +50,8 @@ public:
 private:
 
   std::pair<raw::OpDetWaveform, recob::OpHit> MakeWaveformAndHit(
-      const dunedaq::dataformats::EventHeader * event_header, size_t data_pos,
-      uint8_t * data_ptr);
+      const dunedaq::detdataformats::ssp::EventHeader * event_header,
+      size_t data_pos, uint8_t * data_ptr);
 
   hid_t fPrevStoredHandle = -1;
   hid_t fHDFFile = -1;
@@ -78,7 +78,7 @@ dune::VDColdboxPDSDecoder::VDColdboxPDSDecoder(fhicl::ParameterSet const& p)
 void dune::VDColdboxPDSDecoder::produce(art::Event& e) {
 
   using namespace dune::HDF5Utils;
-  using namespace dunedaq::dataformats;
+  using namespace dunedaq::detdataformats::ssp;
 
   //To-do: put in sizes here?
   std::unique_ptr<std::vector<raw::OpDetWaveform>> output_wfs
@@ -166,10 +166,11 @@ void dune::VDColdboxPDSDecoder::produce(art::Event& e) {
 
 std::pair<raw::OpDetWaveform, recob::OpHit>
     dune::VDColdboxPDSDecoder::MakeWaveformAndHit(
-        const dunedaq::dataformats::EventHeader * event_header, size_t data_pos,
-        uint8_t * data_ptr) {
+        const dunedaq::detdataformats::ssp::EventHeader * event_header,
+        size_t data_pos, uint8_t * data_ptr) {
 
-  size_t nADC = (event_header->length - sizeof(dunedaq::dataformats::EventHeader))/2;
+  using namespace dunedaq::detdataformats::ssp;
+  size_t nADC = (event_header->length - sizeof(EventHeader))/2;
   if (fDebug) std::cout << "\tnADC: " << nADC << std::endl;
   unsigned long ts = 0;
   for (unsigned int iword = 0; iword <= 3; ++iword) {
@@ -181,7 +182,7 @@ std::pair<raw::OpDetWaveform, recob::OpHit>
 
   //Iterate to the start of the adc data
   unsigned short * adc_ptr = reinterpret_cast<unsigned short *>(
-      data_ptr + data_pos + sizeof(dunedaq::dataformats::EventHeader));
+      data_ptr + data_pos + sizeof(EventHeader));
 
   //size_t peak_tick = 0;
   //unsigned short max_adc = 0;
