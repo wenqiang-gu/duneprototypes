@@ -1,0 +1,69 @@
+# channelstatus_vdcb.fcl
+#
+# David Adams
+# Novewmber 2021
+#
+# For use with runs after 8225
+#
+# Note the lists are now kept in data instead of prolog
+
+################## Run period 1. Before run 12065. ###################
+
+# Dead channels.
+data.vdcb1_dead_channels: [
+1855,  # Dead in run 11990
+3119,  # Dead in run 11990
+3189   # Dead in run 11990
+]
+
+# Very noisy channels.
+data.vdcb1_hirms_channels: [
+1640,   # Noisy wf in run 11990
+1641,   # Noisy wf in run 11990
+1742,   # Noisy wf in run 11990
+1743,   # Noisy wf in run 11990
+1750,   # Noisy wf in run 11990
+1751,   # Noisy wf in run 11990
+1752,   # Noisy wf in run 11990
+1759,   # Noisy wf in run 11990
+1760,   # Noisy wf in run 11990
+1818,   # Noisy wf in run 11990
+1819,   # Noisy wf in run 11990
+2068,   # Noisy wf in run 11990
+2069,   # Noisy wf in run 11990
+1819    # Noisy wf in run 11990
+]
+
+# Somewhat noisy channels.
+data.vdcb1_modrms_channels: [
+2911,   # Somewhat noisy wf in run 11990
+2912    # Somewhat noisy wf in run 11990
+]
+
+# Very sticky code(s).
+data.vdcb1_hisc_channels: [
+2407    # Many sticky samples in run 11990
+]
+
+# Sticky codes that can/should mitigated.
+data.vdcb1_modsc_channels: [
+2856,   # Many sticky samples in run 11990
+2948    # Many sticky samples in run 11990
+]
+
+# Bad channels.
+data.vdcb1_bad_channels: @local::data.vdcb1_dead_channels
+data.vdcb1_noisy_channels: [
+  @sequence::data.vdcb1_hirms_channels,
+  @sequence::data.vdcb1_hisc_channels
+]
+
+data.ChannelStatusService_vdcb1: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdcb1_bad_channels
+  NoisyChannels: @local::data.vdcb1_noisy_channels
+}
+
+################## Run period 2. Run 12065 and later. ###################
+
+################## Run period 1. Before run 12065. ###################

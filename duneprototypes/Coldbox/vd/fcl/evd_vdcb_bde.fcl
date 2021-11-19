@@ -1,0 +1,14 @@
+#include "evd_dune10kt.fcl"
+
+services.Geometry: @local::dunevdcb_geo
+
+services.ColorDrawingOptions.RawQHigh: [100]
+services.ColorDrawingOptions.RawQLow:  [-50]
+services.RawDrawingOptions.RawDataLabels: ["tpcrawdecoder:daq", "caldata:dataprep"]
+services.RawDrawingOptions.PedestalOption: 1
+services.RawDrawingOptions.MinimumSignal: 5.0
+services.RawDrawingOptions.TotalTicks: 8192
+services.RecoDrawingOptions.WireModuleLabels: [ "caldata:dataprep" ]
+
+services.DetectorPropertiesService.TimeOffsetY: 0
+

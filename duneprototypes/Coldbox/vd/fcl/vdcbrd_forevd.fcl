@@ -1,0 +1,5 @@
+#include "vdcoldbox_raw_dataprep.fcl"
+
+services.VDColdboxChannelMapService.FileName: "vdcbce_chanmap_v2_dcchan3200.txt"
+physics.producers.caldata.ChannelGroups: [ "crb" ]
+tools.vdtool.MaxChan: 3199

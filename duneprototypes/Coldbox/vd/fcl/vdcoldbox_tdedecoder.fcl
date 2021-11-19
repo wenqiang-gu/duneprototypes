@@ -1,0 +1,36 @@
+# 
+# Example fcl to configure and run the 
+# decoder for coldbox TDE data
+#
+# Vyacheslav Galymov
+# November, 2021
+#
+
+#include "vdct_decoder.fcl"
+
+process_name: VDColdboxTDEDAQ
+
+services:
+{
+   OnlineChannelMapService:    @local::vdct_channelmap
+}
+
+source: @local::vdctdecoder_source
+
+outputs:
+{
+  rootout:
+  {
+    module_type: 	RootOutput
+    fileName: 	 	"%ifb_vdcbtde_rawdata.root"
+    compressionLevel: 	1
+    dataTier: 		"raw"
+    streamName:         "cosmics"
+  }
+}
+
+physics:
+{
+  output: 	[ rootout ]
+  end_paths: 	[ output ]
+}
