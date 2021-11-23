@@ -1,0 +1,76 @@
+#include "services_common_dune.fcl"
+
+BEGIN_PROLOG
+
+#
+vdcb_services: {
+  ExptGeoHelperInterface:       @local::dune_geometry_helper
+  GeometryConfigurationWriter:  {}
+  Geometry:                     @local::dunevdcb_geo	
+  DetectorClocksService:        @local::protodune_detectorclocks
+  DetectorPropertiesService:    @local::protodune_detproperties
+  LArPropertiesService:         @local::dunefd_properties
+  LArFFT:                       @local::dunefd_larfft
+  NuRandomService:              @local::dune_seedservice
+  ChannelStatusService:         @local::dunefd_channel_status
+  ChannelGroupService:          @local::changroup_apa_keepall
+}
+
+# set all possible offsets ...
+vdcb_services.DetectorPropertiesService.TimeOffsetX: 0
+vdcb_services.DetectorPropertiesService.TimeOffsetY: 0
+vdcb_services.DetectorPropertiesService.TimeOffsetZ: 0
+
+# bot CRP1
+vdcb_crp1_bot_services: @local::vdcb_services
+#vdcb_crp1_bot_services.DetectorPropertiesService.NumberTimeSamples: 8192
+#vdcb_crp1_bot_services.DetectorPropertiesService.ReadOutWindowSize: 8192
+
+# top CRP1
+vdcb_crp1_top_services: @local::vdcb_services
+vdcb_crp1_top_services.DetectorPropertiesService.NumberTimeSamples: 10000
+vdcb_crp1_top_services.DetectorPropertiesService.ReadOutWindowSize: 10000
+vdcb_crp1_top_services.DetectorClocksService.FramePeriod:   4000
+vdcb_crp1_top_services.DetectorClocksService.ClockSpeedTPC: 2.5
+
+
+# Default tools for RawDigitPrepService ToolNames: [
+#    "digitReader",
+#    "adcSampleFiller",
+#    "adcKeepAllSignalFinder"
+#  ]
+vdcb_dataprep_base_services: {
+   RawDigitPrepService:        @local::adcprep_with_tools_simwc
+   AdcDeconvolutionService:    @local::adcdco_dunefd
+   AdcRoiBuildingService:      @local::adcroi_dunefd
+   AdcWireBuildingService:     @local::adcwire_std
+}
+
+# data services for Top CRU
+vdcb_crp1_top_data_services: {
+  @table::vdcb_crp1_top_services
+  @table::vdcb_dataprep_base_services
+  ChannelMapService: {
+    service_provider: VDColdboxTDEChannelMapService
+    MapName  : "vdcb1crp"
+    LogLevel : 1
+  }
+}
+
+# data services for Bottom CRU
+vdcb_crp1_bot_data_services: {
+  @table::vdcb_crp1_bot_services
+  @table::vdcb_dataprep_base_services
+  ChannelMapService: {
+    service_provider: VDColdboxChannelMapService
+    FileName:         "vdcbce_chanmap_v1_dcchan3200.txt"
+    LogLevel:         1
+  }
+}
+
+
+# TO DO
+#vdcb_reco_base_services:{
+#}
+
+END_PROLOG

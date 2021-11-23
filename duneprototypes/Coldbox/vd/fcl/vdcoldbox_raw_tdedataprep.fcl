@@ -1,4 +1,4 @@
-#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "services_vdcoldbox.fcl"
 #include "vdct_decoder.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdct.fcl"
@@ -12,17 +12,8 @@ services: {
   RandomNumberGenerator: {} 
   FileCatalogMetadata:  @local::art_file_catalog_data
   message:              @local::dune_message_services_prod
-                        @table::protodune_data_reco_services
-  ChannelMapService:    @local::vdct_channelmap
-  Geometry:             @local::dunevdcb_geo 
+                        @table::vdcb_crp1_top_data_services
   ChannelStatusService: @local::data.ChannelStatusService_vdct1  
-  #  TFileService: { 
-  #    closeFileFast: true  # default
-  #    fileName: "hist_%ifb_decoder_reco1.root"
-  #    tmpDir: "<parent-path-of-filename>"  # default
-  #  }
-  IFBeam:            {}
-  IFDH:              {}
 }
 
 outputs: {
@@ -53,14 +44,6 @@ physics: {
 # from vdct_decoder.fcl
 source: @local::vdctdecoder_source
 
-services.DetectorPropertiesService.NumberTimeSamples: 10000
-services.DetectorPropertiesService.ReadOutWindowSize: 10000
-services.DetectorPropertiesService.TimeOffsetX: 0
-services.DetectorPropertiesService.TimeOffsetY: 0
-services.DetectorPropertiesService.TimeOffsetZ: 0
-services.DetectorClocksService.FramePeriod:   4000
-services.DetectorClocksService.ClockSpeedTPC: 2.5
-
 physics.producers.caldata.DecoderTool: ""
 physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
 physics.producers.caldata.OutputWireName: "caldata:dataprep"
@@ -68,12 +51,8 @@ physics.producers.caldata.ChannelGroups: ["crt"]
 physics.producers.caldata.DoGroups: true
 physics.producers.caldata.OnlineChannelMapTool: ""
 
-services.RawDigitPrepService.ToolNames: [
-  digitReader,                       # Unpack the digits acd.raw[] and acd.pedestal
-  adcSampleFiller,                   # Fill acd.samples from acd.raw - pedestal
-  #adcScaleAdcToKe,
-  adcKeepAllSignalFinder             # Flag all samples as signal, i.e. acd.signal[] = true
-]
-
-# this is at warm, but just as a palce holder ...
-#tools.adcScaleAdcToKe.ScaleFactor: 0.038 # ke/ADC/ticks 
+#services.RawDigitPrepService.ToolNames: [
+#  digitReader, 
+#  adcSampleFiller,
+#  adcKeepAllSignalFinder
+#]
