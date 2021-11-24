@@ -17,9 +17,18 @@ vdcb_services: {
 }
 
 # set all possible offsets ...
+vdcb_services.DetectorPropertiesService.TimeOffsetU: 0
+vdcb_services.DetectorPropertiesService.TimeOffsetV: 0
 vdcb_services.DetectorPropertiesService.TimeOffsetX: 0
 vdcb_services.DetectorPropertiesService.TimeOffsetY: 0
 vdcb_services.DetectorPropertiesService.TimeOffsetZ: 0
+
+# Efield settings for Nov. 2021 Run: apart from drift field
+# the other two are not relevant
+data.vdcb_nov21_Efield:  [0.45, 1.0, 1.0]
+
+# set efield
+vdcb_services.DetectorPropertiesService.Efield: @local::data.vdcb_nov21_Efield
 
 # bot CRP1
 vdcb_crp1_bot_services: @local::vdcb_services
