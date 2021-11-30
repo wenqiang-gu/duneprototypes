@@ -2,7 +2,7 @@
 #include "vdct_decoder.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdct.fcl"
-#include "vdct_tools.fcl"
+#include "vdcb_tools.fcl"
 
 process_name: VDTDEDataPrep
 
