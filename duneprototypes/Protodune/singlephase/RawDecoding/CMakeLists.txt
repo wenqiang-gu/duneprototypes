@@ -3,9 +3,9 @@ cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEF
 
 cet_build_plugin(PDSPTPCDataInterface   art::tool
 				     art_utilities
-				     canvas
-				     cetlib
-				     cetlib_except
+				     canvas::canvas
+				     cetlib::cetlib
+				     cetlib_except::cetlib_except
                         lardataobj_RawData
                         dune_raw_data::dune-raw-data_Overlays
 			artdaq_core::artdaq-core_Data
@@ -225,9 +225,9 @@ art_make_library( LIBRARY_NAME dunetpc_protodune_RawDecodingUtils
                   ART_ROOT_IO_TFILE_SUPPORT
                   ROOT::Core
                   ART_ROOT_IO_TFILESERVICE_SERVICE
- #                 art_Persistency_Common canvas_Persistency_Common
- #                 art_Persistency_Provenance canvas_Persistency_Provenance
- #                 art_Utilities canvas_Utilities
+ #                 art::Persistency_Common canvas_Persistency_Common
+ #                 art::Persistency_Provenance canvas_Persistency_Provenance
+ #                 art::Utilities canvas_Utilities
                   messagefacility::MF_MessageLogger
 
                   CETLIB

@@ -4,7 +4,7 @@ cet_build_plugin(SPLifetime art::module
               larcore_Geometry_Geometry_service
               larsim_MCCheater_BackTrackerService_service
               larsim_MCCheater_ParticleInventoryService_service
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
               ART_FRAMEWORK_SERVICES_REGISTRY
@@ -12,11 +12,11 @@ cet_build_plugin(SPLifetime art::module
               ROOT::Core
               ART_ROOT_IO_TFILESERVICE_SERVICE
               ART_PERSISTENCY_PROVENANCE
-              art_Persistency_Common
-              art_Utilities
-              canvas
+              art::Persistency_Common
+              art::Utilities
+              canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib cetlib_except
+              cetlib::cetlib cetlib_except
               ROOT_MATHCORE
               ROOT_GENVECTOR
               ROOT_GEOM
@@ -29,7 +29,7 @@ cet_build_plugin(PlotTrackT0 art::module
               larcore_Geometry_Geometry_service
               larsim_MCCheater_BackTrackerService_service
               larsim_MCCheater_ParticleInventoryService_service
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
               ART_FRAMEWORK_SERVICES_REGISTRY
@@ -37,11 +37,11 @@ cet_build_plugin(PlotTrackT0 art::module
               ROOT::Core
               ART_ROOT_IO_TFILESERVICE_SERVICE
               ART_PERSISTENCY_PROVENANCE
-              art_Persistency_Common
-              art_Utilities
-              canvas
+              art::Persistency_Common
+              art::Utilities
+              canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib cetlib_except
+              cetlib::cetlib cetlib_except
               ROOT_MATHCORE
               ROOT_GENVECTOR
               ROOT_GEOM
@@ -54,7 +54,7 @@ cet_build_plugin(PlotTrackDetails art::module
               larcore_Geometry_Geometry_service
               larsim_MCCheater_BackTrackerService_service
               larsim_MCCheater_ParticleInventoryService_service
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
               ART_FRAMEWORK_SERVICES_REGISTRY
@@ -62,11 +62,11 @@ cet_build_plugin(PlotTrackDetails art::module
               ROOT::Core
               ART_ROOT_IO_TFILESERVICE_SERVICE
               ART_PERSISTENCY_PROVENANCE
-              art_Persistency_Common
-              art_Utilities
-              canvas
+              art::Persistency_Common
+              art::Utilities
+              canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib cetlib_except
+              cetlib::cetlib cetlib_except
               ROOT_MATHCORE
               ROOT_GENVECTOR
               ROOT_GEOM
@@ -79,7 +79,7 @@ cet_build_plugin(PlotEventDetails art::module
       larcore_Geometry_Geometry_service
       larsim_MCCheater_BackTrackerService_service
            larsim_MCCheater_ParticleInventoryService_service
-      nusimdata_SimulationBase
+      nusimdata::SimulationBase
       ART_FRAMEWORK_CORE
       ART_FRAMEWORK_PRINCIPAL
       ART_FRAMEWORK_SERVICES_REGISTRY
@@ -87,11 +87,11 @@ cet_build_plugin(PlotEventDetails art::module
       ROOT::Core
       ART_ROOT_IO_TFILESERVICE_SERVICE
       ART_PERSISTENCY_PROVENANCE
-      art_Persistency_Common
-      art_Utilities 
-      canvas
+      art::Persistency_Common
+      art::Utilities 
+      canvas::canvas
       messagefacility::MF_MessageLogger
-      cetlib cetlib_except
+      cetlib::cetlib cetlib_except
       ROOT_MATHCORE
       ROOT_GENVECTOR
       ROOT_GEOM
@@ -108,11 +108,11 @@ cet_build_plugin(PlotOpticalDetails art::module
               ROOT::Core
               ART_ROOT_IO_TFILESERVICE_SERVICE
               ART_PERSISTENCY_PROVENANCE
-              art_Persistency_Common
-              art_Utilities
-              canvas
+              art::Persistency_Common
+              art::Utilities
+              canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib cetlib_except
+              cetlib::cetlib cetlib_except
               ROOT_MATHCORE
               ROOT_GENVECTOR
               ROOT_GEOM
@@ -124,7 +124,7 @@ cet_build_plugin(RawEventDisplay art::module
               larcore_Geometry_Geometry_service
               lardataalg_DetectorInfo
               lardataobj_RawData
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
               ART_FRAMEWORK_SERVICES_REGISTRY
@@ -141,7 +141,7 @@ cet_build_plugin(TpcMonitor art::module
               larcore_Geometry_Geometry_service
               lardataalg_DetectorInfo
               lardataobj_RawData
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
@@ -160,7 +160,7 @@ cet_build_plugin(SSPMonitor art::module
               larcore_Geometry_Geometry_service
               lardataobj_RawData
               lardataobj_RecoBase
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL
               ART_FRAMEWORK_SERVICES_REGISTRY
@@ -181,11 +181,11 @@ cet_build_plugin(PDSPNearlineHeader art::module
               ART_ROOT_IO_TFILE_SUPPORT
               ROOT::Core
               ART_ROOT_IO_TFILESERVICE_SERVICE
-              art_Persistency_Common
-              art_Utilities
-              canvas
+              art::Persistency_Common
+              art::Utilities
+              canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib cetlib_except
+              cetlib::cetlib cetlib_except
               ROOT_BASIC_LIB_LIST
               BASENAME_ONLY)
 
@@ -193,7 +193,7 @@ cet_build_plugin(PDSPHitMonitor art::module
               larcorealg_Geometry
               larcore_Geometry_Geometry_service
               lardataobj_RawData
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL

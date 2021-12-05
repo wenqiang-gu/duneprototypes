@@ -13,15 +13,15 @@ art_make_library(  LIBRARY_NAME  BeamData
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         
-                        cetlib cetlib_except
-			FHICLCPP
+                        cetlib::cetlib cetlib_except
+			fhiclcpp::fhiclcpp
                         ROOT_BASIC_LIB_LIST
-			${Boost_SYSTEM_LIBRARY}
+			
         )
 
 #art_make_exec( NAME RunInfoDUNE
@@ -29,7 +29,7 @@ art_make_library(  LIBRARY_NAME  BeamData
 #               LIBRARIES
 #			RunHistoryDUNE
                          #wda
-			 # nuevdb_IFDatabase
+			 # nuevdb::IFDatabase
 #               )
 
 #art_make_exec( NAME getDUNEPedestals

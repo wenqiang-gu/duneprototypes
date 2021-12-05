@@ -12,7 +12,7 @@ art_make( MODULE_LIBRARIES
                         larcorealg_CoreUtils
 			larcore_Geometry_Geometry_service
                         lardataobj_Simulation
-                        nusimdata_SimulationBase
+                        nusimdata::SimulationBase
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase
 			larsim_MCCheater_ParticleInventoryService_service
@@ -24,11 +24,11 @@ art_make( MODULE_LIBRARIES
 			ART_ROOT_IO_TFILE_SUPPORT
 			ROOT::Core
 			ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
-			cetlib cetlib_except
+			cetlib::cetlib cetlib_except
 			ROOT_BASIC_LIB_LIST
                         ROOT_GENVECTOR
                         ROOT_GEOM

@@ -9,7 +9,7 @@ art_make(
   larsim_PhotonPropagation_PhotonVisibilityService_service
   larana_OpticalDetector_OpDigiProperties_service
   lardata_Utilities
-  nusimdata_SimulationBase
+  nusimdata::SimulationBase
   ART_FRAMEWORK_CORE
   ART_FRAMEWORK_PRINCIPAL
   ART_FRAMEWORK_SERVICES_REGISTRY
@@ -17,12 +17,12 @@ art_make(
   ROOT::Core
   ART_ROOT_IO_TFILESERVICE_SERVICE
   ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE
-  art_Persistency_Common
-  art_Utilities
-  canvas
+  art::Persistency_Common
+  art::Utilities
+  canvas::canvas
   messagefacility::MF_MessageLogger
-  FHICLCPP
-  cetlib cetlib_except
+  fhiclcpp::fhiclcpp
+  cetlib::cetlib cetlib_except
   ROOT_BASIC_LIB_LIST
   MODULE_LIBRARIES larana_OpticalDetector_OpDigiProperties_service
   larana_OpticalDetector_OpHitFinder
@@ -38,13 +38,13 @@ art_make(
   larreco_RecoAlg
   larcorealg_Geometry
   larcore_Geometry_Geometry_service
-  larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
   lardata_Utilities
   lardataobj_RawData
   larreco_Calorimetry
   lardataobj_AnalysisBase
-  nurandom_RandomUtils_NuRandomService_service
-  nusimdata_SimulationBase
+  nurandom::RandomUtils_NuRandomService_service
+  nusimdata::SimulationBase
   ART_FRAMEWORK_CORE
   ART_FRAMEWORK_PRINCIPAL
   ART_FRAMEWORK_SERVICES_REGISTRY
@@ -53,12 +53,12 @@ art_make(
   ART_ROOT_IO_TFILESERVICE_SERVICE
   ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE
   ART_PERSISTENCY_PROVENANCE
-  art_Persistency_Common
-  art_Utilities
-  canvas
+  art::Persistency_Common
+  art::Utilities
+  canvas::canvas
   messagefacility::MF_MessageLogger
-  FHICLCPP
-  cetlib cetlib_except
+  fhiclcpp::fhiclcpp
+  cetlib::cetlib cetlib_except
   ROOT_BASIC_LIB_LIST
   SERVICE_LIBRARIES
   larcorealg_Geometry
@@ -69,12 +69,12 @@ art_make(
   ART_ROOT_IO_TFILE_SUPPORT
   ROOT::Core
   ART_ROOT_IO_TFILESERVICE_SERVICE
-  art_Persistency_Common
-  art_Utilities
-  canvas
+  art::Persistency_Common
+  art::Utilities
+  canvas::canvas
   messagefacility::MF_MessageLogger
-  FHICLCPP
-  cetlib cetlib_except
+  fhiclcpp::fhiclcpp
+  cetlib::cetlib cetlib_except
   CLHEP
   ROOT_BASIC_LIB_LIST
   )
