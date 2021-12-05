@@ -230,6 +230,7 @@ namespace spdp{
 
     fEfield                     = config.Efield();
     fGetHVDriftfromMetaData    = config.fGetHVDriftfromMetaData();
+    fGetHVDriftfromMetaData    = false;  // DLA 2021-11-11  Redmine 26419
     fGetReadOutWindowSizefromMetaData = config.fGetReadOutWindowSizefromMetaData();
     fUseRunDependentTemperature = config.fUseRunDependentTemperature();
     fElectronlifetime           = config.Electronlifetime();

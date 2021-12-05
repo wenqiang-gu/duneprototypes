@@ -1,0 +1,113 @@
+# channelstatus_vdcb.fcl
+#
+# David Adams
+# Novewmber 2021
+#
+# For use with runs after 8225
+#
+# Note the lists are now kept in data instead of prolog
+
+################## Run period 1. Before run 12065. ###################
+
+# Dead channels.
+data.vdcb1_dead_channels: [
+1855,  # Dead in run 11990
+3119,  # Dead in run 11990
+3189   # Dead in run 11990
+]
+
+# Very noisy channels.
+data.vdcb1_hirms_channels: [
+1640,   # Noisy wf in run 11990
+1641,   # Noisy wf in run 11990
+1742,   # Noisy wf in run 11990
+1743,   # Noisy wf in run 11990
+1750,   # Noisy wf in run 11990
+1751,   # Noisy wf in run 11990
+1752,   # Noisy wf in run 11990
+1759,   # Noisy wf in run 11990
+1760,   # Noisy wf in run 11990
+1818,   # Noisy wf in run 11990
+1819,   # Noisy wf in run 11990
+2068,   # Noisy wf in run 11990
+2069    # Noisy wf in run 11990
+]
+
+# Somewhat noisy channels.
+data.vdcb1_modrms_channels: [
+2911,   # Somewhat noisy wf in run 11990
+2912    # Somewhat noisy wf in run 11990
+]
+
+# Very sticky code(s).
+data.vdcb1_hisc_channels: [
+2407    # Many sticky samples in run 11990
+]
+
+# Sticky codes that can/should mitigated.
+data.vdcb1_modsc_channels: [
+2856,   # Many sticky samples in run 11990
+2948    # Many sticky samples in run 11990
+]
+
+# Bad and noisy compilations.
+data.vdcb1_bad_channels: @local::data.vdcb1_dead_channels
+data.vdcb1_noisy_channels: [
+  @sequence::data.vdcb1_hirms_channels,
+  @sequence::data.vdcb1_hisc_channels
+]
+
+# Bad channel service.
+data.ChannelStatusService_vdcb1: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdcb1_bad_channels
+  NoisyChannels: @local::data.vdcb1_noisy_channels
+}
+
+################## Run period 2. Run 12065 (cold) and later. ###################
+
+# Dead channels.
+data.vdcb2_dead_channels: [
+1855,  # Dead in run 11990, 12100-1
+#3119,  # Dead in 11900, not dead in run 12100-1
+3189   # Dead in run 11900, 12100-1
+]
+
+# High uncorrelated noise channels.
+data.vdcb2_hirms_channels: [
+1640,   # Noisy wf in run 11990 and 12100-1
+1641,   # Noisy wf in run 11990 and 12100-1
+2068,   # Noisy wf in run 11990 and 12100-1
+2069    # Noisy wf in run 11990 and 12100-1
+]
+
+# Very sticky codes.
+data.vdcb2_hisc_channels: [
+1719,    # Very sticky in 12100-1
+1720,    # Very sticky in 12100-1
+2189,    # Very sticky in 12100-1
+2281,    # Very sticky in 12100-1
+2284,    # Very sticky in 12100-1
+2287,    # Very sticky in 12100-1
+2288,    # Very sticky in 12100-1
+2290,    # Very sticky in 12100-1
+2291,    # Very sticky in 12100-1
+2582,    # Very sticky in 12100-1
+2779,    # Very sticky in 12100-1
+3187     # Very sticky in 12100-1
+]
+
+# Bad and noisy compilations.
+data.vdcb2_bad_channels: @local::data.vdcb2_dead_channels
+data.vdcb2_noisy_channels: [
+  @sequence::data.vdcb2_hirms_channels,
+  @sequence::data.vdcb2_hisc_channels
+]
+
+# Bad channel service.
+data.ChannelStatusService_vdcb2: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdcb2_bad_channels
+  NoisyChannels: @local::data.vdcb2_noisy_channels
+}
+

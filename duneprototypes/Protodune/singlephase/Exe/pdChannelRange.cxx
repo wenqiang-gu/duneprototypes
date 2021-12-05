@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     cout << "Usage: " << argv[0] << " [-d DET] NAME" << endl;
     cout << "  Displays the range names group for channel group NAME" << endl;
     cout << "  or the range for channel range NAME." << endl;
-    cout << "  DET = protodune (default) or apa7 or any value for which\n"
+    cout << "  DET = protodune (default), apa7, iceberg, vdcb or any value for which\n"
          << "        DET_tools_dune.fcl provides definitions for\n"
          << "        channelRanges and channelGroups." << endl;
     if ( sdet == "protodune" ) {

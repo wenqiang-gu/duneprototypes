@@ -1,0 +1,37 @@
+# channelstatus_vdct.fcl
+#
+# Channel status for TDE Coldbox 1
+# Vyacheslav Galymov
+# November 2021
+# 
+# Updated December 2/2021
+#
+
+# Dead channels. 
+# These channels have lower noise than their neigbours
+# most likely due to interuption somewhere on the CRP
+data.vdct1_dead_channels: [
+223, 515, 523, 1027, 1028, 1032, 1075, 1391, 1392
+]
+
+# Very noisy channels.
+data.vdct1_hirms_channels: [
+219, 703, 704
+]
+
+# Somewhat noisy channels.
+data.vdct1_modrms_channels: [
+]
+
+
+# Bad channels.
+data.vdct1_bad_channels: @local::data.vdct1_dead_channels
+data.vdct1_noisy_channels: [
+  @sequence::data.vdct1_hirms_channels
+]
+
+data.ChannelStatusService_vdct1: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdct1_bad_channels
+  NoisyChannels: @local::data.vdct1_noisy_channels
+}

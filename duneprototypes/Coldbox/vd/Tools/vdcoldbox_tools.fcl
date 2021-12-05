@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+vd_coldbox_channelRanges: {
+  tool_type: VDColdboxChannelRanges
+  LogLevel: 1
+}
+
+vd_coldbox_channelGroups: {
+  tool_type: VDColdboxChannelGroups
+  LogLevel: 1
+}
+END_PROLOG

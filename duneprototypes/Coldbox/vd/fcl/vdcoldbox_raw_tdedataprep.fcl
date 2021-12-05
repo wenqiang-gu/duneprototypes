@@ -1,0 +1,58 @@
+#include "services_vdcoldbox.fcl"
+#include "vdct_decoder.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_vdct.fcl"
+#include "vdcb_tools.fcl"
+
+process_name: VDTDEDataPrep
+
+services: {
+  TimeTracker:       @local::dune_time_tracker
+  MemoryTracker:     @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  FileCatalogMetadata:  @local::art_file_catalog_data
+  message:              @local::dune_message_services_prod
+                        @table::vdcb_crp1_top_data_services
+  ChannelStatusService: @local::data.ChannelStatusService_vdct1  
+}
+
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "%ifb_vdcbtde_dataprep.root"
+    #outputCommands: [ "keep *", "drop raw::RawDigit*_*_*_*" ]
+    compressionLevel: 1
+    dataTier: "decoded-raw"
+    streamName: "cosmics"
+  }
+}
+
+physics: {
+  producers: {
+    caldata: @local::producer_adcprep
+  }
+
+  produce: [
+    caldata
+  ]
+
+  output : [ rootout ]
+  trigger_paths: [produce]
+  end_paths : [ output ]
+}
+
+# from vdct_decoder.fcl
+source: @local::vdctdecoder_source
+
+physics.producers.caldata.DecoderTool: ""
+physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
+physics.producers.caldata.OutputWireName: "caldata:dataprep"
+physics.producers.caldata.ChannelGroups: ["crt"]
+physics.producers.caldata.DoGroups: true
+physics.producers.caldata.OnlineChannelMapTool: ""
+
+#services.RawDigitPrepService.ToolNames: [
+#  digitReader, 
+#  adcSampleFiller,
+#  adcKeepAllSignalFinder
+#]
