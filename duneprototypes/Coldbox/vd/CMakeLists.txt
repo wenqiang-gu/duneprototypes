@@ -22,8 +22,6 @@ cet_build_plugin(VDColdboxDataInterface   art::tool
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
-                        z
              )
 
 

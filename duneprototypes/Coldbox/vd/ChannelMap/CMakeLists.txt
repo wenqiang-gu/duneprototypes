@@ -23,7 +23,7 @@ simple_plugin(VDColdboxChannelMapService "service"
               ${SQLITE3}
               ${MF_MESSAGELOGGER}
               ${CETLIB_LIBS}
-              ${ROOT_BASIC_LIB_LIST}
+              ROOT_BASIC_LIB_LIST
 )
 
 simple_plugin(VDColdboxTDEChannelMapService "service"
@@ -33,5 +33,5 @@ simple_plugin(VDColdboxTDEChannelMapService "service"
               ${SQLITE3}
               ${MF_MESSAGELOGGER}
               ${CETLIB_LIBS}
-              ${ROOT_BASIC_LIB_LIST}
+              ROOT_BASIC_LIB_LIST
 )
