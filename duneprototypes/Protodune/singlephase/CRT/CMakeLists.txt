@@ -1,12 +1,6 @@
 add_subdirectory(data)
 add_subdirectory(alg)
 
-include_directories( $ENV{LIBWDA_FQ_DIR}/include )
-include_directories( $ENV{IFDH_ART_INC} )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
-include_directories( $ENV{IFBEAM_FQ_DIR}/include )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-
 # temporary fix for an extra semicolon in the root v6_22_06a TVirtualPaveStats header
 cet_add_compiler_flags(CXX -Wno-pedantic)
 
@@ -18,7 +12,7 @@ art_make( MODULE_LIBRARIES
                         larcorealg_CoreUtils
 			larcore_Geometry_Geometry_service
                         lardataobj_Simulation
-                        nusimdata_SimulationBase
+                        nusimdata::SimulationBase
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase
 			larsim_MCCheater_ParticleInventoryService_service
@@ -30,11 +24,11 @@ art_make( MODULE_LIBRARIES
 			ART_ROOT_IO_TFILE_SUPPORT
 			ROOT::Core
 			ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
-			cetlib cetlib_except
+			cetlib::cetlib cetlib_except
 			ROOT_BASIC_LIB_LIST
                         ROOT_GENVECTOR
                         ROOT_GEOM

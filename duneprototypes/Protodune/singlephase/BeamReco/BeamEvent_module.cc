@@ -17,7 +17,7 @@
 #include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "IFBeam_service.h"
+#include "ifdh_art/IFBeamService/IFBeam_service.h"
 #include "art_root_io/TFileService.h"
 #include "lardataobj/RecoBase/TrackingTypes.h"
 #include "lardataobj/RecoBase/TrackTrajectory.h"

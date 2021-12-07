@@ -21,7 +21,7 @@
 #include "fhiclcpp/make_ParameterSet.h"
 
 
-#include "IFDH_service.h"
+#include "ifdh_art/IFDHService/IFDH_service.h"
 
 #include "TFile.h"
 

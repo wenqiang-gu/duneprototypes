@@ -8,9 +8,9 @@ cet_build_plugin(RawData311InputDriver art::service
 			ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_IO_SOURCES
 			ART_FRAMEWORK_PRINCIPAL
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
 			CETLIB
@@ -27,18 +27,18 @@ cet_build_plugin(dlardaq art::service
 			larcorealg_Geometry
 			larcore_Geometry_Geometry_service
 			lardata_Utilities
-			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
 			ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_PRINCIPAL
 			ART_FRAMEWORK_SERVICES_REGISTRY
 			ART_ROOT_IO_TFILE_SUPPORT
 			ROOT::Core
 			ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
 			CETLIB
@@ -59,18 +59,18 @@ cet_build_plugin(EventDecoder art::service
 			larcorealg_Geometry
 			larcore_Geometry_Geometry_service
 			lardata_Utilities
-			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
 			ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_PRINCIPAL
 			ART_FRAMEWORK_SERVICES_REGISTRY
 			ART_ROOT_IO_TFILE_SUPPORT
 			ROOT::Core
 			ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
 			CETLIB
@@ -90,18 +90,18 @@ cet_build_plugin(HuffDataCompressor art::service
 			larcorealg_Geometry
 			larcore_Geometry_Geometry_service
 			lardata_Utilities
-			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
 			ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_PRINCIPAL
 			ART_FRAMEWORK_SERVICES_REGISTRY
 			ART_ROOT_IO_TFILE_SUPPORT
 			ROOT::Core
 			ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
 			CETLIB

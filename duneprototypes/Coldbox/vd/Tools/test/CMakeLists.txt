@@ -10,39 +10,39 @@ include(CetTest)
 cet_test(test_VDColdboxChannelRanges SOURCES test_VDColdboxChannelRanges.cxx
   LIBRARIES
     dune_ArtSupport
-    art_Utilities
-    canvas
+    art::Utilities
+    canvas::canvas
     fhiclcpp
-    cetlib cetlib_except
-    cetlib_except
+    cetlib::cetlib cetlib_except
+    cetlib_except::cetlib_except
     ROOT_BASIC_LIB_LIST
     SQLITE3
-    ${Boost_FILESYSTEM_LIBRARY}
+    Boost::filesystem
 )
 
 cet_test(test_VDColdboxChannelGroups SOURCES test_VDColdboxChannelGroups.cxx
   LIBRARIES
     dune_ArtSupport
-    art_Utilities
-    canvas
+    art::Utilities
+    canvas::canvas
     fhiclcpp
-    cetlib cetlib_except
-    cetlib_except
+    cetlib::cetlib cetlib_except
+    cetlib_except::cetlib_except
     ROOT_BASIC_LIB_LIST
     SQLITE3
-    ${Boost_FILESYSTEM_LIBRARY}
+    Boost::filesystem
 )
 
 cet_test(test_VDColdboxOnlineChannel SOURCES test_VDColdboxOnlineChannel.cxx
   LIBRARIES
     dune_ArtSupport
-    art_Utilities
-    canvas
+    art::Utilities
+    canvas::canvas
     fhiclcpp
-    cetlib cetlib_except
-    cetlib_except
+    cetlib::cetlib cetlib_except
+    cetlib_except::cetlib_except
     ROOT_BASIC_LIB_LIST
     SQLITE3
-    ${Boost_FILESYSTEM_LIBRARY}
+    Boost::filesystem
 )
 
