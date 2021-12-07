@@ -2,7 +2,7 @@
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
 #include "vdcb_tools.fcl"
-#include "vdcb_dataprep_sequences.fcl.
+#include "vdcb_dataprep_sequences.fcl"
 
 process_name: VDSourcePrep
 
@@ -64,9 +64,6 @@ tools.vdtool: {
   tool_type: "VDColdboxDataInterface"
 }
 
-
-#tools.channelRanges: @local::vd_coldbox_channelRanges 
-#tools.channelGroups: @local::vd_coldbox_channelGroups 
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "vdtool"
 physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb

@@ -2,7 +2,7 @@
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
 #include "vdcb_tools.fcl"
-#include "vdcb_dataprep_sequences.fcl.
+#include "vdcb_dataprep_sequences.fcl"
 
 process_name: VDRawDigit
 
@@ -83,19 +83,6 @@ tools.vdtool: {
   tool_type: "VDColdboxDataInterface"
   ForceOpen: true
 }
-
-##### 
-#tools.channelRanges: {
-#  tool_type: VDColdboxChannelRanges
-#  LogLevel: 1
-#}
-#
-#tools.channelGroups: {
-#  tool_type: VDColdboxChannelGroups
-#  LogLevel: 1
-#}
-#tools.channelRanges: @local::vd_coldbox_channelRanges 
-#tools.channelGroups: @local::vd_coldbox_channelGroups 
 
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "vdtool"
