@@ -1,8 +1,8 @@
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
+#include "channelstatus_vdcb.fcl"
 #include "vdcb_tools.fcl"
-
-
+#include "vdcb_dataprep_sequences.fcl.
 
 process_name: VDRawDigit
 
@@ -43,6 +43,8 @@ services: {
   }
   IFBeam:            {}
   IFDH:              {}
+  #ChannelStatusService: @local::data.ChannelStatusService_vdcb1    # Before run 12065
+  ChannelStatusService: @local::data.ChannelStatusService_vdcb2     # Cold running
 }
 services.DatabaseUtil: @erase
 
@@ -103,12 +105,7 @@ physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
 tools.channelRanges.GhostRange: [3456, 3647]
 physics.producers.caldata.LogLevel: 3
 
-services.RawDigitPrepService.ToolNames: [
-  digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
-  adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
-  vdcbb_adcChannelPedestalPlotter,   # Plot pedestals
-  vdcbb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
-  adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
-]
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr
 
 tools.vdcbb_adcChannelRawRmsPlotter.MetricMax: 100

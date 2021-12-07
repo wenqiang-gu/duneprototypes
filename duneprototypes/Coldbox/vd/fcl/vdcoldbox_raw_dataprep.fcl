@@ -2,6 +2,7 @@
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
 #include "vdcb_tools.fcl"
+#include "vdcb_dataprep_sequences.fcl.
 
 process_name: VDSourcePrep
 
@@ -72,12 +73,8 @@ physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb
 physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.OutputWireName: "dataprep"
 physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
-services.RawDigitPrepService.ToolNames: [
-  digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
-  adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
-  vdccb_adcChannelPedestalPlotter,   # Plot pedestals
-  vdccb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
-  adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
-]
+
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr
 
 tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
