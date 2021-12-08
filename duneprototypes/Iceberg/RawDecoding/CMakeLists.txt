@@ -14,9 +14,9 @@ cet_build_plugin(IcebergTPCRawDecoder art::module
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
- #                       art_Persistency_Common canvas_Persistency_Common
- #                       art_Persistency_Provenance canvas_Persistency_Provenance
- #                       art_Utilities canvas_Utilities
+ #                       art::Persistency_Common canvas_Persistency_Common
+ #                       art::Persistency_Provenance canvas_Persistency_Provenance
+ #                       art::Utilities canvas_Utilities
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
@@ -39,9 +39,9 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
- #                       art_Persistency_Common canvas_Persistency_Common
- #                       art_Persistency_Provenance canvas_Persistency_Provenance
- #                       art_Utilities canvas_Utilities
+ #                       art::Persistency_Common canvas_Persistency_Common
+ #                       art::Persistency_Provenance canvas_Persistency_Provenance
+ #                       art::Utilities canvas_Utilities
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
@@ -53,9 +53,9 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
 
 cet_build_plugin(IcebergDataInterface   art::tool
 				     art_utilities
-				     canvas
-				     cetlib
-				     cetlib_except
+				     canvas::canvas
+				     cetlib::cetlib
+				     cetlib_except::cetlib_except
                         lardataobj_RawData
                         dune_raw_data::dune-raw-data_Overlays
 			artdaq_core::artdaq-core_Data
@@ -78,9 +78,9 @@ cet_build_plugin(IcebergDataInterface   art::tool
 
 cet_build_plugin(IcebergDataInterfaceFELIXBufferMarch2021   art::tool
 				     art_utilities
-				     canvas
-				     cetlib
-				     cetlib_except
+				     canvas::canvas
+				     cetlib::cetlib
+				     cetlib_except::cetlib_except
                         lardataobj_RawData
                         dune_raw_data::dune-raw-data_Overlays
 			artdaq_core::artdaq-core_Data

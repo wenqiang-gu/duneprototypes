@@ -2,7 +2,7 @@ cet_build_plugin(ICEBERGPDSSPMonitor art::module
               larcorealg_Geometry
               larcore_Geometry_Geometry_service
               lardataobj_RawData
-              nusimdata_SimulationBase
+              nusimdata::SimulationBase
               dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
               ART_FRAMEWORK_CORE
               ART_FRAMEWORK_PRINCIPAL

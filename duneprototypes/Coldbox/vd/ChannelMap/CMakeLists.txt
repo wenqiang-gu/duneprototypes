@@ -11,27 +11,27 @@ install_fw( LIST ${channel_map_file} )
 # Add plugin for each service
 
 if( DEFINED ENV{CANVAS_DIR} )
-  set( persistency_lib art_Utilities canvas)
+  set( persistency_lib art::Utilities canvas)
 else()
-  set( persistency_lib art_Utilities)
+  set( persistency_lib art::Utilities)
 endif()
 
 simple_plugin(VDColdboxChannelMapService "service"
               ${ART_PERSISTENCY_ROOTDB}
-              ${ART_FRAMEWORK_SERVICES_REGISTRY}
+              art::Framework_Services_Registry
               ${persistency_lib}
-              ${SQLITE3}
-              ${MF_MESSAGELOGGER}
+              SQLite::SQLite3
+              messagefacility::MF_MessageLogger
               ${CETLIB_LIBS}
               ROOT_BASIC_LIB_LIST
 )
 
 simple_plugin(VDColdboxTDEChannelMapService "service"
               ${ART_PERSISTENCY_ROOTDB}
-              ${ART_FRAMEWORK_SERVICES_REGISTRY}
+              art::Framework_Services_Registry
               ${persistency_lib}
-              ${SQLITE3}
-              ${MF_MESSAGELOGGER}
+              SQLite::SQLite3
+              messagefacility::MF_MessageLogger
               ${CETLIB_LIBS}
               ROOT_BASIC_LIB_LIST
 )
