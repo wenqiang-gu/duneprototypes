@@ -24,7 +24,7 @@ cet_build_plugin(PDSPmatchmc art::module
                         dune_raw_data::dune-raw-data_Overlays
                         artdaq_core::artdaq-core_Data
                         dune_Geometry
-                        nusimdata_SimulationBase
+                        nusimdata::SimulationBase
                         larsim_MCCheater_PhotonBackTrackerService_service
                         larsim_MCCheater_ParticleInventoryService_service
                         ART_FRAMEWORK_CORE

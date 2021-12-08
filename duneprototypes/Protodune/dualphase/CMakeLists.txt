@@ -2,15 +2,15 @@
 
 cet_build_plugin(
            CRTGen art::module
-           nusimdata_SimulationBase
-           cetlib
-           cetlib_except
-           FHICLCPP
+           nusimdata::SimulationBase
+           cetlib::cetlib
+           cetlib_except::cetlib_except
+           fhiclcpp::fhiclcpp
            CLHEP
            larcorealg_Geometry
            larcoreobj_SummaryData
            larsim_EventGenerator
-           nurandom_RandomUtils_NuRandomService_service
+           nurandom::RandomUtils_NuRandomService_service
            ART_FRAMEWORK_SERVICES_REGISTRY
            ART_ROOT_IO_TFILESERVICE_SERVICE
            ART_ROOT_IO_TFILE_SUPPORT
@@ -40,12 +40,12 @@ cet_build_plugin(
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
+                        art::Persistency_Common canvas
+                        art::Persistency_Provenance canvas
+                        art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         
-                        cetlib cetlib_except
+                        cetlib::cetlib cetlib_except
                         ROOT_BASIC_LIB_LIST
                         BASENAME_ONLY
 )
@@ -67,12 +67,12 @@ cet_build_plugin(
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
+                        art::Persistency_Common canvas
+                        art::Persistency_Provenance canvas
+                        art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         
-                        cetlib cetlib_except
+                        cetlib::cetlib cetlib_except
                         ROOT_BASIC_LIB_LIST
                         BASENAME_ONLY
 )
@@ -80,7 +80,7 @@ cet_build_plugin(
 cet_build_plugin(
 	  AnaRootParser art::module
 	  larcore_Geometry_Geometry_service
-	  larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+	  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 	  larsim_MCCheater_BackTrackerService_service
           larsim_MCCheater_ParticleInventoryService_service
 	  lardata_Utilities
@@ -96,20 +96,20 @@ cet_build_plugin(
 	  larpandora_LArPandoraInterface
 	  SignalShapingServiceDUNE10kt_service
 	  SignalShapingServiceDUNE35t_service
-          nusimdata_SimulationBase
+          nusimdata::SimulationBase
           ART_FRAMEWORK_CORE
 	  ART_FRAMEWORK_PRINCIPAL
 	  ART_FRAMEWORK_SERVICES_REGISTRY
 	  ART_ROOT_IO_TFILE_SUPPORT
 	  ROOT::Core
 	  ART_ROOT_IO_TFILESERVICE_SERVICE
-	  art_Persistency_Common canvas
-	  art_Persistency_Provenance canvas
-	  art_Utilities canvas
+	  art::Persistency_Common canvas
+	  art::Persistency_Provenance canvas
+	  art::Utilities canvas
 	  messagefacility::MF_MessageLogger
 	  
-	  FHICLCPP
-	  cetlib cetlib_except
+	  fhiclcpp::fhiclcpp
+	  cetlib::cetlib cetlib_except
           ROOT_GEOM
           ROOT_XMLIO
           ROOT_GDML

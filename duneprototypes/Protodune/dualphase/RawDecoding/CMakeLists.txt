@@ -2,10 +2,10 @@ cet_build_plugin(PDDPChannelMap art::service
                         ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_IO_SOURCES
                         ART_FRAMEWORK_PRINCIPAL
-                        art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
-			FHICLCPP
+                        art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
+			fhiclcpp::fhiclcpp
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
@@ -19,10 +19,10 @@ cet_build_plugin(PDDPRawInput art::source
                         ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_IO_SOURCES
                         ART_FRAMEWORK_PRINCIPAL
-                        art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
-			FHICLCPP
+                        art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
+			fhiclcpp::fhiclcpp
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
@@ -37,10 +37,10 @@ cet_build_plugin(PDDPRawInputDriver art::service
                         ART_FRAMEWORK_CORE
 			ART_FRAMEWORK_IO_SOURCES
                         ART_FRAMEWORK_PRINCIPAL
-                        art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
-			FHICLCPP
+                        art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
+			fhiclcpp::fhiclcpp
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
@@ -55,12 +55,12 @@ cet_build_plugin(PDDPTPCRawDecoderTest art::module
                         ART_ROOT_IO_TFILE_SUPPORT
                         ROOT::Core
                         ART_ROOT_IO_TFILESERVICE_SERVICE
- 			art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-			art_Utilities canvas
+ 			art::Persistency_Common canvas
+			art::Persistency_Provenance canvas
+			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
-			cetlib cetlib_except
+			cetlib::cetlib cetlib_except
 			ROOT_BASIC_LIB_LIST
               		BASENAME_ONLY
 )

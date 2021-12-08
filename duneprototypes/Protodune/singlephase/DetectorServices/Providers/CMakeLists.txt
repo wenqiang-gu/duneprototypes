@@ -4,20 +4,20 @@ art_make( NO_PLUGINS
           LIB_LIBRARIES
                         lardataalg_DetectorInfo
   	                wda
-	                nuevdb_IFDatabase
+	                nuevdb::IFDatabase
                         larcorealg_Geometry
                         art_Framework_Core
-                        art_Framework_Principal
+                        art::Framework_Principal
                         ART_ROOT_IO_ROOTDB
-                        art_Utilities
+                        art::Utilities
                         messagefacility::MF_MessageLogger
                         ART_FRAMEWORK_SERVICES_REGISTRY
-                        cetlib cetlib_except
-                        canvas
-                        ifdh
-                        FHICLCPP
+                        cetlib::cetlib cetlib_except
+                        canvas::canvas
+                        ifdh::ifdh
+                        fhiclcpp::fhiclcpp
                         ROOT_BASIC_LIB_LIST
-                        ${Boost_SYSTEM_LIBRARY}
+                        
         )
 
 

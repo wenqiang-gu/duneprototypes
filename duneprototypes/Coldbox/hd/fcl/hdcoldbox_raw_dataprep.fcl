@@ -1,25 +1,22 @@
+#include "PdspChannelMapService.fcl"
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
 #include "vdcb_tools.fcl"
-#include "vdcb_dataprep_sequences.fcl"
 
-process_name: VDSourcePrep
+process_name: HDSourcePrep
 
 services: {
-  TimeTracker:       @local::dune_time_tracker
-  MemoryTracker:     @local::dune_memory_tracker
+  
+  TimeTracker:           @local::dune_time_tracker
+  MemoryTracker:         @local::dune_memory_tracker
   RandomNumberGenerator: {} 
-  FileCatalogMetadata:  @local::art_file_catalog_data
-                        @table::protodune_rawdecoding_services
-                        @table::protodune_data_reco_services
-  message:              @local::dune_message_services_prod
-    
+  message:               @local::dune_message_services_prod
+  FileCatalogMetadata:   @local::art_file_catalog_data
+                         @table::protodune_rawdecoding_services
+                         @table::protodune_data_reco_services
+  PdspChannelMapService: @local::pdspchannelmap
 
-  VDColdboxChannelMapService: {
-    FileName:         "vdcbce_chanmap_v1_dcchan3200.txt"
-    LogLevel:         1
-  }
 
   TFileService: { 
     closeFileFast: true  # default
@@ -60,18 +57,25 @@ source: {
   module_type: HDF5RawInput
 }
 
-tools.vdtool: {
-  tool_type: "VDColdboxDataInterface"
+tools.hdtool: {
+  tool_type: "HDColdboxDataInterface"
 }
 
+
+# tools.channelRanges: @local::vd_coldbox_channelRanges 
+# tools.channelGroups: @local::vd_coldbox_channelGroups 
 services.LArFFT.FFTSize: 10000
-physics.producers.caldata.DecoderTool: "vdtool"
+physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb
 physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.OutputWireName: "dataprep"
 physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
-
-# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
-services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr
+services.RawDigitPrepService.ToolNames: [
+  digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
+  adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
+  vdccb_adcChannelPedestalPlotter,   # Plot pedestals
+  vdccb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
+  adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
+]
 
 tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
