@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+
+hdcoldboxdatainterface_tool: 
+{
+  tool_type: "HDColdboxDataInterface"
+
+  APA1InputLabels: [ "daq:TPC001", "daq:ContainerTPC001", "daq:FELIX001", "daq:ContainerFELIX001",  "daq:TPC", "daq:ContainerTPC", "daq:FELIX", "daq:ContainerFELIX" ]
+ 
+}
+
+END_PROLOG

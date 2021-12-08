@@ -1,0 +1,81 @@
+#include "PdspChannelMapService.fcl"
+#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_vdcb.fcl"
+#include "vdcb_tools.fcl"
+
+process_name: HDSourcePrep
+
+services: {
+  
+  TimeTracker:           @local::dune_time_tracker
+  MemoryTracker:         @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  message:               @local::dune_message_services_prod
+  FileCatalogMetadata:   @local::art_file_catalog_data
+                         @table::protodune_rawdecoding_services
+                         @table::protodune_data_reco_services
+  PdspChannelMapService: @local::pdspchannelmap
+
+
+  TFileService: { 
+    closeFileFast: true  # default
+    fileName: "hist_%ifb_decoder_reco1.root"
+    tmpDir: "<parent-path-of-filename>"  # default
+  }
+  IFBeam:            {}
+  IFDH:              {}
+  #ChannelStatusService: @local::data.ChannelStatusService_vdcb1    # Before run 12065
+  ChannelStatusService: @local::data.ChannelStatusService_vdcb2     # Cold running
+  Geometry: @local::dunevdcb_geo
+}
+
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "out_raw_dataprep.root"
+    dataTier:    "full-reconstructed"
+    compressionLevel: 1
+  }
+}
+
+physics: {
+  producers: {
+    caldata: @local::protoDUNE_reco_data_producers.caldata
+  }
+
+  produce: [
+    caldata
+  ]
+
+  output : [ rootout ]
+  trigger_paths: [produce]
+  end_paths : [ output ]
+}
+
+source: {
+  module_type: HDF5RawInput
+}
+
+tools.hdtool: {
+  tool_type: "HDColdboxDataInterface"
+}
+
+
+# tools.channelRanges: @local::vd_coldbox_channelRanges 
+# tools.channelGroups: @local::vd_coldbox_channelGroups 
+services.LArFFT.FFTSize: 10000
+physics.producers.caldata.DecoderTool: "hdtool"
+physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb
+physics.producers.caldata.OutputDigitName: "dataprep"
+physics.producers.caldata.OutputWireName: "dataprep"
+physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
+services.RawDigitPrepService.ToolNames: [
+  digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
+  adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
+  vdccb_adcChannelPedestalPlotter,   # Plot pedestals
+  vdccb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
+  adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
+]
+
+tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
