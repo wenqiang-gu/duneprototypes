@@ -16,7 +16,7 @@ data.vdct1_dead_channels: [
 
 # Very noisy channels.
 data.vdct1_hirms_channels: [
-219, 703, 704
+219, 703, 704, 763, 764, 781, 791, 1023
 ]
 
 # Somewhat noisy channels.
