@@ -46,7 +46,7 @@ source: @local::vdctdecoder_source
 
 physics.producers.caldata.DecoderTool: ""
 physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
-physics.producers.caldata.OutputWireName: "caldata:dataprep"
+physics.producers.caldata.WireName: "dataprep"
 physics.producers.caldata.ChannelGroups: ["crt"]
 physics.producers.caldata.DoGroups: true
 physics.producers.caldata.OnlineChannelMapTool: ""

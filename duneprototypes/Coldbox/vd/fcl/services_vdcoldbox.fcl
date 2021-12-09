@@ -78,8 +78,14 @@ vdcb_crp1_bot_data_services: {
 }
 
 
-# TO DO
-#vdcb_reco_base_services:{
-#}
+# To complete ...
+vdcb_top_reco_services: {
+    @table::vdcb_crp1_top_services
+}
+
+vdcb_bot_reco_services: {
+    @table::vdcb_crp1_bot_services
+}
+
 
 END_PROLOG

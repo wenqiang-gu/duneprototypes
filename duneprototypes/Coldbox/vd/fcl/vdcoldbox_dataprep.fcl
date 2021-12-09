@@ -93,6 +93,6 @@ tools.channelRanges.GhostRange: [3456, 3647]
 physics.producers.caldata.LogLevel: 3
 
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
-services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr_adc
 
 tools.vdcbb_adcChannelRawRmsPlotter.MetricMax: 100
