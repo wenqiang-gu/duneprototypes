@@ -72,6 +72,6 @@ physics.producers.caldata.OutputWireName: "dataprep"
 physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
 
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
-services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr_adc
 
 tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
