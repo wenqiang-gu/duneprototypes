@@ -62,14 +62,14 @@ tools.hdtool: {
 }
 
 
-# tools.channelRanges: @local::vd_coldbox_channelRanges 
-# tools.channelGroups: @local::vd_coldbox_channelGroups 
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
 physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.OutputWireName: "dataprep"
-physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
+physics.producers.caldata.ChannelGroups: ["apa1"]
 services.RawDigitPrepService.ToolNames: [
   digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
   adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
