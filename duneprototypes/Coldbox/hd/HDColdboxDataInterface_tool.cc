@@ -262,7 +262,7 @@ int HDColdboxDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
   
   if (fDebugLevel > 0)
     {
-      std::cout << "Retrieving Data for " << apalist.size() << " APA " << std::endl;
+      std::cout << "Retrieving Data for " << apalist.size() << " APAs " << std::endl;
     }
 
   // NOTE: The "apalist" that DataPrep hands to the method is always of size 1.
@@ -393,7 +393,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 
 	      else if (fiber == 2)
 		{
-		  fiberloc = 2;
+		  fiberloc = 3;
 		}
 	      else
 		{
