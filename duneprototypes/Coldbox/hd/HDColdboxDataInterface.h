@@ -34,7 +34,7 @@ class HDColdboxDataInterface : public PDSPTPCDataInterfaceParent {
                    std::vector<raw::RDTimeStamp> &rd_timestamps,
                    std::vector<raw::RDStatus> &rdstatuses );
 
-  void readFragmentsForEvent (art::Event &evt);
+  //void readFragmentsForEvent (art::Event &evt);
 
   int retrieveDataAPAListWithLabels(
       art::Event &evt, std::string inputlabel,
@@ -70,6 +70,7 @@ class HDColdboxDataInterface : public PDSPTPCDataInterfaceParent {
 
   unsigned int fMaxChan = 1000000;  // no maximum for now
   unsigned int fDefaultCrate = 3;
+  int fDebugLevel = 0;   // switch to turn on debugging printout
 
 };
 
