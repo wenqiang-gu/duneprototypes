@@ -87,10 +87,10 @@ int dune::VDColdboxChannelMapService::getOfflChanFromWIBConnectorInfo(int wib, i
   int r = -1;
   auto fm1 = infotochanmap.find(wib);
   if (fm1 == infotochanmap.end()) return r;
-  auto m1 = fm1->second;
+  auto& m1 = fm1->second;
   auto fm2 = m1.find(wibconnector);
   if (fm2 == m1.end()) return r;
-  auto m2 = fm2->second;
+  auto& m2 = fm2->second;
   auto fm3 = m2.find(cechan);
   if (fm3 == m2.end()) return r;
   r = fm3->second;  
