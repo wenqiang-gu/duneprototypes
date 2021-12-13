@@ -27,7 +27,7 @@ services: {
   IFDH:              {}
   #ChannelStatusService: @local::data.ChannelStatusService_vdcb1    # Before run 12065
   ChannelStatusService: @local::data.ChannelStatusService_vdcb2     # Cold running
-  Geometry: @local::dunevdcb_geo
+  Geometry: @local::protodunev7_geo
 }
 
 outputs: {
