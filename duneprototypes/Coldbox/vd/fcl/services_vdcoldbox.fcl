@@ -77,14 +77,27 @@ vdcb_crp1_bot_data_services: {
   }
 }
 
+vdcb_sim_base_services: {
+   LArVoxelCalculator:           @local::dunefd_larvoxelcalculator
+   MagneticField:                @local::no_mag_larsoft
+   ParticleInventoryService:     @local::standard_particleinventoryservice
+   SpaceCharge:                  @local::dunefd_spacecharge
+   OpDetResponseInterface:       @local::dunefd_opdetresponse
+   BackTrackerService:           @local::dunefd_backtrackerservice
+   ParticleListAction:           @local::dune_particle_list_action
+   PhysicsList:                  @local::dune_physics_list_fastoptical
+}
+
 
 # To complete ...
 vdcb_top_reco_services: {
     @table::vdcb_crp1_top_services
+    SpaceCharge: @local::dunefd_spacecharge
 }
 
 vdcb_bot_reco_services: {
     @table::vdcb_crp1_bot_services
+    SpaceCharge: @local::dunefd_spacecharge
 }
 
 
