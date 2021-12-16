@@ -83,16 +83,15 @@ vdcb_sim_base_services: {
    MagneticField:                @local::no_mag_larsoft
    ParticleInventoryService:     @local::standard_particleinventoryservice
    SpaceCharge:                  @local::dunefd_spacecharge
-
-##   OpDetResponseInterface:       @local::dunefd_opdetresponse
-##   OpDetResponseInterface.QuantumEfficiency: 0.002345
-
-##   BackTrackerService:           @local::dunefd_backtrackerservice
+   OpDetResponseInterface:       @local::dunefd_opdetresponse
+   BackTrackerService:           @local::dunefd_backtrackerservice
    ParticleListAction:           @local::dune_particle_list_action
    PhysicsList:                  @local::dune_physics_list_fastoptical
 ##   MCTruthEventAction: 		 {}
-   LArG4Parameters:              @local::dunefd_largeantparameters
+    LArG4Parameters:              @local::dunefd_largeantparameters
 }
+vdcb_sim_base_services.OpDetResponseInterface.QuantumEfficiency: 0.03 # (tkosc) otherwise larsoft complains, manually changed, but should be investigated
+
 
 vdcb_tde_larg4:    @local::standard_larg4
 vdcb_tde_ionandscint:
