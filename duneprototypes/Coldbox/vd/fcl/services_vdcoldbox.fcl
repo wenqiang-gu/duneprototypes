@@ -1,4 +1,8 @@
 #include "services_common_dune.fcl"
+#include "LArG4.fcl"
+#include "IonAndScint_dune.fcl"
+#include "elecdrift_dune.fcl"
+#include "PDFastSim_dune.fcl"
 
 BEGIN_PROLOG
 
@@ -91,7 +95,6 @@ vdcb_sim_base_services: {
     LArG4Parameters:              @local::dunefd_largeantparameters
 }
 vdcb_sim_base_services.OpDetResponseInterface.QuantumEfficiency: 0.03 # (tkosc) otherwise larsoft complains, manually changed, but should be investigated
-
 
 vdcb_tde_larg4:    @local::standard_larg4
 vdcb_tde_ionandscint:
