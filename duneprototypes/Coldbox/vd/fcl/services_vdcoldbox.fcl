@@ -1,4 +1,8 @@
 #include "services_common_dune.fcl"
+#include "LArG4.fcl"
+#include "IonAndScint_dune.fcl"
+#include "elecdrift_dune.fcl"
+#include "PDFastSim_dune.fcl"
 
 BEGIN_PROLOG
 
@@ -90,8 +94,12 @@ vdcb_sim_base_services: {
 ##   MCTruthEventAction: 		 {}
     LArG4Parameters:              @local::dunefd_largeantparameters
 }
+<<<<<<< HEAD
 vdcb_sim_base_services.OpDetResponseInterface.QuantumEfficiency: 0.03 # (tkosc) otherwise larsoft complains, manually changed, but should be investigated
 
+=======
+vdcb_sim_base_services.OpDetResponseInterface.QuantumEfficiency: 0.03 # otherwise larsoft complains, manually changed, but should be investigated
+>>>>>>> dcf72d42ebaef83b5f2bfbfe684e5ccce26b83f9
 
 vdcb_tde_larg4:    @local::standard_larg4
 vdcb_tde_ionandscint:
