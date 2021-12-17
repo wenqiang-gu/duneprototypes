@@ -76,7 +76,7 @@ vdcb_crp1_bot_data_services: {
   @table::vdcb_dataprep_base_services
   ChannelMapService: {
     service_provider: VDColdboxChannelMapService
-    FileName:         "vdcbce_chanmap_v1_dcchan3200.txt"
+    FileName:         "vdcbce_chanmap_v2_dcchan3200.txt"
     LogLevel:         1
   }
 }
