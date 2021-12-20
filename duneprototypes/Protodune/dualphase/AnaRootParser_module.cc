@@ -5455,6 +5455,7 @@ if (fSaveTrackInfo) {
          }*/
 
       // find particle ID info
+      /*
       art::FindMany<anab::ParticleID> fmpid(trackListHandle[iTracker], evt, fParticleIDModuleLabel[iTracker]);
       if(fmpid.isValid()) {
         std::vector<const anab::ParticleID*> pids = fmpid.at(iTrk);
@@ -5477,6 +5478,7 @@ if (fSaveTrackInfo) {
           TrackerData.trkpidpida[iTrk][planenum] = pids[ipid]->PIDA();
         }
       } // fmpid.isValid()
+      */
       if(fMVAPIDTrackModuleLabel[iTracker].size()){
         art::FindOneP<anab::MVAPIDResult> fmvapid(trackListHandle[iTracker], evt, fMVAPIDTrackModuleLabel[iTracker]);
         if(fmvapid.isValid()) {

@@ -1,8 +1,8 @@
 #include "PdspChannelMapService.fcl"
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
-#include "channelstatus_vdcb.fcl"
-#include "vdcb_tools.fcl"
+#include "channelstatus_hdcb.fcl"
+#include "hdcb_dataprep_tools.fcl"
 
 process_name: HDSourcePrep
 
@@ -25,9 +25,8 @@ services: {
   }
   IFBeam:            {}
   IFDH:              {}
-  #ChannelStatusService: @local::data.ChannelStatusService_vdcb1    # Before run 12065
-  ChannelStatusService: @local::data.ChannelStatusService_vdcb2     # Cold running
-  Geometry: @local::dunevdcb_geo
+  ChannelStatusService: @local::data.ChannelStatusService_hdcb1     # Cold running
+  Geometry: @local::protodunev7_geo
 }
 
 outputs: {
@@ -62,20 +61,17 @@ tools.hdtool: {
 }
 
 
-# tools.channelRanges: @local::vd_coldbox_channelRanges 
-# tools.channelGroups: @local::vd_coldbox_channelGroups 
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
 physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.OutputWireName: "dataprep"
-physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
+physics.producers.caldata.ChannelGroups: ["apa1"]
 services.RawDigitPrepService.ToolNames: [
   digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
   adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
-  vdccb_adcChannelPedestalPlotter,   # Plot pedestals
-  vdccb_adcChannelRawRmsPlotter,     # Plot ADC-pedestal RMS
   adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
 ]
 
-tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100

@@ -27,6 +27,9 @@ services:
   IFBeam:            {}
   IFDH:              {}
 
+  ChannelStatusService: @local::data.ChannelStatusService_vdcb2     # Cold running
+  Geometry: @local::protodunev7_geo
+
 }
 services.DatabaseUtil: @erase
 
@@ -67,12 +70,14 @@ tools.hdtool: {
 }
 
 
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
+physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
 physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.OutputWireName: "dataprep"
-physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
-tools.channelRanges.GhostRange: [3456, 3647]
+physics.producers.caldata.ChannelGroups: ["apa1"]
 physics.producers.caldata.LogLevel: 3
 
 services.RawDigitPrepService.ToolNames: [

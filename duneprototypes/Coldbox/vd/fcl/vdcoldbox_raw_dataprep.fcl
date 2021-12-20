@@ -1,3 +1,4 @@
+#include "services_vdcoldbox.fcl"
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
@@ -16,10 +17,7 @@ services: {
   message:              @local::dune_message_services_prod
     
 
-  VDColdboxChannelMapService: {
-    FileName:         "vdcbce_chanmap_v1_dcchan3200.txt"
-    LogLevel:         1
-  }
+  VDColdboxChannelMapService: @local::vdcb_crp1_bot_data_services.ChannelMapService
 
   TFileService: { 
     closeFileFast: true  # default
