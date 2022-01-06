@@ -13,7 +13,7 @@ run=840
 path_to_data="/eos/experiment/wa105/data/311/rawdata/$run"
 path_to_pedestal="/eos/experiment/wa105/data/311/datafiles/pedestals/pedestals" #can be made an iterative subtraction of the pedestal if is took a pedestal for every run
 
-importfile=$MRB_SOURCE"/dunetpc/dune/3x1x1dp/DataImport/ImportFullFile/ImportFull311File.fcl"
+importfile=$MRB_SOURCE"/duneprototypes/duneprototypes/3x1x1dp/DataImport/ImportFullFile/ImportFull311File.fcl"
 
 path_to_output="/eos/user/a/ascarpel/3x1x1/data"
 

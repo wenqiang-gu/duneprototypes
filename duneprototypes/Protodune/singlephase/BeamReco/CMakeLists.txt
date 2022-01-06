@@ -1,6 +1,6 @@
 
 art_make(  MODULE_LIBRARIES
-                        dune_ArtSupport
+                        dunecore_ArtSupport
                         ifbeam::ifbeam
                         ifdh_art::IFBeam_service
                         lardataobj_RawData
@@ -14,7 +14,7 @@ art_make(  MODULE_LIBRARIES
                         lardata_Utilities
                         larsim_Simulation 
                         lardataobj_Simulation
-                        dune_DuneObj
+                        dunecore_DuneObj
                         dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
                         larsim_MCCheater_PhotonBackTrackerService_service
                         larsim_MCCheater_BackTrackerService_service

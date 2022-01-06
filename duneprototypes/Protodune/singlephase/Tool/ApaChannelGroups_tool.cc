@@ -1,8 +1,8 @@
 // ApaChannelGroups_tool.cc
 
 #include "ApaChannelGroups.h"
-#include "dune/ArtSupport/DuneToolManager.h"
-#include "dune/DuneInterface/Tool/IndexRangeTool.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

@@ -15,7 +15,7 @@
 #include "canvas/Utilities/Exception.h"
 
 // DUNE includes
-#include "dune/DuneObj/RDStatus.h"
+#include "dunecore/DuneObj/RDStatus.h"
 
 #include "PDDPRawInputDriver.h"
 

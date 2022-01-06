@@ -1,6 +1,6 @@
 #include "VDColdboxChannelGroups.h"
-#include "dune/ArtSupport/DuneToolManager.h"
-#include "dune/DuneInterface/Tool/IndexRangeTool.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include <string>
 #include <iostream>
 

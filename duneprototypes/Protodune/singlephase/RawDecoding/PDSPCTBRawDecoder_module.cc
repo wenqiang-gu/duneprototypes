@@ -27,7 +27,7 @@
 
 // dunetpc includes
 
-#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
 
 class PDSPCTBRawDecoder;
 

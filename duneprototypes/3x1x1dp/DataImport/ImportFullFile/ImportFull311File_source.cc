@@ -1,6 +1,6 @@
 #include "art/Framework/Core/InputSourceMacros.h"
 #include "art/Framework/IO/Sources/Source.h"	
-#include "dune/3x1x1dp/DataImport/Services/RawData311InputDriver.h"
+#include "duneprototypes/3x1x1dp/DataImport/Services/RawData311InputDriver.h"
 
 namespace lris 
 {

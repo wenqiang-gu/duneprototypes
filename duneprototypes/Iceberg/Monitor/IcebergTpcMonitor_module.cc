@@ -21,7 +21,7 @@
 // Data type includes
 #include "lardataobj/RawData/raw.h"
 #include "lardataobj/RawData/RawDigit.h"
-#include "dune/DuneObj/RDStatus.h"
+#include "dunecore/DuneObj/RDStatus.h"
 
 // Framework includes
 #include "art/Framework/Core/EDAnalyzer.h"

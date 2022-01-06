@@ -17,7 +17,7 @@
 
 #include "art/Framework/Principal/Event.h"
 //#include "lardataalg/DetectorInfo/DetectorPropertiesStandard.h"
-#include "dune/Protodune/singlephase/DetectorServices/Providers/DetectorPropertiesProtoDUNEsp.h"
+#include "duneprototypes/Protodune/singlephase/DetectorServices/Providers/DetectorPropertiesProtoDUNEsp.h"
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 
 

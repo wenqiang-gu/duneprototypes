@@ -24,7 +24,7 @@ cet_build_plugin(
 if(FALSE)
 cet_build_plugin(
 			Purity art::module
-			dune_DetSim
+			dunesim_DetSim
                         lardataobj_RecoBase
                         larreco_Calorimetry
                         larcorealg_Geometry
@@ -52,7 +52,7 @@ cet_build_plugin(
 endif()
 cet_build_plugin(
 			DEdxdp art::module
-			dune_DetSim
+			dunesim_DetSim
                         lardataobj_RecoBase
                         larreco_Calorimetry
                         larcorealg_Geometry
@@ -94,8 +94,8 @@ cet_build_plugin(
 	  larcorealg_GeoAlgo
 	  larreco_RecoAlg
 	  larpandora_LArPandoraInterface
-	  SignalShapingServiceDUNE10kt_service
-	  SignalShapingServiceDUNE35t_service
+	  dunecore::SignalShapingServiceDUNE10kt_service
+	  dunecore::SignalShapingServiceDUNE35t_service
           nusimdata::SimulationBase
           ART_FRAMEWORK_CORE
 	  ART_FRAMEWORK_PRINCIPAL

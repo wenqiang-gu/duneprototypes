@@ -45,7 +45,7 @@
 
 //local includes
 //#include "CRTTrigger.h"
-#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
 
 //c++ includes
 #include <memory>
@@ -174,7 +174,7 @@ void CRT::CRTSim::produce(art::Event & e)
     //      can get access to individual Geant steps.  
     //TODO: Read detector response from MariaDB database on DAQ machine?
     //TODO: Simulate detector response with quantum efficiency and detection efficiency?
-    //TODO: simulate time -> timestamp.  Check out how 35t example in dunetpc/dune/DetSim does this.
+    //TODO: simulate time -> timestamp.  Check out how 35t example in dunetpc/dunesim/DetSim does this.
 
     //Integrate "energy deposited" over time, then form a time-ordered sparse-vector (=std::map) of CRT::Hits
     //associated with the art::Ptr that produced each hit. Associating each hit with a time value gives me the 

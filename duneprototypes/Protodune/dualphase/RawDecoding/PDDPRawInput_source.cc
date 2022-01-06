@@ -1,6 +1,6 @@
 #include "art/Framework/Core/InputSourceMacros.h"
 #include "art/Framework/IO/Sources/Source.h"	
-#include "dune/Protodune/dualphase/RawDecoding/PDDPRawInputDriver.h"
+#include "duneprototypes/Protodune/dualphase/RawDecoding/PDDPRawInputDriver.h"
 
 namespace lris 
 {

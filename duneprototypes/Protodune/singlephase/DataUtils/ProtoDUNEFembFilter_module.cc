@@ -14,7 +14,7 @@
 #include "art/Framework/Principal/Event.h" 
 #include "art_root_io/TFileService.h"
 
-#include "dune/Protodune/singlephase/DataUtils/ProtoDUNEDataUtils.h"
+#include "duneprototypes/Protodune/singlephase/DataUtils/ProtoDUNEDataUtils.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
 
 

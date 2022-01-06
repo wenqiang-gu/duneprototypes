@@ -1,7 +1,7 @@
 // VDColdboxOnlineChannel.cxx
 
 #include "VDColdboxOnlineChannel.h"
-#include "dune/Coldbox/vd/ChannelMap/VDColdboxChannelMapService.h"
+#include "duneprototypes/Coldbox/vd/ChannelMap/VDColdboxChannelMapService.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include <iostream>
 

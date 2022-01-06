@@ -1,6 +1,6 @@
 // ProtoduneChannelHelper.cxx
 
-#include "dune/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
+#include "duneprototypes/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
 #include <iostream>
 #include <vector>
 #include <string>

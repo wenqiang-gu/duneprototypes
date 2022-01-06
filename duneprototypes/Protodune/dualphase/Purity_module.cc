@@ -37,7 +37,7 @@
 #include "lardataobj/RecoBase/Track.h"
 #include "lardataobj/RecoBase/TrackHitMeta.h"
 #include "larreco/Calorimetry/CalorimetryAlg.h"
-#include "dune/DetSim/Service/DPhaseSimChannelExtractService.h"
+#include "dunesim/DetSim/Service/DPhaseSimChannelExtractService.h"
 
 #include "TTree.h"
 #include "TH1.h"

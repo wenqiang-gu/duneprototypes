@@ -8,7 +8,7 @@
 #define CRT_ONLINEPLOTTER_CPP
 
 //crt-core includes
-#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
 
 //ROOT includes
 #include "TH2D.h"

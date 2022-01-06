@@ -31,8 +31,8 @@
 #include "lardataobj/RecoBase/OpFlash.h"
 #include "lardataobj/AnalysisBase/T0.h"
 #include "lardata/Utilities/AssociationUtil.h"
-//#include "dune/Protodune/singlephase/DataUtils/ProtoDUNEPFParticleUtils.h"
-//#include "dune/Protodune/singlephase/DataUtils/ProtoDUNETrackUtils.h"
+//#include "duneprototypes/Protodune/singlephase/DataUtils/ProtoDUNEPFParticleUtils.h"
+//#include "duneprototypes/Protodune/singlephase/DataUtils/ProtoDUNETrackUtils.h"
 
 // ROOT
 #include "TVector3.h"

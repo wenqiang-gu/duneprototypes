@@ -47,7 +47,7 @@
 
 
 
-#include "dune/Protodune/singlephase/DetectorServices/Providers/DetectorPropertiesProtoDUNEsp.h"
+#include "duneprototypes/Protodune/singlephase/DetectorServices/Providers/DetectorPropertiesProtoDUNEsp.h"
 
 
 

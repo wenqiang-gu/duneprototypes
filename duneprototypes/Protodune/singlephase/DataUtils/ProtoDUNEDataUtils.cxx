@@ -7,7 +7,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
 #include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
-#include "dune/DuneObj/ProtoDUNEBeamEvent.h"
+#include "dunecore/DuneObj/ProtoDUNEBeamEvent.h"
 
 protoana::ProtoDUNEDataUtils::ProtoDUNEDataUtils(fhicl::ParameterSet const& p){
   this->reconfigure(p);

@@ -12,4 +12,4 @@
 #include "nusimdata/SimulationBase/MCParticle.h"
 
 //local includes
-#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"

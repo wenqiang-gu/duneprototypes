@@ -10,7 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include "dune/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
+#include "duneprototypes/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
 #include "TH1F.h"
 
 #undef NDEBUG

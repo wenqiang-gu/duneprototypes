@@ -5,9 +5,9 @@
 //
 // Display the range of channels for a named channel range or group.
 
-#include "dune/ArtSupport/DuneToolManager.h"
-#include "dune/DuneInterface/Tool/IndexRangeTool.h"
-#include "dune/DuneInterface/Tool/IndexRangeGroupTool.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
+#include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
 #include <string>
 #include <iostream>
 #include <vector>

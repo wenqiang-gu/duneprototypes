@@ -20,8 +20,8 @@
 #include "lardataobj/RawData/OpDetWaveform.h"
 #include "lardataobj/RecoBase/OpHit.h"
 #include <hdf5.h>
-#include "dune/DuneObj/DUNEHDF5FileInfo.h"
-#include "dune/HDF5Utils/HDF5Utils.h"
+#include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
+#include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "daqdataformats/Fragment.hpp"
 #include "detdataformats/ssp/SSPTypes.hpp"
 

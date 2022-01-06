@@ -1,7 +1,7 @@
 // HalfApaChannelRanges_tool.cc
 
 #include "HalfApaChannelRanges.h"
-#include "dune/ArtSupport/DuneToolManager.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

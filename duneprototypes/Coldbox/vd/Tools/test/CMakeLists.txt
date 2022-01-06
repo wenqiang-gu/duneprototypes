@@ -9,7 +9,7 @@ include(CetTest)
 
 cet_test(test_VDColdboxChannelRanges SOURCES test_VDColdboxChannelRanges.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -22,7 +22,7 @@ cet_test(test_VDColdboxChannelRanges SOURCES test_VDColdboxChannelRanges.cxx
 
 cet_test(test_VDColdboxChannelGroups SOURCES test_VDColdboxChannelGroups.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -35,7 +35,7 @@ cet_test(test_VDColdboxChannelGroups SOURCES test_VDColdboxChannelGroups.cxx
 
 cet_test(test_VDColdboxOnlineChannel SOURCES test_VDColdboxOnlineChannel.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp

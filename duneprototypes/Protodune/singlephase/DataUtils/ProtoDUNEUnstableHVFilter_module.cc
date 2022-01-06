@@ -39,7 +39,7 @@ extern "C" {
 #include "messagefacility/MessageLogger/MessageLogger.h" 
 
 #include "lardataobj/RawData/RDTimeStamp.h"
-#include "dune/DuneObj/ProtoDUNETimeStamp.h"
+#include "dunecore/DuneObj/ProtoDUNETimeStamp.h"
 ///filters for events, etc
 namespace filter {
         class ProtoDUNEUnstableHVFilter : public art::EDFilter  {

@@ -1,5 +1,5 @@
 #include "VDColdboxChannelRanges.h"
-#include "dune/ArtSupport/DuneToolManager.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
 
 using std::string;
 using std::cout;

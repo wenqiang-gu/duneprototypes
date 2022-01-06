@@ -27,7 +27,7 @@
 // LArSoft includes
 #include "lardataobj/RecoBase/OpFlash.h"
 #include "lardataobj/RecoBase/OpHit.h"
-#include "dune/OpticalDetector/OpFlashSort.h"
+#include "duneopdet/OpticalDetector/OpFlashSort.h"
 
 // ART includes.
 #include "art/Framework/Core/EDAnalyzer.h"

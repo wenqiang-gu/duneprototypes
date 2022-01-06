@@ -43,14 +43,14 @@
 
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 
-#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
 
 #include "larevt/SpaceChargeServices/SpaceChargeService.h"
 
 
 //Local includes
-#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
 
 
 

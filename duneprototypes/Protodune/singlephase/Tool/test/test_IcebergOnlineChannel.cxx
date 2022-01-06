@@ -10,9 +10,9 @@
 #include <fstream>
 #include <sstream>
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "dune/ArtSupport/DuneToolManager.h"
-#include "dune/DuneInterface/Tool/IndexMapTool.h"
-#include "dune/ArtSupport/ArtServiceHelper.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneInterface/Tool/IndexMapTool.h"
+#include "dunecore/ArtSupport/ArtServiceHelper.h"
 #include "TH1F.h"
 
 #undef NDEBUG

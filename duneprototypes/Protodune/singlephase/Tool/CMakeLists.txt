@@ -29,35 +29,35 @@ cet_build_plugin(ProtoduneOnlineChannel   art::tool
              )
 
 cet_build_plugin(ProtoDuneChannelRanges  art::tool
-                dune_ArtSupport
+                dunecore_ArtSupport
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST
              )
 
 cet_build_plugin(ApaChannelRanges  art::tool
-                dune_ArtSupport
+                dunecore_ArtSupport
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST
              )
 
 cet_build_plugin(HalfApaChannelRanges  art::tool
-                dune_ArtSupport
+                dunecore_ArtSupport
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST
              )
 
 cet_build_plugin(ProtoDuneChannelGroups  art::tool
-                dune_ArtSupport
+                dunecore_ArtSupport
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST
              )
 
 cet_build_plugin(ApaChannelGroups  art::tool
-                dune_ArtSupport
+                dunecore_ArtSupport
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST

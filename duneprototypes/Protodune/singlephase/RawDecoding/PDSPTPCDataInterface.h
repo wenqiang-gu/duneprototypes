@@ -31,7 +31,7 @@
 #include "lardataobj/RawData/RDTimeStamp.h"
 #include "artdaq-core/Data/Fragment.hh"
 #include "artdaq-core/Data/ContainerFragment.hh"
-#include "dune/DuneObj/PDSPTPCDataInterfaceParent.h"
+#include "dunecore/DuneObj/PDSPTPCDataInterfaceParent.h"
 
 class PDSPTPCDataInterface : public PDSPTPCDataInterfaceParent {
 

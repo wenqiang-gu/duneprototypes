@@ -39,7 +39,7 @@
 
 #include "art/Utilities/ToolMacros.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "dune/DuneInterface/Tool/IndexRangeGroupTool.h"
+#include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
 #include <map>
 
 class IndexRangeTool;

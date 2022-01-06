@@ -10,7 +10,7 @@
 #include "art/Framework/Principal/Event.h" 
 
 #include "lardataobj/RawData/RDTimeStamp.h"
-#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
 
 namespace filt{
 

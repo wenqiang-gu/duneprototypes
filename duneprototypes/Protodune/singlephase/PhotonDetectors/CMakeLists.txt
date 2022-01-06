@@ -3,7 +3,7 @@ cet_build_plugin(PDSPmatch art::module
                         lardataobj_RecoBase
                         dune_raw_data::dune-raw-data_Overlays
                         artdaq_core::artdaq-core_Data
-                        dune_Geometry
+                        dunecore_Geometry
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
                         ART_FRAMEWORK_SERVICES_REGISTRY
@@ -23,7 +23,7 @@ cet_build_plugin(PDSPmatchmc art::module
                         lardataobj_RecoBase
                         dune_raw_data::dune-raw-data_Overlays
                         artdaq_core::artdaq-core_Data
-                        dune_Geometry
+                        dunecore_Geometry
                         nusimdata::SimulationBase
                         larsim_MCCheater_PhotonBackTrackerService_service
                         larsim_MCCheater_ParticleInventoryService_service

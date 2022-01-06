@@ -1,7 +1,7 @@
 // ProtoDuneChannelRanges_tool.cc
 
 #include "ProtoDuneChannelRanges.h"
-#include "dune/ArtSupport/DuneToolManager.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

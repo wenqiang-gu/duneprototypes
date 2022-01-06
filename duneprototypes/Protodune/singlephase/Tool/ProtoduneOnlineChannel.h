@@ -22,7 +22,7 @@
 
 #include "art/Utilities/ToolMacros.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "dune/DuneInterface/Tool/IndexMapTool.h"
+#include "dunecore/DuneInterface/Tool/IndexMapTool.h"
 
 class ProtoduneOnlineChannel : public IndexMapTool {
 

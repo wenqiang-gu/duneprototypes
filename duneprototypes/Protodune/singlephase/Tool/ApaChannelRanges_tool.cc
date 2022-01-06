@@ -1,7 +1,7 @@
 // ApaChannelRanges_tool.cc
 
 #include "ApaChannelRanges.h"
-#include "dune/ArtSupport/DuneToolManager.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>

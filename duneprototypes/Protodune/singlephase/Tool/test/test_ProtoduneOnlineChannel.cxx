@@ -10,9 +10,9 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include "dune/ArtSupport/DuneToolManager.h"
-#include "dune/DuneInterface/Tool/IndexMapTool.h"
-#include "dune/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
+#include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneInterface/Tool/IndexMapTool.h"
+#include "duneprototypes/Protodune/singlephase/Utility/ProtoduneChannelHelper.h"
 #include "TH1F.h"
 
 #undef NDEBUG

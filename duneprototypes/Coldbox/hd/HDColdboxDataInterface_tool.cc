@@ -13,8 +13,8 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "dune/DuneObj/DUNEHDF5FileInfo.h"
-#include "dune/HDF5Utils/HDF5Utils.h"
+#include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
+#include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib/WIBFrame.hpp"
 #include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
 

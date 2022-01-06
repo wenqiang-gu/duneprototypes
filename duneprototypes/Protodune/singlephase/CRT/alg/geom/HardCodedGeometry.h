@@ -6,7 +6,7 @@
 
 #ifndef CRT_HARDCODEDGEOMETRY_H
 #define CRT_HARDCODEDGEOMETRY_H
-#include "dune/Protodune/singlephase/CRT/alg/geom/Geometry.h" //Interface that this header describes an implementation for.  
+#include "duneprototypes/Protodune/singlephase/CRT/alg/geom/Geometry.h" //Interface that this header describes an implementation for.  
 
 namespace CRT
 {

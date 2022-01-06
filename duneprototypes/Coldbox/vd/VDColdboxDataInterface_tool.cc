@@ -13,10 +13,10 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "dune/DuneObj/DUNEHDF5FileInfo.h"
-#include "dune/HDF5Utils/HDF5Utils.h"
+#include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
+#include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib/WIBFrame.hpp"
-#include "dune/Coldbox/vd/ChannelMap/VDColdboxChannelMapService.h"
+#include "duneprototypes/Coldbox/vd/ChannelMap/VDColdboxChannelMapService.h"
 
 
 //The file handle is from the raw::DUNEHDF5FileInfo data product that the source puts into the event. Art's getHandle<type> is usedto retrieve a data product from the event.  

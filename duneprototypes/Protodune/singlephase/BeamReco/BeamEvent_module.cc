@@ -22,11 +22,11 @@
 #include "lardataobj/RecoBase/TrackingTypes.h"
 #include "lardataobj/RecoBase/TrackTrajectory.h"
 #include "lardataobj/RecoBase/Track.h"
-#include "dune/DuneObj/ProtoDUNEBeamEvent.h"
-#include "dune/DuneObj/ProtoDUNEBeamSpill.h"
-#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "dunecore/DuneObj/ProtoDUNEBeamEvent.h"
+#include "dunecore/DuneObj/ProtoDUNEBeamSpill.h"
+#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
-#include "dune/DuneObj/ProtoDUNETimeStamp.h"
+#include "dunecore/DuneObj/ProtoDUNETimeStamp.h"
 #include <bitset>
 #include <iomanip>
 #include <utility>

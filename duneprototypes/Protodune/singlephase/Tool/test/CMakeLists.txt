@@ -9,7 +9,7 @@ include(CetTest)
 
 cet_test(test_PdspOnlineChannel SOURCES test_PdspOnlineChannel.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -22,7 +22,7 @@ cet_test(test_PdspOnlineChannel SOURCES test_PdspOnlineChannel.cxx
 
 cet_test(test_IcebergOnlineChannel SOURCES test_IcebergOnlineChannel.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -35,8 +35,8 @@ cet_test(test_IcebergOnlineChannel SOURCES test_IcebergOnlineChannel.cxx
 
 cet_test(test_ProtoduneOnlineChannel SOURCES test_ProtoduneOnlineChannel.cxx
   LIBRARIES
-    dune_ArtSupport
-    dune_Protodune_singlephase_Utility
+    dunecore_ArtSupport
+    duneprototypes_Protodune_singlephase_Utility
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -49,7 +49,7 @@ cet_test(test_ProtoduneOnlineChannel SOURCES test_ProtoduneOnlineChannel.cxx
 
 cet_test(test_ProtoDuneChannelRanges SOURCES test_ProtoDuneChannelRanges.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -62,7 +62,7 @@ cet_test(test_ProtoDuneChannelRanges SOURCES test_ProtoDuneChannelRanges.cxx
 
 cet_test(test_ApaChannelRanges SOURCES test_ApaChannelRanges.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -75,7 +75,7 @@ cet_test(test_ApaChannelRanges SOURCES test_ApaChannelRanges.cxx
 
 cet_test(test_HalfApaChannelRanges SOURCES test_HalfApaChannelRanges.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -88,7 +88,7 @@ cet_test(test_HalfApaChannelRanges SOURCES test_HalfApaChannelRanges.cxx
 
 cet_test(test_ProtoDuneChannelGroups SOURCES test_ProtoDuneChannelGroups.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -101,7 +101,7 @@ cet_test(test_ProtoDuneChannelGroups SOURCES test_ProtoDuneChannelGroups.cxx
 
 cet_test(test_ApaChannelGroups SOURCES test_ApaChannelGroups.cxx
   LIBRARIES
-    dune_ArtSupport
+    dunecore_ArtSupport
     art::Utilities
     canvas::canvas
     fhiclcpp

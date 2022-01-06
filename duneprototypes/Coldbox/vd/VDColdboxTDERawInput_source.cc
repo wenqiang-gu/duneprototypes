@@ -13,10 +13,10 @@
 #include "TMath.h"
 
 // DUNE includes
-#include "dune/DuneObj/RDStatus.h"
+#include "dunecore/DuneObj/RDStatus.h"
 
-#include "dune/Coldbox/vd/VDColdboxTDERawInput.h"
-#include "dune/Coldbox/vd/ChannelMap/VDColdboxTDEChannelMapService.h"
+#include "duneprototypes/Coldbox/vd/VDColdboxTDERawInput.h"
+#include "duneprototypes/Coldbox/vd/ChannelMap/VDColdboxTDEChannelMapService.h"
 
 #include <exception>
 #include <thread>
