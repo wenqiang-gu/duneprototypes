@@ -22,6 +22,7 @@
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "larreco/Calorimetry/CalorimetryAlg.h"
 #include "lardataobj/RecoBase/Track.h"
+#include "lardataobj/RecoBase/Shower.h"
 #include "lardataobj/AnalysisBase/Calorimetry.h"
 #include "dunecalib/Calib/XYZCalib.h"
 #include "dunecalib/CalibServices/XYZCalibService.h"
@@ -59,8 +60,8 @@ public:
 
 private:
 
-  std::string fTrackModuleLabel;
-  std::string fCalorimetryModuleLabel;
+  std::string fTrackModuleLabel, fShowerModuleLabel;
+  std::string fCalorimetryModuleLabel, fShowerCalorimetryModuleLabel;
   std::string fHitModuleLabel;
 
   calo::CalorimetryAlg caloAlg;
@@ -69,10 +70,11 @@ private:
   double fModBoxB;
 
   bool fSCE;
-  bool fApplyNormCorrection;
-  bool fApplyXCorrection;
-  bool fApplyYZCorrection;
-  bool fApplyLifetimeCorrection;
+  bool fApplyNormCorrection, fApplyNormCorrectionShower;
+  bool fApplyXCorrection, fApplyXCorrectionShower;
+  bool fApplyYZCorrection, fApplyYZCorrectionShower;
+  bool fApplyLifetimeCorrection, fApplyLifetimeCorrectionShower;
+  double fShowerRecombFactor;
   bool fUseLifetimeFromDatabase; // true: lifetime from database; false: lifetime from DetectorProperties
   std::vector<double> fReferencedQdx; 
 
@@ -88,16 +90,24 @@ private:
 dune::CalibrationdEdXPDSP::CalibrationdEdXPDSP(fhicl::ParameterSet const & p)
   : EDProducer(p)
   , fTrackModuleLabel      (p.get< std::string >("TrackModuleLabel"))
+  , fShowerModuleLabel      (p.get< std::string >("ShowerModuleLabel"))
   , fCalorimetryModuleLabel(p.get< std::string >("CalorimetryModuleLabel"))
+  , fShowerCalorimetryModuleLabel(
+      p.get< std::string >("ShowerCalorimetryModuleLabel"))
   , fHitModuleLabel        (p.get< std::string >("HitModuleLabel"))
   , caloAlg                (p.get< fhicl::ParameterSet >("CaloAlg"))
   , fModBoxA               (p.get< double >("ModBoxA"))
   , fModBoxB               (p.get< double >("ModBoxB"))
   , fSCE                   (p.get< bool >("CorrectSCE"))
   , fApplyNormCorrection   (p.get< bool >("ApplyNormCorrection"))
+  , fApplyNormCorrectionShower   (p.get< bool >("ApplyNormCorrectionShower"))
   , fApplyXCorrection      (p.get< bool >("ApplyXCorrection"))
+  , fApplyXCorrectionShower      (p.get< bool >("ApplyXCorrectionShower"))
   , fApplyYZCorrection     (p.get< bool >("ApplyYZCorrection"))
+  , fApplyYZCorrectionShower     (p.get< bool >("ApplyYZCorrectionShower"))
   , fApplyLifetimeCorrection(p.get< bool >("ApplyLifetimeCorrection"))
+  , fApplyLifetimeCorrectionShower(p.get< bool >("ApplyLifetimeCorrectionShower"))
+  , fShowerRecombFactor(p.get<double>("ShowerRecombFactor", 1.))
   , fUseLifetimeFromDatabase(p.get< bool >("UseLifetimeFromDatabase"))
   , fReferencedQdx         (p.get<std::vector<double>>("ReferencedQdx"))
 {
@@ -108,6 +118,7 @@ dune::CalibrationdEdXPDSP::CalibrationdEdXPDSP(fhicl::ParameterSet const & p)
   //create calorimetry product and its association with track
   produces< std::vector<anab::Calorimetry>              >();
   produces< art::Assns<recob::Track, anab::Calorimetry> >();
+  produces< art::Assns<recob::Shower, anab::Calorimetry> >();
   first = true;
 }
 
@@ -124,7 +135,7 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
   calib::LifetimeCalib *lifetimecalib = lifetimecalibService.provider();
   auto const detProp = art::ServiceHandle<detinfo::DetectorPropertiesService const>()->DataFor(evt);
 
-  if (fApplyLifetimeCorrection) {
+  if (fApplyLifetimeCorrection || fApplyLifetimeCorrectionShower) {
     if (fUseLifetimeFromDatabase) {
       fLifetime = lifetimecalib->GetLifetime()*1000.0; // [ms]*1000.0 -> [us]
       //std::cout << "use lifetime from database   " << fLifetime << std::endl;
@@ -167,7 +178,7 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
   //get existing track/calorimetry objects
   auto trackListHandle = evt.getHandle< std::vector<recob::Track> >(fTrackModuleLabel);
 
-  std::vector<art::Ptr<recob::Track> > tracklist;
+  std::vector<art::Ptr<recob::Track>> tracklist;
   art::fill_ptr_vector(tracklist, trackListHandle);
 
   art::FindManyP<anab::Calorimetry> fmcal(trackListHandle, evt, fCalorimetryModuleLabel);
@@ -175,7 +186,7 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
   //get hits
   auto hitListHandle = evt.getHandle< std::vector<recob::Hit> >(fHitModuleLabel);
 
-  std::vector<art::Ptr<recob::Hit> > hitlist;
+  std::vector<art::Ptr<recob::Hit>> hitlist;
   art::fill_ptr_vector(hitlist, hitListHandle);
 
   if (!fmcal.isValid()){
@@ -318,8 +329,163 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
     }//loop over calorimetry objects
   }//loop over tracks
 
+
+  auto showerListHandle = evt.getHandle<std::vector<recob::Shower>>(fShowerModuleLabel);
+  std::vector<art::Ptr<recob::Shower> > showerlist;
+  art::fill_ptr_vector(showerlist, showerListHandle);
+
+  //CalibrateShowers(evt, hitlist, showerlist, shower_calos);
+
+  //create anab::Calorimetry objects and make association with recob::Shower
+  std::unique_ptr< art::Assns<recob::Shower, anab::Calorimetry>> assn_shower(
+      new art::Assns<recob::Shower, anab::Calorimetry>);
+  art::FindManyP<anab::Calorimetry> fmcal_shower(showerListHandle, evt,
+                                                 fShowerCalorimetryModuleLabel);
+  if (!fmcal_shower.isValid()){
+    throw art::Exception(art::errors::ProductNotFound)
+      <<"Could not get assocated Calorimetry objects";
+  }
+
+  for (size_t showerIt = 0; showerIt < showerlist.size(); ++showerIt) {
+    for (size_t i = 0; i < fmcal_shower.at(showerIt).size(); ++i) {
+      auto & calo = fmcal_shower.at(showerIt)[i];
+
+      if (!calo->dEdx().size()) {
+        //empty calorimetry product, just copy it
+        calorimetrycol->push_back(*calo);
+        util::CreateAssn(*this, evt, *calorimetrycol, showerlist[showerIt], *assn_shower);
+      }
+      else{
+        //start calibrating dQdx
+
+        //get original calorimetry information
+        //double                Kin_En     = calo->KineticEnergy();
+        std::vector<float>   vdEdx      = calo->dEdx();
+        std::vector<float>   vdQdx      = calo->dQdx();
+        std::vector<float>   vresRange  = calo->ResidualRange();
+        std::vector<float>   deadwire   = calo->DeadWireResRC();
+        float                length = calo->Range();
+        std::vector<float>   fpitch     = calo->TrkPitchVec();
+        const auto&          fHitIndex  = calo->TpIndices();
+        const auto&          vXYZ       = calo->XYZ();
+        geo::PlaneID         planeID    = calo->PlaneID();
+
+        //make sure the vectors are of the same size
+        if ((vdEdx.size() != vXYZ.size()) || (vdQdx.size() != vXYZ.size()) ||
+            (vresRange.size() != vXYZ.size()) ||
+            (fpitch.size() != vXYZ.size())) {
+          throw art::Exception(art::errors::Configuration) << 
+                "Vector sizes mismatch for vdEdx, vdQdx, vresRange, fpitch, vXYZ";
+        }
+
+        //make sure the planeID is reasonable
+        if (!planeID.isValid) {
+          throw art::Exception(art::errors::Configuration) << "planeID is invalid";
+        }
+        if (planeID.Plane>2){
+          throw art::Exception(art::errors::Configuration) << "plane is invalid " <<
+                planeID.Plane;
+        }
+        // update the kinetic energy
+        double EkinNew = 0.;
+
+        for (size_t j = 0; j < vdQdx.size(); ++j) {
+          auto & hit = hitlist[fHitIndex[j]];
+          if (hit->WireID().Plane != planeID.Plane) {
+            throw art::Exception(art::errors::Configuration) <<"Hit plane = " <<
+                  hit->WireID().Plane<<" calo plane = "<<planeID.Plane;
+          }
+
+          double normcorrection = 1;
+          if (fApplyNormCorrectionShower) {
+            normcorrection = xyzcalib->GetNormCorr(planeID.Plane);
+            if (normcorrection) {
+              normcorrection = fReferencedQdx[planeID.Plane]/normcorrection;
+            }
+            else {
+              normcorrection = 1.;
+            }
+          }
+
+          double xcorrection = 1;
+          if (fApplyXCorrectionShower) {
+            xcorrection = xyzcalib->GetXCorr(planeID.Plane, vXYZ[j].X());
+            if (!xcorrection) xcorrection = 1.;
+          }
+
+          double yzcorrection = 1;
+          if (fApplyYZCorrectionShower) {
+            yzcorrection = xyzcalib->GetYZCorr(planeID.Plane, (vXYZ[j].X()>0),
+                                               vXYZ[j].Y(), vXYZ[j].Z());
+            if (!yzcorrection) yzcorrection = 1.;
+          }
+
+          if (fApplyLifetimeCorrectionShower){
+            xcorrection *= exp((xAnode-std::abs(vXYZ[j].X()))/(fLifetime*vDrift));
+          }
+
+          vdQdx[j] = normcorrection*xcorrection*yzcorrection*vdQdx[j];
+
+
+          //Calculate dE/dx uisng the new recombination constants
+          double dQdx_e = caloAlg.ElectronsFromADCArea(vdQdx[j], planeID.Plane);
+          double rho = detProp.Density();                       // LAr density in g/cm^3
+          double Wion = 1000./util::kGeVToElectrons;    // 23.6 eV = 1e, Wion in MeV/e
+          double E_field_nominal = detProp.Efield();   // Electric Field in the drift region in KV/cm
+
+          //correct Efield for SCE
+          geo::Vector_t E_field_offsets = {0., 0., 0.};
+
+          if (sce->EnableCalEfieldSCE() && fSCE)
+            E_field_offsets = sce->GetCalEfieldOffsets(
+                geo::Point_t{vXYZ[j].X(), vXYZ[j].Y(), vXYZ[j].Z()},
+                hit->WireID().TPC);
+
+          TVector3 E_field_vector = {
+            E_field_nominal*(1 + E_field_offsets.X()),
+            E_field_nominal*E_field_offsets.Y(),
+            E_field_nominal*E_field_offsets.Z()
+          };
+
+          double E_field = E_field_vector.Mag();
+
+          //calculate recombination factors
+          double Beta = fModBoxB / (rho * E_field);
+          double Alpha = fModBoxA;
+          //double old_vdEdx = vdEdx[j];
+          vdEdx[j] = (exp(Beta * Wion * dQdx_e) - Alpha) / Beta;
+
+
+          double hit_energy = hit->Integral();
+          hit_energy *= normcorrection;
+          hit_energy *= Wion/*23.6e-6*/;
+          hit_energy *= caloAlg.ElectronsFromADCArea(1., planeID.Plane); //Returns 1./calib_factor
+          hit_energy *= xcorrection;
+          hit_energy *= yzcorrection;
+          hit_energy /= fShowerRecombFactor;
+
+          EkinNew += hit_energy;
+
+        }
+        //save new calorimetry information
+        calorimetrycol->push_back(anab::Calorimetry(EkinNew,
+                                                    vdEdx,
+                                                    vdQdx,
+                                                    vresRange,
+                                                    deadwire,
+                                                    length,
+                                                    fpitch,
+                                                    vXYZ,
+                                                    fHitIndex,
+                                                    planeID));
+        util::CreateAssn(*this, evt, *calorimetrycol, showerlist[showerIt], *assn_shower);
+      }//calorimetry object not empty
+    }//loop over calorimetry objects
+  }
+
   evt.put(std::move(calorimetrycol));
   evt.put(std::move(assn));
+  evt.put(std::move(assn_shower));
 
   return;
 }
