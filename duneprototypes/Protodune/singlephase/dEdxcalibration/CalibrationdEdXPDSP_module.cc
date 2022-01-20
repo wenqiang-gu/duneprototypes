@@ -343,7 +343,9 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
                                                  fShowerCalorimetryModuleLabel);
   if (!fmcal_shower.isValid()){
     throw art::Exception(art::errors::ProductNotFound)
-      <<"Could not get assocated Calorimetry objects";
+      << "Could not get assocated Calorimetry objects. "
+      << "Shower Label: " << fShowerModuleLabel << " Shower Calo Label: "
+      << fShowerCalorimetryModuleLabel << "\n";
   }
 
   for (size_t showerIt = 0; showerIt < showerlist.size(); ++showerIt) {
