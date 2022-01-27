@@ -48,6 +48,7 @@ find_ups_product( clhep )
 find_ups_product( hdf5 )
 find_ups_product( dunedaqdataformats )
 find_ups_product( dunedetdataformats )
+find_ups_product( postgresql )
 find_ups_geant4( )
 
 # artdaq_core Utility library
