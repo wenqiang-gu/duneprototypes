@@ -4,7 +4,7 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(duneprototypes VERSION 09.42.00.01 LANGUAGES CXX)
+project(duneprototypes VERSION 09.42.02.00 LANGUAGES CXX)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -48,6 +48,7 @@ find_ups_product( clhep )
 find_ups_product( hdf5 )
 find_ups_product( dunedaqdataformats )
 find_ups_product( dunedetdataformats )
+find_ups_product( postgresql )
 find_ups_geant4( )
 
 # artdaq_core Utility library
