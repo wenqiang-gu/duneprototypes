@@ -50,14 +50,14 @@
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 
-#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
 
 #include "larevt/SpaceChargeServices/SpaceChargeService.h"
 
 
 //Local includes
-#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
 
 
 
@@ -358,7 +358,10 @@ void CRT::TwoCRTMatchingProducer::produce(art::Event & event)
   }
   vector < art::Ptr < recob::Track > > trackList;
   auto trackListHandle = event.getHandle < vector < recob::Track > >(fTrackModuleLabel);
-  if (trackListHandle) {
+  vector<art::Ptr<recob::PFParticle> > pfplist;
+  auto PFPListHandle = event.getHandle< std::vector<recob::PFParticle> >("pandora");
+  if (PFPListHandle) art::fill_ptr_vector(pfplist, PFPListHandle);
+  if (trackListHandle && pfplist.size()>0) {
     art::fill_ptr_vector(trackList, trackListHandle);
   }
   else{
@@ -366,10 +369,7 @@ void CRT::TwoCRTMatchingProducer::produce(art::Event & event)
     return;
   }
 
-  vector<art::Ptr<recob::PFParticle> > pfplist;
-  auto PFPListHandle = event.getHandle< std::vector<recob::PFParticle> >("pandora");
-  if (PFPListHandle) art::fill_ptr_vector(pfplist, PFPListHandle);
-  if(pfplist.size()<1) return;
+
   art::FindManyP<anab::T0> trk_t0_assn_v(PFPListHandle, event ,"pandora");
     art::FindManyP<recob::PFParticle> pfp_trk_assn(trackListHandle,event,"pandoraTrack");
   int nTracksReco = trackList.size();

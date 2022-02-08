@@ -48,11 +48,11 @@
 
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 
-#include "duneprototypes/Protodune/singlephase/CTB/data/pdspctb.h"
+#include "dune/Protodune/singlephase/CTB/data/pdspctb.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
 
 //Local includes
-#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "dune/Protodune/singlephase/CRT/data/CRTTrigger.h"
 
 //ROOT includes
 #include "TH1.h"
@@ -447,14 +447,15 @@ void CRT::SingleCRTMatchingProducer::produce(art::Event & event)
 
   vector < art::Ptr < recob::Track > > trackList;
   auto trackListHandle = event.getHandle < vector < recob::Track > >(fTrackModuleLabel);
-  if (trackListHandle) {
-    art::fill_ptr_vector(trackList, trackListHandle);
-  }
-
   vector<art::Ptr<recob::PFParticle> > pfplist;
   auto PFPListHandle = event.getHandle< std::vector<recob::PFParticle> >("pandora");
   if (PFPListHandle) art::fill_ptr_vector(pfplist, PFPListHandle);
-  if (pfplist.size()<1) return;
+  if (trackListHandle && pfplist.size()>0) {
+    art::fill_ptr_vector(trackList, trackListHandle);
+  }
+  else{
+event.put(std::move(T0col)); event.put(std::move(CRTTrack)); event.put(std::move(TPCCRTassn));  event.put(std::move(TPCT0assn)); event.put(std::move(CRTT0assn)); event.put(std::move(CRTTriggerassn)); return;
+  }
   art::FindManyP<anab::T0> trk_t0_assn_v(PFPListHandle, event ,"pandora");
     art::FindManyP<recob::PFParticle> pfp_trk_assn(trackListHandle,event,"pandoraTrack");
 
