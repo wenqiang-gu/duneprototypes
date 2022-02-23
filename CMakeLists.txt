@@ -4,7 +4,7 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(duneprototypes VERSION 09.42.03.01 LANGUAGES CXX)
+project(duneprototypes VERSION 09.42.04.00 LANGUAGES CXX)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
