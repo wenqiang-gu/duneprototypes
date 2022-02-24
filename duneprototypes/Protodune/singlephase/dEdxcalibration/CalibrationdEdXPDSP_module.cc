@@ -13,6 +13,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
 #include "art/Framework/Principal/SubRun.h"
+#include "art_root_io/TFileService.h"
 #include "canvas/Utilities/InputTag.h"
 #include "canvas/Persistency/Common/FindManyP.h"
 #include "fhiclcpp/ParameterSet.h"
@@ -58,6 +59,9 @@ public:
   // Required functions.
   void produce(art::Event & e) override;
 
+  // Selected optional functions.
+  void beginJob() override;
+
 private:
 
   std::string fTrackModuleLabel, fShowerModuleLabel;
@@ -74,6 +78,7 @@ private:
   bool fApplyXCorrection, fApplyXCorrectionShower;
   bool fApplyYZCorrection, fApplyYZCorrectionShower;
   bool fApplyLifetimeCorrection, fApplyLifetimeCorrectionShower;
+  bool fCorrectResidualRange;
   double fShowerRecombFactor;
   bool fUseLifetimeFromDatabase; // true: lifetime from database; false: lifetime from DetectorProperties
   std::vector<double> fReferencedQdx; 
@@ -84,6 +89,10 @@ private:
   double xAnode;
 
   bool first;
+
+  TH1D *hdRR[3];
+  
+  void CorrectResidualRange(double endx, double endy, double endz, std::vector<float> &vresRange, std::vector<geo::Point_t> vXYZ, int plane);
 };
 
 
@@ -107,6 +116,7 @@ dune::CalibrationdEdXPDSP::CalibrationdEdXPDSP(fhicl::ParameterSet const & p)
   , fApplyYZCorrectionShower     (p.get< bool >("ApplyYZCorrectionShower"))
   , fApplyLifetimeCorrection(p.get< bool >("ApplyLifetimeCorrection"))
   , fApplyLifetimeCorrectionShower(p.get< bool >("ApplyLifetimeCorrectionShower"))
+  , fCorrectResidualRange(p.get<bool>("CorrectResidualRange", false))
   , fShowerRecombFactor(p.get<double>("ShowerRecombFactor", 1.))
   , fUseLifetimeFromDatabase(p.get< bool >("UseLifetimeFromDatabase"))
   , fReferencedQdx         (p.get<std::vector<double>>("ReferencedQdx"))
@@ -195,6 +205,7 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
   }
 
   for (size_t trkIter = 0; trkIter < tracklist.size(); ++trkIter){
+    
     for (size_t i = 0; i<fmcal.at(trkIter).size(); ++i){
       auto & calo = fmcal.at(trkIter)[i];
 
@@ -313,6 +324,26 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
           }
 
         }
+
+        if (fCorrectResidualRange && (!vresRange.empty())){
+          double endx =tracklist[trkIter]->End().X();
+          double endy =tracklist[trkIter]->End().Y();
+          double endz =tracklist[trkIter]->End().Z();
+          // find hit closest to the track end
+          auto & hit = hitlist[fHitIndex[0]];
+          if (vresRange[0]>vresRange.back()){
+            hit = hitlist[fHitIndex.back()];
+          }
+          geo::Vector_t posOffsets = {0., 0., 0.};
+          if (sce->EnableCalSpatialSCE() && fSCE){
+            posOffsets = sce->GetCalPosOffsets(geo::Point_t(endx, endy, endz), hit->WireID().TPC);
+            endx =- posOffsets.X();
+            endy =+ posOffsets.Y();
+            endz =+ posOffsets.Z();
+          }
+          CorrectResidualRange(endx, endy, endz, vresRange, vXYZ, hit->WireID().Plane);
+        }
+        
         //save new calorimetry information
         calorimetrycol->push_back(anab::Calorimetry(EkinNew,// Kin_En, // change by David C. to update kinetic energy calculation
                                                     vdEdx,
@@ -490,6 +521,48 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
   evt.put(std::move(assn_shower));
 
   return;
+}
+
+void dune::CalibrationdEdXPDSP::beginJob(){
+  art::ServiceHandle<art::TFileService const> tfs;
+  for (int i = 0; i<3; ++i){
+    hdRR[i] = tfs->make<TH1D>(Form("hdRR%d",i), Form("Plane %d;new RR - old RR (cm)",i), 100,-5,45);
+    hdRR[i]->Sumw2();
+  }
+}
+  
+  
+
+void dune::CalibrationdEdXPDSP::CorrectResidualRange(double endx, double endy, double endz, std::vector<float> &vresRange, std::vector<geo::Point_t> vXYZ, int plane){
+
+  bool revDir = vresRange[0] > vresRange.back();
+  for (size_t i = 0; i<vresRange.size(); ++i){
+    if (!revDir){
+      if (i==0){
+        double newrr = sqrt(pow(vXYZ[i].X()-endx,2) + pow(vXYZ[i].Y()-endy,2) + pow(vXYZ[i].Z()-endz,2));
+        hdRR[plane]->Fill(newrr-vresRange[i]);
+        vresRange[i] = newrr;
+      }
+      else{
+        vresRange[i] = vresRange[i-1] + sqrt(pow(vXYZ[i].X()-vXYZ[i-1].X(),2) +
+                                             pow(vXYZ[i].Y()-vXYZ[i-1].Y(),2) +
+                                             pow(vXYZ[i].Z()-vXYZ[i-1].Z(),2));
+      }
+    }
+    else{
+      int index = vresRange.size() - i -1;
+      if (i==0){
+        double newrr = sqrt(pow(vXYZ[index].X()-endx,2) + pow(vXYZ[index].Y()-endy,2) + pow(vXYZ[index].Z()-endz,2));
+        hdRR[plane]->Fill(newrr-vresRange[index]);
+        vresRange[index] = newrr;
+      }
+      else{
+        vresRange[index] = vresRange[index+1] + sqrt(pow(vXYZ[index].X()-vXYZ[index+1].X(),2) +
+                                                     pow(vXYZ[index].Y()-vXYZ[index+1].Y(),2) +
+                                                     pow(vXYZ[index].Z()-vXYZ[index+1].Z(),2));
+      }
+    }
+  }
 }
 
 DEFINE_ART_MODULE(dune::CalibrationdEdXPDSP)
