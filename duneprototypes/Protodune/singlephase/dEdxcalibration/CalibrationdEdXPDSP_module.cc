@@ -337,9 +337,9 @@ void dune::CalibrationdEdXPDSP::produce(art::Event & evt)
           geo::Vector_t posOffsets = {0., 0., 0.};
           if (sce->EnableCalSpatialSCE() && fSCE){
             posOffsets = sce->GetCalPosOffsets(geo::Point_t(endx, endy, endz), hit->WireID().TPC);
-            endx =- posOffsets.X();
-            endy =+ posOffsets.Y();
-            endz =+ posOffsets.Z();
+            endx -= posOffsets.X();
+            endy += posOffsets.Y();
+            endz += posOffsets.Z();
           }
           CorrectResidualRange(endx, endy, endz, vresRange, vXYZ, hit->WireID().Plane);
         }
