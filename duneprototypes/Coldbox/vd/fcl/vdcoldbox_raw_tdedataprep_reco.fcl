@@ -1,0 +1,79 @@
+#include "services_dune.fcl"
+#include "services_vdcoldbox.fcl"
+#include "workflow_reco_vdcb.fcl"
+
+#include "vdct_decoder.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_vdct.fcl"
+#include "channelstatus_vdcb.fcl"
+#include "vdcb_tools.fcl"
+#include "vdcb_dataprep_sequences.fcl"
+  
+
+process_name: VDTDEDataPrepReco
+
+services: {
+  TFileService: { fileName: "%ifb_reco_hist.root" }
+  TimeTracker:       @local::dune_time_tracker
+  MemoryTracker:     @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  FileCatalogMetadata:  @local::art_file_catalog_data
+  FileCatalogMetadata: {
+  #applicationVersion: "v07_08_00_04"
+  fileType: "detector"
+  runType: "vd-coldbox-top" }
+  
+  @table::vdcb_services
+  @table::vdcb_top_reco_services
+  message:              @local::dune_message_services_prod
+                        @table::vdcb_crp1_top_data_services
+  ChannelStatusService: @local::data.ChannelStatusService_vdct1  
+}
+
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "%ifb_vdcbtde_dataprep_reco.root"
+    #outputCommands: [ "keep *", "drop raw::RawDigit*_*_*_*" ]
+    outputCommands: [ "keep *", "drop recob::Wires_caldata_dataprep_*" ]
+    compressionLevel: 1
+    dataTier: "full-reconstructed"
+    streamName: "test"
+  }
+}
+
+physics: {
+  producers: {
+    caldata: 	@local::producer_adcprep # defined in dataprep_dune.fcl
+    		@table::dunecb_vertdrift_producers 
+  }
+
+  produce: [
+#    @local::producer_adcprep, # defined in dataprep_dune.fcl
+    caldata,
+    @sequence::dunecb_vertdrift_reco_tpc_only # defined in workflow_reco_vdcb.fcl
+  ]
+
+  output : [ rootout ]
+  trigger_paths: [produce]
+  end_paths : [ output ]
+}
+
+# from vdct_decoder.fcl
+source: @local::vdctdecoder_source
+physics.producers.caldata.DecoderTool: ""
+physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
+physics.producers.caldata.WireName: "dataprep"
+physics.producers.caldata.ChannelGroups: ["crt"]
+physics.producers.caldata.DoGroups: true
+physics.producers.caldata.OnlineChannelMapTool: ""
+
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
+
+# modifications to reco
+# set TDE in wirecell signal processing
+physics.producers.wclsdatanfsp.wcls_main.params.active_cru: "tde"
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane0.RoiThreshold: 5.0
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane1.RoiThreshold: 5.0
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane2.RoiThreshold: 5.0
