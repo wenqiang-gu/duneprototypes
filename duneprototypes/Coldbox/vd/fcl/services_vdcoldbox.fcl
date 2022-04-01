@@ -41,8 +41,8 @@ vdcb_crp1_bot_services: @local::vdcb_services
 
 # top CRP1
 vdcb_crp1_top_services: @local::vdcb_services
-vdcb_crp1_top_services.DetectorPropertiesService.NumberTimeSamples: 10000
-vdcb_crp1_top_services.DetectorPropertiesService.ReadOutWindowSize: 10000
+# vdcb_crp1_top_services.DetectorPropertiesService.NumberTimeSamples: 10000
+# vdcb_crp1_top_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 vdcb_crp1_top_services.DetectorClocksService.FramePeriod:   4000
 vdcb_crp1_top_services.DetectorClocksService.ClockSpeedTPC: 2.5
 
@@ -69,6 +69,8 @@ vdcb_crp1_top_data_services: {
     LogLevel : 1
   }
 }
+vdcb_crp1_top_data_services.DetectorPropertiesService.NumberTimeSamples: 10000
+vdcb_crp1_top_data_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
 # data services for Bottom CRU
 vdcb_crp1_bot_data_services: {
@@ -115,6 +117,8 @@ vdcb_top_reco_services: {
     @table::vdcb_crp1_top_services
     SpaceCharge: @local::dunefd_spacecharge
 }
+vdcb_top_reco_services.DetectorPropertiesService.NumberTimeSamples: 10000
+vdcb_top_reco_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
 vdcb_bot_reco_services: {
     @table::vdcb_crp1_bot_services
