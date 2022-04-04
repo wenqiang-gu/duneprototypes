@@ -464,7 +464,7 @@ event.put(std::move(T0col)); event.put(std::move(CRTTrack)); event.put(std::move
   int tempId = 0;
 
   auto const detProp = art::ServiceHandle<detinfo::DetectorPropertiesService const>()->DataFor(event);
-   std::cout<<"Running Single CRT"<<std::endl;
+   
   for (int iRecoTrack = 0; iRecoTrack < nTracksReco; ++iRecoTrack) {
     if (primaryHits_F.size()+primaryHits_B.size()<1) break;
    std::vector< art::Ptr<recob::Hit> > allHits =  hitsFromTrack.at(iRecoTrack);
@@ -636,8 +636,8 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
 
 	TVector3 trackStart(trackStartPositionX, trackStartPositionY, trackStartPositionZ);
 	TVector3 trackEnd(trackEndPositionX, trackEndPositionY, trackEndPositionZ);
-         std::cout<<"Running over track "<<f<<std::endl;
-         std::cout<<primaryHits_F[f].moduleX<<std::endl;   
+         
+            
       tracksPair tPair;
         tPair.tempId = tempId;
         tPair.CRTTrackId = f;
@@ -649,10 +649,9 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
 
         tPair.moduleX1 = primaryHits_F[f].moduleX;
         tPair.moduleY1 = primaryHits_F[f].moduleY;
-        std::cout<<primaryHits_F[f].moduleX<<','<<primaryHits_F[f].moduleY<<std::endl; 
         tPair.adcX1=primaryHits_F[f].adcX;
         tPair.adcY1=primaryHits_F[f].adcY;
-        std::cout<<primaryHits_F[f].adcX<<","<<primaryHits_F[f].adcY<<std::endl;
+        
         tPair.stripX1 = primaryHits_F[f].stripX;
         tPair.stripY1 = primaryHits_F[f].stripY;
         tPair.trigNumberX = primaryHits_F[f].trigNumberX;
