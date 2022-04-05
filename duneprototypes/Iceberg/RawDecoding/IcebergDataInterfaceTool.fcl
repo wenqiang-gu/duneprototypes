@@ -78,4 +78,14 @@ IcebergDataInterface_tool_frame14: @local::IcebergDataInterface_tool
 IcebergDataInterface_tool_frame14.APA1InputLabels: [ "daq:FRAME14" ]
 IcebergDataInterface_tool_frame14.MISCAPAInputLabels: [ "daq:FRAME14" ]
 
+IcebergDataInterface_tool_HDF5: 
+  {
+  tool_type: "IcebergHDF5DataInterface"
+  MinOfflineChannel:        -1     #  Use to limit range of channels.  <0: no limit
+  MaxOfflineChannel:        -1     #  Use to limit range of channels.  <0: no limit.  < MinOfflineChannel: no limit
+  FileInfoLabel:            "daq"  #  module label for HDF5 file info data product
+  DebugPrint:               false  #  switch to turn on debug printing of crate, slot and fiber and other debug output
+}
+
+
 END_PROLOG
