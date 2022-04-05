@@ -79,21 +79,21 @@ int IcebergHDF5DataInterface::retrieveDataAPAListWithLabels(art::Event &evt,
   
   if (_debugprint)
     {
-       std::cout << "Requested Data for " << apalist.size() << " APAs " << std::endl;
-       std::cout << "Top level group name: " << toplevel_groupname << "  the_group " << the_group << std::endl;
+      std::cout << "Requested Data for " << apalist.size() << " APAs " << std::endl;
+      std::cout << "Top level group name: " << toplevel_groupname << "  the_group " << the_group << std::endl;
     }
 
   // NOTE: The "apalist" that DataPrep hands to the method is always of size 1.
   // Also "apalist" should technically hand you the current APA No. we are looking at but there is exception.
   // CAUTION: This is only and only for ICEBERG, which has only one APA
 
-      int apano = 0;
+  int apano = 0;
 
-      getIcebergHDF5Data(the_group, raw_digits, rd_timestamps, apano);
+  getIcebergHDF5Data(the_group, raw_digits, rd_timestamps, apano);
       
-      //Currently putting in dummy values for the RD Statuses
-      rdstatuses.clear();
-      rdstatuses.emplace_back(false, false, 0);
+  //Currently putting in dummy values for the RD Statuses
+  rdstatuses.clear();
+  rdstatuses.emplace_back(false, false, 0);
 
   _collectRDStatus(rdstatuses);
   
@@ -143,10 +143,10 @@ void IcebergHDF5DataInterface::getIcebergHDF5Data(
         = getMidLevelGroupNames(geoGroup);
       
       if (_debugprint)
-	{
+        {
           std::cout << "Size of apaNames: " << apaNames.size() << std::endl;
           std::cout << "apaNames[0]: "  << apaNames[0] << std::endl;
-	}
+        }
 
       // apaNames is a vector whose elements start at [0].
       hid_t linkGroup = getGroupFromPath(geoGroup, apaNames[0]);
@@ -166,10 +166,10 @@ void IcebergHDF5DataInterface::getIcebergHDF5Data(
           //Each fragment is a collection of WIB Frames
           Fragment frag(&ds_data[0], Fragment::BufferAdoptionMode::kReadOnlyMode);
           size_t n_frames = (ds_size - sizeof(FragmentHeader))/sizeof(WIB2Frame);
-	  if (_debugprint)
-	    {
-	      std::cout << "N_Frames calc: " << ds_size << " " << sizeof(FragmentHeader) << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
-	    }
+          if (_debugprint)
+            {
+              std::cout << "N_Frames calc: " << ds_size << " " << sizeof(FragmentHeader) << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
+            }
           std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
           uint32_t slot = 0, fiber = 0, crate = 0;
           for (size_t i = 0; i < n_frames; ++i)
@@ -177,12 +177,12 @@ void IcebergHDF5DataInterface::getIcebergHDF5Data(
               auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
               for (size_t j = 0; j < adc_vectors.size(); ++j)
                 {
-		  if (j<40) adc_vectors[j].push_back(frame->get_u(0,j));
-		  else if (j<80)  adc_vectors[j].push_back(frame->get_v(0,j-40));
-		  else if (j<128) adc_vectors[j].push_back(frame->get_x(0,j-80));
-		  else if (j<168) adc_vectors[j].push_back(frame->get_u(0,j-128));
-		  else if (j<208) adc_vectors[j].push_back(frame->get_v(0,j-168));
-		  else            adc_vectors[j].push_back(frame->get_x(0,j-208));
+                  if (j<40) adc_vectors[j].push_back(frame->get_u(0,j));
+                  else if (j<80)  adc_vectors[j].push_back(frame->get_v(0,j-40));
+                  else if (j<128) adc_vectors[j].push_back(frame->get_x(0,j-80));
+                  else if (j<168) adc_vectors[j].push_back(frame->get_u(0,j-128));
+                  else if (j<208) adc_vectors[j].push_back(frame->get_v(0,j-168));
+                  else            adc_vectors[j].push_back(frame->get_x(0,j-208));
                 }
         
               if (i == 0)
