@@ -464,7 +464,7 @@ event.put(std::move(T0col)); event.put(std::move(CRTTrack)); event.put(std::move
   int tempId = 0;
 
   auto const detProp = art::ServiceHandle<detinfo::DetectorPropertiesService const>()->DataFor(event);
-
+   
   for (int iRecoTrack = 0; iRecoTrack < nTracksReco; ++iRecoTrack) {
     if (primaryHits_F.size()+primaryHits_B.size()<1) break;
    std::vector< art::Ptr<recob::Hit> > allHits =  hitsFromTrack.at(iRecoTrack);
@@ -514,7 +514,7 @@ event.put(std::move(T0col)); event.put(std::move(CRTTrack)); event.put(std::move
       double best_dotProductCos = DBL_MAX;
       double best_deltaXF = DBL_MAX;
       double best_deltaYF = DBL_MAX;
-      int bestHitIndex_F=0;
+      int bestHitIndex_F=-1;
       double best_trackX1=DBL_MAX;
       double best_trackX2=DBL_MAX;
       for (unsigned int iHit_F = 0; iHit_F < primaryHits_F.size(); iHit_F++) {
@@ -618,8 +618,10 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
           }
 
 	}
-   int  f=bestHitIndex_F; 
- 
+   
+    int  f=bestHitIndex_F; 
+    if (bestHitIndex_F==-1) continue;
+
    double deltaX=best_deltaXF; double deltaY=best_deltaYF;
    double dotProductCos=best_dotProductCos;
 
@@ -634,8 +636,9 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
 
 	TVector3 trackStart(trackStartPositionX, trackStartPositionY, trackStartPositionZ);
 	TVector3 trackEnd(trackEndPositionX, trackEndPositionY, trackEndPositionZ);
-
-         tracksPair tPair;
+         
+            
+      tracksPair tPair;
         tPair.tempId = tempId;
         tPair.CRTTrackId = f;
         tPair.recoId = iRecoTrack;
@@ -646,10 +649,9 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
 
         tPair.moduleX1 = primaryHits_F[f].moduleX;
         tPair.moduleY1 = primaryHits_F[f].moduleY;
-
         tPair.adcX1=primaryHits_F[f].adcX;
         tPair.adcY1=primaryHits_F[f].adcY;
-
+        
         tPair.stripX1 = primaryHits_F[f].stripX;
         tPair.stripY1 = primaryHits_F[f].stripY;
         tPair.trigNumberX = primaryHits_F[f].trigNumberX;
@@ -670,7 +672,7 @@ if(geom->PositionToTPCID(geo::Point_t(trackEndPositionX, trackEndPositionY, trac
       double best_dotProductCos = DBL_MAX;
       double best_deltaXF = DBL_MAX;
       double best_deltaYF = DBL_MAX;     
-      int bestHitIndex_B=0;
+      int bestHitIndex_B=-1;
       double best_trackX1=DBL_MAX;
       double best_trackX2=DBL_MAX;
       for (unsigned int iHit_B = 0; iHit_B < primaryHits_B.size(); iHit_B++) {
@@ -759,8 +761,9 @@ double xOffset=0;
           }
 
 	}
+   
    int  f=bestHitIndex_B; 
- 
+      if (bestHitIndex_B==-1) continue;
    double deltaX=best_deltaXF; double deltaY=best_deltaYF;
    double dotProductCos=best_dotProductCos;
 

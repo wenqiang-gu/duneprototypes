@@ -1,0 +1,34 @@
+# runiceberg_decode_hdf5test.fcl
+
+# just run the decoder step via caldata and other caldata
+# tools, but not any of the subsequent reco
+
+#include "iceberg5c_decode_reco.fcl"
+
+# Pedestal fitter.
+tools.ib5_adcPedestalFit: @local::tools.ib5cond_adcPedestalFit
+
+# Charge calibration.
+tools.ib5SampleCalibration: @local::tools.ib5CondSVSampleCalibration
+
+# Define pedestal finder used in the pedestal update.
+# NEED conditons based tool here!!!!
+tools.ib5TailPedSignalFinder: @local::tools.ib5bTailPedSignalFinder
+
+physics.producers.wclsdatasp: {}
+physics.producers.gaushit: {}
+physics.producers.reco3d: {}
+physics.producers.hitpdune: {}
+physics.producers.linecluster: {}
+physics.producers.pmtrack: {}
+
+physics.decode: [ "caldata" ]
+
+tools.IcebergDecoderHDF5: @local::IcebergDataInterface_tool_HDF5
+physics.producers.caldata.DecoderTool: "IcebergDecoderHDF5"
+tools.IcebergDecoderHDF5.DebugPrint: false
+
+source: {
+   module_label: "source"
+   module_type: "HDF5RawInput"
+}
