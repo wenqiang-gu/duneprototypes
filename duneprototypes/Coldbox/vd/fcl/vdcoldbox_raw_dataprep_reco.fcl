@@ -1,0 +1,82 @@
+#include "services_dune.fcl"
+#include "services_vdcoldbox.fcl"
+#include "workflow_reco_vdcb.fcl"
+
+#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_vdct.fcl"
+#include "channelstatus_vdcb.fcl"
+#include "vdcb_tools.fcl"
+#include "vdcb_dataprep_sequences.fcl"
+
+process_name: VDBDEDataPrepReco
+
+services: {
+  TFileService: { fileName: "%ifb_reco_hist.root" }
+  TimeTracker:       @local::dune_time_tracker
+  MemoryTracker:     @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  FileCatalogMetadata:  @local::art_file_catalog_data
+  FileCatalogMetadata: {
+  #applicationVersion: "v07_08_00_04"
+  fileType: "detector"
+  runType: "vd-coldbox-bottom" }
+  
+  @table::vdcb_services
+  @table::vdcb_bot_reco_services
+  message:              @local::dune_message_services_prod
+                        @table::vdcb_crp1_bot_data_services
+  ChannelStatusService: @local::data.ChannelStatusService_vdcb2 
+}
+
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "%ifb_vdcbbde_dataprep_reco.root"
+    #outputCommands: [ "keep *", "drop raw::RawDigit*_*_*_*" ]
+    outputCommands: [ "keep *", "drop recob::Wires_caldata_dataprep_*" ]
+    compressionLevel: 1
+    dataTier: "full-reconstructed"
+    streamName: "test"
+  }
+}
+
+physics: {
+  producers: {
+    caldata:    @local::protoDUNE_reco_data_producers.caldata
+    		@table::dunecb_vertdrift_producers 
+  }
+
+  produce: [
+    caldata,
+    @sequence::dunecb_vertdrift_reco_tpc_only # defined in workflow_reco_vdcb.fcl
+  ]
+
+  output : [ rootout ]
+  trigger_paths: [produce]
+  end_paths : [ output ]
+}
+
+source: {
+  module_type: HDF5RawInput
+}
+
+tools.vdtool: {
+  tool_type: "VDColdboxDataInterface"
+}
+
+services.LArFFT.FFTSize: 10000
+physics.producers.caldata.DecoderTool: "vdtool"
+physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb
+physics.producers.caldata.OutputDigitName: "dataprep"
+physics.producers.caldata.OutputWireName: "dataprep"
+physics.producers.caldata.ChannelGroups: ["crb", "crbg"]
+
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr_adc
+
+tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
+physics.producers.wclsdatanfsp.wcls_main.params.active_cru: "bde"
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane0.RoiThreshold: 5.0
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane1.RoiThreshold: 5.0
+physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane2.RoiThreshold: 5.0
