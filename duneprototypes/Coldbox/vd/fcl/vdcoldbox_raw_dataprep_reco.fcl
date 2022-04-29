@@ -80,3 +80,5 @@ physics.producers.wclsdatanfsp.wcls_main.params.active_cru: "bde"
 physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane0.RoiThreshold: 5.0
 physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane1.RoiThreshold: 5.0
 physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane2.RoiThreshold: 5.0
+
+tools.vdtool.MaxChan: 3199
