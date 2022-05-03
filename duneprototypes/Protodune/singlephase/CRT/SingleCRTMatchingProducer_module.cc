@@ -12,6 +12,7 @@
 #include "art/Persistency/Common/PtrMaker.h"
 #include "canvas/Persistency/Common/Assns.h"
 #include "lardata/Utilities/AssociationUtil.h"
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "canvas/Persistency/Common/Ptr.h"
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Principal/Event.h"
