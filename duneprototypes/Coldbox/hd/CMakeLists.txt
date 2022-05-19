@@ -24,6 +24,32 @@ cet_build_plugin(HDColdboxDataInterface   art::tool
              )
 
 
+cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
+                        art_utilities
+                        canvas::canvas
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
+                        lardataobj::RawData
+                        dune_raw_data::dune-raw-data_Overlays
+                        artdaq_core::artdaq-core_Data
+                        artdaq-core_Utilities
+                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
+                        ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Provenance
+                        messagefacility::MF_MessageLogger
+                        ROOT_BASIC_LIB_LIST
+                        dunecore::HDF5Utils
+                        LIBHDF5
+             )
+
+
+
+
 add_subdirectory(fcl)
 
 

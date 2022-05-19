@@ -1,0 +1,77 @@
+#include "PdspChannelMapService.fcl"
+#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_hdcb.fcl"
+#include "hdcb_dataprep_tools.fcl"
+
+process_name: HDSourcePrep
+
+services: {
+  
+  TimeTracker:           @local::dune_time_tracker
+  MemoryTracker:         @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  message:               @local::dune_message_services_prod
+  FileCatalogMetadata:   @local::art_file_catalog_data
+                         @table::protodune_rawdecoding_services
+                         @table::protodune_data_reco_services
+  PdspChannelMapService: @local::pdspchannelmap 
+
+ 
+  TFileService: { 
+    closeFileFast: true  # default
+    fileName: "hist_%ifb_decoder_reco1.root"
+    tmpDir: "<parent-path-of-filename>"  # default
+  }
+  IFBeam:            {}
+  IFDH:              {}
+  ChannelStatusService: @local::data.ChannelStatusService_hdcb1     # Cold running
+  Geometry: @local::protodunev7_geo
+}
+
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "out_raw_dataprep.root"
+    dataTier:    "full-reconstructed"
+    compressionLevel: 1
+  }
+}
+
+physics: {
+  producers: {
+    caldata: @local::protoDUNE_reco_data_producers.caldata
+  }
+
+  produce: [
+    caldata
+  ]
+
+  output : [ rootout ]
+  trigger_paths: [produce]
+  end_paths : [ output ]
+}
+
+source: {
+  module_type: HDF5RawInput
+}
+
+tools.hdtool: {
+  tool_type: "HDColdboxDataInterfaceWIB3"
+}
+
+
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups
+services.LArFFT.FFTSize: 10000
+physics.producers.caldata.DecoderTool: "hdtool"
+physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
+physics.producers.caldata.OutputDigitName: "dataprep"
+physics.producers.caldata.OutputWireName: "dataprep"
+physics.producers.caldata.ChannelGroups: ["apa1"]
+services.RawDigitPrepService.ToolNames: [
+  digitReader,            # Unpack the digits acd.raw[] and acd.pedestal
+  adcSampleFiller,        # Fill acd.samples from acd.raw - pedestal
+  adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
+]
+
