@@ -25,7 +25,7 @@ cet_build_plugin(HDColdboxDataInterface   art::tool
 
 
 add_subdirectory(fcl)
-
+add_subdirectory(ChannelMap)
 
 install_headers()
 install_fhicl()
