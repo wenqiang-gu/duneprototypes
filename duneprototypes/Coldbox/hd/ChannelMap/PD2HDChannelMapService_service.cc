@@ -46,16 +46,22 @@ dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& 
       >> chanInfo.asic 
       >> chanInfo.asicchan; 
 
+    // calculate wibframechan as it wasn't in the original spec
+
+    chanInfo.wibframechan = chanInfo.chan_in_plane + 128*chanInfo.femb_on_link;
+    if (chanInfo.plane == 1) chanInfo.wibframechan += 40;
+    else if (chanInfo.plane == 2) chanInfo.wibframechan += 80;
+    else if (chanInfo.plane != 0)
+      {
+	throw cet::exception("PD2HDChannelMapService") << "Bad plane ID in input file: " << chanInfo.plane << std::endl;
+      }
     chanInfo.valid = true;
 
     // fill maps.
 
-    if (chanInfo.offlchan >= fNChans)
-      {
-	throw cet::exception("PD2HDChannelMapService") << "Ununderstood Offline Channel: " << chanInfo.offlchan << "\n";
-      }
+    check_offline_channel(chanInfo.offlchan);
 
-    DetToChanInfo[chanInfo.crate][chanInfo.wib][chanInfo.link][chanInfo.femb_on_link][chanInfo.plane][chanInfo.chan_in_plane] = chanInfo;
+    DetToChanInfo[chanInfo.crate][chanInfo.wib][chanInfo.link][chanInfo.wibframechan] = chanInfo;
     OfflToChanInfo[chanInfo.offlchan] = chanInfo;
 
   }
@@ -67,7 +73,32 @@ dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& 
 }
 
 
-dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromDetectorElements(unsigned int crate, unsigned int slot, unsigned int link, unsigned int femb_on_link, unsigned int plane, unsigned int chan_in_plane ) const {
+dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromDetectorElements(
+    unsigned int crate,
+    unsigned int slot,
+    unsigned int link,
+    unsigned int femb_on_link,
+    unsigned int plane,
+    unsigned int chan_in_plane ) const {
+
+  unsigned int wibframechan = 128*femb_on_link + chan_in_plane;
+  if (plane == 1) wibframechan += 40;
+  else if (plane == 2) wibframechan += 80;
+  else if (plane != 0)
+    {
+      HDChanInfo_t badInfo = {};
+      badInfo.valid = false;
+      return badInfo;
+    }
+
+  return GetChanInfoFromWIBElements(crate,slot,link,wibframechan);
+}
+
+dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromWIBElements(
+    unsigned int crate,
+    unsigned int slot,
+    unsigned int link,
+    unsigned int wibframechan ) const {
 
   unsigned int wib = slot + 1;
 
@@ -86,18 +117,9 @@ dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChan
   if (fm3 == m2.end()) return badInfo;
   auto& m3 = fm3->second;
 
-  auto fm4 = m3.find(femb_on_link);
+  auto fm4 = m3.find(wibframechan);
   if (fm4 == m3.end()) return badInfo;
-  auto& m4 = fm4->second;
-
-  auto fm5 = m4.find(plane);
-  if (fm5 == m4.end()) return badInfo;
-  auto& m5 = fm5->second;
-
-  auto fm6 = m5.find(chan_in_plane);
-  if (fm6 == m5.end()) return badInfo;
-
-  return fm6->second;
+  return fm4->second;
 }
 
 
