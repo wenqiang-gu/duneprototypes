@@ -131,7 +131,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
       
       if (fDebugLevel > 0)
         {
-	  std::cout << "HDColdboxDataInterface :"  << "Detector type:  " << det << std::endl;
+	  std::cout << "HDColdboxDataInterfaceWIB3 :"  << "Detector type:  " << det << std::endl;
         }
       hid_t geoGroup = getGroupFromPath(the_group, det);
       std::deque<std::string> apaNames
@@ -139,8 +139,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
       
       if (fDebugLevel > 0)
         {
-	  std::cout << "HDColdboxDataInterface :" << "Size of apaNames: " << apaNames.size() << std::endl;
-	  std::cout << "HDColdboxDataInterface :" << "apaNames[0]: "  << apaNames[0] << std::endl;
+	  std::cout << "HDColdboxDataInterfaceWIB3 :" << "Size of apaNames: " << apaNames.size() << std::endl;
+	  std::cout << "HDColdboxDataInterfaceWIB3 :" << "apaNames[0]: "  << apaNames[0] << std::endl;
         }
       // apaNames is a vector whose elements start at [0].
       hid_t linkGroup = getGroupFromPath(geoGroup, apaNames[0]);
@@ -188,7 +188,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
             }
           if (fDebugLevel > 0)
             {
-	      std::cout << "HDColdboxDataInterfaceTool: crate, slot, fiber: "  << crate << ", " << slot << ", " << fiber << std::endl;
+	      std::cout << "HDColdboxDataInterfaceToolWIB3: crate, slot, fiber: "  << crate << ", " << slot << ", " << fiber << std::endl;
             }
 
 
