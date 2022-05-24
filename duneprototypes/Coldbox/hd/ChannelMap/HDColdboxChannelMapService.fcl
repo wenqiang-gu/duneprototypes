@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+
+# ProtoDUNE-2-HD online/offline channel mapping.
+# configuration for the coldbox -- use the same channel map
+# as PD2HD.
+
+hdcoldboxchannelmap: {
+  FileName:         "PD2HDChannelMap_v1.txt"
+}
+
+END_PROLOG
