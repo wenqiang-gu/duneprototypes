@@ -44,7 +44,7 @@ public:
     unsigned int femb;            // which FEMB on an APA -- 1 to 20
     unsigned int asic;            // ASIC:   1 to 8
     unsigned int asicchan;        // ASIC channel:  0 to 15
-    unsigned int wibframechan;    // channel index in WIB frame (used with get_adc in detdataformatsWIB2Frame.hh).  0:255
+    unsigned int wibframechan;    // channel index in WIB frame (used with get_adc in detdataformats/WIB2Frame.hh).  0:255
     bool valid;          // true if valid, false if not
   } HDChanInfo_t;
 
