@@ -16,8 +16,8 @@
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib2/WIB2Frame.hpp"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
-
+//#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "duneprototypes/Coldbox/hd/ChannelMap/PD2HDChannelMapService.h"
 
 
 
@@ -25,7 +25,7 @@ HDColdboxDataInterface::HDColdboxDataInterface(fhicl::ParameterSet const& p)
   : fForceOpen(p.get<bool>("ForceOpen", false)),
     fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fMaxChan(p.get<int>("MaxChan",1000000)),
-    fDefaultCrate(p.get<unsigned int>("DefaultCrate", 3)),
+    fDefaultCrate(p.get<unsigned int>("DefaultCrate", 2)),
     fDebugLevel(p.get<int>("DebugLevel",1))
 {
 }
@@ -120,7 +120,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
   using namespace dune::HDF5Utils;
   using dunedaq::detdataformats::wib2::WIB2Frame;
 
-  art::ServiceHandle<dune::PdspChannelMapService> channelMap;
+  // art::ServiceHandle<dune::PdspChannelMapService> channelMap;
+  art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
 
   std::deque<std::string> det_types
     = getMidLevelGroupNames(the_group);
@@ -148,7 +149,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 
       for (const auto & t : linkNames)
         {
-          hid_t dataset = H5Dopen(linkGroup, t.data(), H5P_DEFAULT);
+	  unsigned int link = atoi(t.substr(4,2).c_str());
+	  hid_t dataset = H5Dopen(linkGroup, t.data(), H5P_DEFAULT);
           hsize_t ds_size = H5Dget_storage_size(dataset);
           if (ds_size <= sizeof(FragmentHeader)) continue; //Too small
 
@@ -191,6 +193,9 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 	      std::cout << "HDColdboxDataInterfaceToolWIB3: crate, slot, fiber: "  << crate << ", " << slot << ", " << fiber << std::endl;
             }
 
+	  // unsigned int plane = 0;
+	  // if (
+
 
 	  for (size_t iChan = 0; iChan < 256; ++iChan)
             {
@@ -213,7 +218,9 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
                 }
 
               uint32_t slotloc = slot;
-              unsigned int offline_chan = channelMap->GetOfflineNumberFromDetectorElements(fDefaultCrate, slotloc, fiberloc, chloc, dune::PdspChannelMapService::kFELIX);
+
+	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (fDefaultCrate, slotloc, link, iChan); 
+	      unsigned int offline_chan = hdchaninfo.offlchan;
 
 	      if (offline_chan < 0) continue;
               if (offline_chan > fMaxChan) continue;
