@@ -73,8 +73,6 @@ void MakePD2HDChannelMap_v1() {
       TString oAPAName = APANames[icrate];
       int oplane = 0;
 
-      // do the top ones first -- TODO -- check the upside-down flag for the bottom ones
-
       for (int ifemb=0; ifemb<nfemb; ++ifemb)
 	{
 	  int ofemb = ifemb + 1;  // for output
@@ -85,14 +83,31 @@ void MakePD2HDChannelMap_v1() {
 	  for (int iuchan = 0; iuchan<nichans; ++iuchan)
 	    {
 	      oplane = 0;
-	      if (ifemb<10)
+	      if (udown)  // upside-down
 		{
-	          offlchan = 2560*icrate + 399 - nichans*ifemb - nichans + iuchan + 1;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 348 + nichans*ifemb - iuchan + nichans - 1;
+		    }
+		  else
+		    {
+		      int tmpchan = 347 + nichans*(ifemb - 19) - iuchan;
+		      if (tmpchan < 0) tmpchan += 800;
+                      offlchan = tmpchan + 2560*icrate;
+		    }
 		}
 	      else
 		{
-		  offlchan = 2560*icrate + 400 + nichans*(19-ifemb)  + iuchan;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 399 - nichans*ifemb - nichans + iuchan + 1;
+		    }
+		  else
+		    {
+		      offlchan = 2560*icrate + 400 + nichans*(19-ifemb)  + iuchan;
+		    }
 		}
+
   	      int ocebchan  = calc_cebchan(oplane,iuchan);
   	      int oasic     = calc_asic(oplane,iuchan);
   	      int oasicchan = calc_asicchan(oplane,iuchan);
@@ -114,13 +129,29 @@ void MakePD2HDChannelMap_v1() {
 	  for (int ivchan = 0; ivchan<nichans; ++ivchan)
 	    {
 	      oplane = 1;
-	      if (ifemb<10)
+	      if (udown) // upside-down
 		{
-	          offlchan = 2560*icrate + 800 + nichans*ifemb + nichans - ivchan - 1;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 1547 - nichans*ifemb + ivchan - nichans + 1;
+		    }
+		  else
+		    {
+		      int tmpchan = 1548 - nichans*(ifemb-19) + ivchan;
+		      if (tmpchan > 1599) tmpchan -= 800;
+		      offlchan = tmpchan + 2560*icrate;
+		    }
 		}
 	      else
 		{
-		  offlchan = 2560*icrate + 1599 + nichans*(ifemb-19) - ivchan;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 800 + nichans*ifemb + nichans - ivchan - 1;
+		    }
+		  else
+		    {
+		      offlchan = 2560*icrate + 1599 + nichans*(ifemb-19) - ivchan;
+		    }
 		}
   	      int ocebchan  = calc_cebchan(oplane,ivchan);
   	      int oasic     = calc_asic(oplane,ivchan);
@@ -142,13 +173,27 @@ void MakePD2HDChannelMap_v1() {
 	  for (int ixchan = 0; ixchan<ncchans; ++ixchan)
 	    {
 	      oplane = 2;
-	      if (ifemb<10)
+	      if (udown) // upside-down
 		{
-	          offlchan = 2560*icrate + 1600 + ncchans*ifemb + ncchans - ixchan - 1;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 2080 + ncchans*ifemb + ncchans - ixchan - 1;
+		    }
+		  else
+		    {
+		      offlchan = 2560*icrate + 1600 + ncchans*(19-ifemb) + ixchan;
+		    }
 		}
 	      else
 		{
-		  offlchan = 2560*icrate + 2080 + ncchans*(19-ifemb) + ncchans - ixchan - 1;
+		  if (ifemb<10)
+		    {
+		      offlchan = 2560*icrate + 1600 + ncchans*ifemb + ncchans - ixchan - 1;
+		    }
+		  else
+		    {
+		      offlchan = 2560*icrate + 2080 + ncchans*(19-ifemb) + ixchan;
+		    }
 		}
   	      int ocebchan  = calc_cebchan(oplane,ixchan);
   	      int oasic     = calc_asic(oplane,ixchan);
