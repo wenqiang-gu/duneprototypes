@@ -25,7 +25,7 @@ fwdir	product_dir	config_data
 # Add the dependent product and version
 
 product                 version
-cetbuildtools	        v8_18_09	-	only_for_build
+cetbuildtools	        v8_20_00	-	only_for_build
 duneopdet               v09_52_00d00
 dunecalib               v09_52_00d00
 dunesim                 v09_52_00d00
