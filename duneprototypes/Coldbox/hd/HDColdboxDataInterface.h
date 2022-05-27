@@ -29,12 +29,12 @@ class HDColdboxDataInterface : public PDSPTPCDataInterfaceParent {
       H5Fclose(fHDFFile);
     }
   };
-  int retrieveData(art::Event &evt, std::string inputlabel,
-                   std::vector<raw::RawDigit> &raw_digits,
-                   std::vector<raw::RDTimeStamp> &rd_timestamps,
-                   std::vector<raw::RDStatus> &rdstatuses );
 
-  //void readFragmentsForEvent (art::Event &evt);
+  int retrieveData (art::Event &evt, std::string inputlabel,
+                    std::vector<raw::RawDigit> &raw_digits,
+                    std::vector<raw::RDTimeStamp> &rd_timestamps,
+                    std::vector<raw::RDStatus> &rdstatuses);
+
 
   int retrieveDataAPAListWithLabels(
       art::Event &evt, std::string inputlabel,
@@ -54,12 +54,14 @@ class HDColdboxDataInterface : public PDSPTPCDataInterfaceParent {
  private:
 
   std::map<int,std::vector<std::string>> _input_labels_by_apa;
-  void _collectRDStatus(std::vector<raw::RDStatus> &rdstatuses){};
-  void getFragmentsForEvent(hid_t the_group, RawDigits& raw_digits,
-                            RDTimeStamps &timestamps, int apano,
-                            unsigned int maxchan);
-  void getMedianSigma(const raw::RawDigit::ADCvector_t &v_adc, float &median,
-                      float &sigma);
+  void _collectRDStatus (std::vector<raw::RDStatus> &rdstatuses){};
+  void getFragmentsForEvent (hid_t the_group, RawDigits& raw_digits,
+                             RDTimeStamps &timestamps, int apano,
+                             unsigned int maxchan);
+  void getFragmentsForEvent (hid_t the_group, RawDigits& raw_digits,
+                             RDTimeStamps &timestamps, int apano);
+  void getMedianSigma (const raw::RawDigit::ADCvector_t &v_adc, float &median,
+                       float &sigma);
 
   //For nicer log syntax
   std::string logname = "HDColdboxDataInterface";
