@@ -44,17 +44,9 @@ dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& 
       >> chanInfo.chan_in_plane 
       >> chanInfo.femb 
       >> chanInfo.asic 
-      >> chanInfo.asicchan; 
+      >> chanInfo.asicchan
+      >> chanInfo.wibframechan; 
 
-    // calculate wibframechan as it wasn't in the original spec
-
-    chanInfo.wibframechan = chanInfo.chan_in_plane + 128*chanInfo.femb_on_link;
-    if (chanInfo.plane == 1) chanInfo.wibframechan += 40;
-    else if (chanInfo.plane == 2) chanInfo.wibframechan += 80;
-    else if (chanInfo.plane != 0)
-      {
-	throw cet::exception("PD2HDChannelMapService") << "Bad plane ID in input file: " << chanInfo.plane << std::endl;
-      }
     chanInfo.valid = true;
 
     // fill maps.
@@ -70,28 +62,6 @@ dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& 
 }
 
 dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& pset, art::ActivityRegistry&) : PD2HDChannelMapService(pset) {
-}
-
-
-dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromDetectorElements(
-    unsigned int crate,
-    unsigned int slot,
-    unsigned int link,
-    unsigned int femb_on_link,
-    unsigned int plane,
-    unsigned int chan_in_plane ) const {
-
-  unsigned int wibframechan = 128*femb_on_link + chan_in_plane;
-  if (plane == 1) wibframechan += 40;
-  else if (plane == 2) wibframechan += 80;
-  else if (plane != 0)
-    {
-      HDChanInfo_t badInfo = {};
-      badInfo.valid = false;
-      return badInfo;
-    }
-
-  return GetChanInfoFromWIBElements(crate,slot,link,wibframechan);
 }
 
 dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromWIBElements(
