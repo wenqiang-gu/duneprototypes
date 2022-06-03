@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class:       PD2HDChannelMapService
 // Module type: service
-// File:        PD2HDChannelMapService.h
+// File:        PD2HDChannelMapService_service.cc
 // Author:      Tom Junk, May 2022
 //
 // Implementation of hardware-offline channel mapping reading from a file.
@@ -25,94 +25,25 @@ dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& 
   else
     std::cout << "PD2HD Channel Map: Building TPC wiremap from file " << channelMapFile << std::endl;
 
-  std::ifstream inFile(fullname, std::ios::in);
-  std::string line;
-
-  while (std::getline(inFile,line)) {
-    std::stringstream linestream(line);
-
-    HDChanInfo_t chanInfo;
-    linestream 
-      >> chanInfo.offlchan 
-      >> chanInfo.crate 
-      >> chanInfo.APAName
-      >> chanInfo.wib 
-      >> chanInfo.link 
-      >> chanInfo.femb_on_link 
-      >> chanInfo.cebchan 
-      >> chanInfo.plane 
-      >> chanInfo.chan_in_plane 
-      >> chanInfo.femb 
-      >> chanInfo.asic 
-      >> chanInfo.asicchan
-      >> chanInfo.wibframechan; 
-
-    chanInfo.valid = true;
-
-    // fill maps.
-
-    check_offline_channel(chanInfo.offlchan);
-
-    DetToChanInfo[chanInfo.crate][chanInfo.wib][chanInfo.link][chanInfo.wibframechan] = chanInfo;
-    OfflToChanInfo[chanInfo.offlchan] = chanInfo;
-
-  }
-  inFile.close();
-
+  fHDChanMap.ReadMapFromFile(fullname);
 }
 
 dune::PD2HDChannelMapService::PD2HDChannelMapService(fhicl::ParameterSet const& pset, art::ActivityRegistry&) : PD2HDChannelMapService(pset) {
 }
 
-dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromWIBElements(
+dune::PD2HDChannelMapSP::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromWIBElements(
     unsigned int crate,
     unsigned int slot,
     unsigned int link,
     unsigned int wibframechan ) const {
 
-  unsigned int wib = slot + 1;
-
-  HDChanInfo_t badInfo = {};
-  badInfo.valid = false;
-
-// a hack -- ununderstood crates are mapped to crate 2
-// for use in the Coldbox
-// crate 2 has the lowest-numbered offline channels
-// data with two ununderstood crates, or an ununderstood crate and crate 2,
-// will have duplicate channels.
-
-  auto fm1 = DetToChanInfo.find(crate);
-  if (fm1 == DetToChanInfo.end()) 
-    {
-      unsigned int substituteCrate = 2;  
-      fm1 = DetToChanInfo.find(substituteCrate);
-      if (fm1 == DetToChanInfo.end()) return badInfo;
-    }
-  auto& m1 = fm1->second;
-
-  auto fm2 = m1.find(wib);
-  if (fm2 == m1.end()) return badInfo;
-  auto& m2 = fm2->second;
-
-  auto fm3 = m2.find(link);
-  if (fm3 == m2.end()) return badInfo;
-  auto& m3 = fm3->second;
-
-  auto fm4 = m3.find(wibframechan);
-  if (fm4 == m3.end()) return badInfo;
-  return fm4->second;
+  return fHDChanMap.GetChanInfoFromWIBElements(crate,slot,link,wibframechan);
 }
 
 
-dune::PD2HDChannelMapService::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromOfflChan(unsigned int offlineChannel) const {
-  auto ci = OfflToChanInfo.find(offlineChannel);
-  if (ci == OfflToChanInfo.end()) 
-    {
-      HDChanInfo_t badInfo = {};
-      badInfo.valid = false;
-      return badInfo;
-    }
-  return ci->second;
+dune::PD2HDChannelMapSP::HDChanInfo_t dune::PD2HDChannelMapService::GetChanInfoFromOfflChan(unsigned int offlineChannel) const {
+
+  return fHDChanMap.GetChanInfoFromOfflChan(offlineChannel);
 
 }
 
