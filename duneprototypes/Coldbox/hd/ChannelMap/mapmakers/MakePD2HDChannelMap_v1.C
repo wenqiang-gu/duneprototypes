@@ -85,8 +85,6 @@ TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 
 void MakePD2HDChannelMap_v1() {
  
-  std::vector<HDChanInfo_t> chaninfolist;
-
   ofstream fmapfelix;
   fmapfelix.open ("PD2HDChannelMap_v1.txt");
   int asicsperfemb = 8;
@@ -110,6 +108,9 @@ void MakePD2HDChannelMap_v1() {
 
       for (int ifemb=0; ifemb<nfemb; ++ifemb)
 	{
+	  // keep a list of unpermuted chaninfos so we can permute them
+          std::vector<HDChanInfo_t> chaninfolist;
+
 	  int ofemb = ifemb + 1;  // for output
 	  int owib = WIBFromFEMB[ifemb];
 	  int olink = LinkFromFEMB[ifemb];
@@ -256,50 +257,50 @@ void MakePD2HDChannelMap_v1() {
 	      chaninfo.wibframechan = owibframechan;
 	      chaninfolist.push_back(chaninfo);
 	    }
-	}
-    }
 
-  // permute the channel map according to the misnumbered ASICs
+	  // permute the channel map according to the misnumbered ASICs
 
-  for (size_t i=0; i<chaninfolist.size(); ++i)
-    {
-      HDChanInfo_t ci = chaninfolist.at(i);  // the old chaninfo
-      int newasic = pd2asic[ci.asic];  // what ASIC really is in PD2
-      // now find the entry in the map that has ASIC and asicchan match the new one.  Keep wibframechan
-      // but update other things
-      for (size_t j=0; j<chaninfolist.size(); ++j)
-	{
-	  HDChanInfo_t cf = chaninfolist.at(j);
-	  if (ci.crate == cf.crate &&
-	      ci.wib == cf.wib &&
-	      ci.link == cf.link &&
-	      ci.femb_on_link == cf.femb_on_link &&
-	      newasic == cf.asic &&
-	      ci.asicchan == cf.asicchan)
+	  for (size_t i=0; i<chaninfolist.size(); ++i)
 	    {
-	      ci.offlchan = cf.offlchan;
-	      ci.cebchan = cf.cebchan;
-	      ci.plane = cf.plane;
-	      ci.chan_in_plane = cf.chan_in_plane;
-              fmapfelix << ci.offlchan << "\t" 
-			<< ci.crate << "\t"
-			<< ci.APAName << "\t"
-			<< ci.wib << "\t"
-			<< ci.link << "\t"
-			<< ci.femb_on_link << "\t"
-			<< ci.cebchan << "\t"
-			<< ci.plane << "\t"
-			<< ci.chan_in_plane << "\t"
-			<< ci.femb << "\t"
-			<< ci.asic << "\t"
-			<< ci.asicchan << "\t" 
-			<< ci.wibframechan << "\t" 
-			<< std::endl;
-	      break;
+	      HDChanInfo_t ci = chaninfolist.at(i);  // the old chaninfo
+	      // now find the entry in the map that has ASIC and asicchan match the new one.  Keep wibframechan
+	      // but update other things
+	      for (size_t j=0; j<chaninfolist.size(); ++j)
+		{
+		  HDChanInfo_t cf = chaninfolist.at(j);
+		  if (ci.crate == cf.crate &&
+		      ci.wib == cf.wib &&
+		      ci.link == cf.link &&
+		      ci.femb_on_link == cf.femb_on_link &&
+		      ci.asic == pd2asic[cf.asic] &&
+		      ci.asicchan == cf.asicchan)
+		    {
+		      ci.offlchan = cf.offlchan;
+		      ci.cebchan = cf.cebchan;
+		      ci.plane = cf.plane;
+		      ci.chan_in_plane = cf.chan_in_plane;
+		      fmapfelix << ci.offlchan << "\t" 
+				<< ci.crate << "\t"
+				<< ci.APAName << "\t"
+				<< ci.wib << "\t"
+				<< ci.link << "\t"
+				<< ci.femb_on_link << "\t"
+				<< ci.cebchan << "\t"
+				<< ci.plane << "\t"
+				<< ci.chan_in_plane << "\t"
+				<< ci.femb << "\t"
+				<< ci.asic << "\t"
+				<< ci.asicchan << "\t" 
+				<< ci.wibframechan << "\t" 
+				<< std::endl;
+		      break;
+		    }
+		}
 	    }
+
+
 	}
     }
-
 
   fmapfelix.close();  
 }
