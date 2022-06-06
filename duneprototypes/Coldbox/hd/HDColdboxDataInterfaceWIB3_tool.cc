@@ -11,12 +11,10 @@
 #include "TString.h"
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib2/WIB2Frame.hpp"
-//#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
 #include "duneprototypes/Coldbox/hd/ChannelMap/PD2HDChannelMapService.h"
 
 
@@ -149,6 +147,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 
       for (const auto & t : linkNames)
         {
+	  // link below is calculated from the HDF5 group name. However,later a link is calculated from 
+          // WIBFrameHeader and used in the rest of the code.
 	  unsigned int link = atoi(t.substr(4,2).c_str());
 	  hid_t dataset = H5Dopen(linkGroup, t.data(), H5P_DEFAULT);
           hsize_t ds_size = H5Dget_storage_size(dataset);
