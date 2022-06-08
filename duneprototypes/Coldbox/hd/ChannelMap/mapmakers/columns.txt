@@ -1,1 +1,1 @@
-offlchan crate APAname wib link femb_on_link cebchan plane planechan femb asic asicchan
+offlchan crate APAname wib link femb_on_link cebchan plane planechan femb asic asicchan wibframechan

@@ -4,7 +4,6 @@
 #include<iostream>
 #include<sstream>
 
-// wibframechan = cebchan + 128*femb_on_link
 
  typedef struct HDChanInfo {
    unsigned int offlchan;        // in gdml and channel sorting convention
@@ -66,18 +65,9 @@ int main(int argc, char **argv)
       >> chanInfo.chan_in_plane 
       >> chanInfo.femb 
       >> chanInfo.asic 
-      >> chanInfo.asicchan; 
+      >> chanInfo.asicchan
+      >> chanInfo.wibframechan; 
 
-    // calculate this as it wasn't in the original spec
-
-    chanInfo.wibframechan = chanInfo.chan_in_plane + 128*chanInfo.femb_on_link;
-    if (chanInfo.plane == 1) chanInfo.wibframechan += 40;
-    else if (chanInfo.plane == 2) chanInfo.wibframechan += 80;
-    else if (chanInfo.plane != 0)
-      {
-	std::cout << "bad plane: " << chanInfo.plane << std::endl;
-	return 1;
-      }
     chanInfo.valid = true;
 
     // fill maps.
@@ -100,7 +90,7 @@ int main(int argc, char **argv)
   for (unsigned int ochan=0; ochan<fNChans; ++ochan)
     {
       HDChanInfo_t ci = GetChanInfoFromOfflChan(ochan);
-      HDChanInfo_t ci2 = GetChanInfoFromDetectorElements(ci.crate, ci.wib-1, ci.link, ci.femb_on_link, ci.plane, ci.chan_in_plane);
+      HDChanInfo_t ci2 = GetChanInfoFromWIBElements(ci.crate, ci.wib-1, ci.link, ci.wibframechan);
       if (ci.offlchan != ci2.offlchan || ci.offlchan != ochan || !ci.valid || !ci2.valid)
         {
           std::cout << "chan compare: " << ochan << " " << ci.offlchan << " " << ci2.offlchan << " " << ci.valid << " " << ci2.valid << std::endl;
@@ -109,42 +99,29 @@ int main(int argc, char **argv)
 }
 
 
-HDChanInfo_t GetChanInfoFromDetectorElements(unsigned int crate, unsigned int slot, unsigned int link, unsigned int femb_on_link, unsigned int plane, unsigned int chan_in_plane ) {
-
-  unsigned int wibframechan = 128*femb_on_link + chan_in_plane;
-  if (plane == 1) wibframechan += 40;
-  else if (plane == 2) wibframechan += 80;
-  else if (plane != 0)
-    {
-      HDChanInfo_t badInfo = {};
-      badInfo.valid = false;
-      return badInfo;
-    }
-
-  return GetChanInfoFromWIBElements(crate,slot,link,wibframechan);
-}
-
 HDChanInfo_t GetChanInfoFromWIBElements(unsigned int crate, unsigned int slot, unsigned int link, unsigned int wibframechan ) {
 
   HDChanInfo_t badInfo = {};
   badInfo.valid = false;
 
+  //std::cout << "getchaninfofromwib: " << crate << " " << slot << " " << link << " " << wibframechan << std::endl;
+
   unsigned int wib = slot + 1;
 
   auto fm1 = DetToChanInfo.find(crate);
-  if (fm1 == DetToChanInfo.end()) return badInfo;
+  if (fm1 == DetToChanInfo.end()) {std::cout << "didn't find crate\n"; return badInfo; }
   auto& m1 = fm1->second;
 
   auto fm2 = m1.find(wib);
-  if (fm2 == m1.end()) return badInfo;
+  if (fm2 == m1.end()) {std::cout << "didn't find wib\n"; return badInfo; }
   auto& m2 = fm2->second;
 
   auto fm3 = m2.find(link);
-  if (fm3 == m2.end()) return badInfo;
+  if (fm3 == m2.end()) {std::cout << "didn't find link\n"; return badInfo; }
   auto& m3 = fm3->second;
 
   auto fm4 = m3.find(wibframechan);
-  if (fm4 == m3.end()) return badInfo;
+  if (fm4 == m3.end()) {std::cout << "didn't find wibframechan\n"; return badInfo; }
   return fm4->second;
 }
 
@@ -154,6 +131,7 @@ HDChanInfo_t GetChanInfoFromOfflChan(unsigned int offlineChannel) {
     {
       HDChanInfo_t badInfo = {};
       badInfo.valid = false;
+      std::cout << "did not find chan info for offl channel: " << offlineChannel << std::endl;
       return badInfo;
     }
   return ci->second;

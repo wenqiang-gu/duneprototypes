@@ -1,37 +1,55 @@
 
 #include <iostream>
 #include <TString.h>
+#include <vector>
 
 /*************************************************************************
     > File Name: MakePD2HDChannelMap_v1.C
     > Author: Tom Junk
- ************************************************************************/
+************************************************************************/
 
 using namespace std;
 
+typedef struct HDChanInfo {
+  unsigned int offlchan;        // in gdml and channel sorting convention
+  unsigned int crate;           // crate number
+  std::string APAName;          // Descriptive APA name
+  unsigned int wib;             // 1, 2, 3, 4 or 5  (slot number +1?)
+  unsigned int link;            // link identifier: 0 or 1
+  unsigned int femb_on_link;    // which of two FEMBs in the WIB frame this FEMB is:  0 or 1
+  unsigned int cebchan;         // cold electronics channel on FEMB:  0 to 127
+  unsigned int plane;           // 0: U,  1: V,  2: X
+  unsigned int chan_in_plane;   // which channel this is in the plane in the FEMB:  0:39 for U and V, 0:47 for X
+  unsigned int femb;            // which FEMB on an APA -- 1 to 20
+  unsigned int asic;            // ASIC:   1 to 8
+  unsigned int asicchan;        // ASIC channel:  0 to 15
+  unsigned int wibframechan;    // channel index in WIB frame.  0:255
+  bool valid;          // true if valid, false if not
+} HDChanInfo_t;
+
 // Implementation of Table 5 in DocDB 4064: FEMB channel (asicNo & asicChannel) to plane type
 int plane[8][16] = {
-										 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
-										 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2}, 
-										 {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-										 {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-										 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
-										 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
-										 {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-										 {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0}
-	                 };
+  {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
+  {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2}, 
+  {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+  {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
+  {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
+  {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+  {2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0}
+};
 
 // Implementation of Table 5 in DocDB 4064: FEMB channel (asicNo & asicChannel) to plane channel number                 
 int planeCh[8][16] = {
-										 {19, 17, 15, 13, 11, 19, 17, 15, 13, 11, 23, 21, 19, 17, 15, 13},
-										 {9,  7,  5,  3,  1,  9,  7,  5,  3,  1,  11, 9,  7,  5,  3,  1}, 
-										 {14, 16, 18, 20, 22, 24, 12, 14, 16, 18, 20, 12, 14, 16, 18, 20},
-										 {2,  4,  6,  8,  10, 12, 2,  4,  6,  8,  10, 2,  4,  6,  8,  10},
-										 {29, 27, 25, 23, 21, 29, 27, 25, 23, 21, 35, 33, 31, 29, 27, 25},
-										 {39, 37, 35, 33, 31, 39, 37, 35, 33, 31, 47, 45, 43, 41, 39, 37},
-										 {26, 28, 30, 32, 34, 36, 22, 24, 26, 28, 30, 22, 24, 26, 28, 30},
-										 {38, 40 ,42, 44, 46, 48, 32, 34, 36, 38, 40, 32, 34, 36, 38, 40}
-	                 };
+  {19, 17, 15, 13, 11, 19, 17, 15, 13, 11, 23, 21, 19, 17, 15, 13},
+  {9,  7,  5,  3,  1,  9,  7,  5,  3,  1,  11, 9,  7,  5,  3,  1}, 
+  {14, 16, 18, 20, 22, 24, 12, 14, 16, 18, 20, 12, 14, 16, 18, 20},
+  {2,  4,  6,  8,  10, 12, 2,  4,  6,  8,  10, 2,  4,  6,  8,  10},
+  {29, 27, 25, 23, 21, 29, 27, 25, 23, 21, 35, 33, 31, 29, 27, 25},
+  {39, 37, 35, 33, 31, 39, 37, 35, 33, 31, 47, 45, 43, 41, 39, 37},
+  {26, 28, 30, 32, 34, 36, 22, 24, 26, 28, 30, 22, 24, 26, 28, 30},
+  {38, 40 ,42, 44, 46, 48, 32, 34, 36, 38, 40, 32, 34, 36, 38, 40}
+};
 
 // Implmentation of WIB number from Cheng-Ju's squash-plate map.  FEMB is numbered here from 0 to 19
 
@@ -42,6 +60,21 @@ int FEMBOnLinkFromFEMB[20]  = {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0};
 int calc_cebchan(int iplane, int ichan_in_plane);
 int calc_asic(int iplane, int ichan_in_plane);
 int calc_asicchan(int iplane, int ichan_in_plane);
+int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane);
+
+//PD1 ASIC -> PD2 ASIC
+// 4->2
+// 3->3
+// 2->1
+// 1->4
+// 7->6
+// 8->7
+// 5->5
+// 6->8
+
+// start ASIC numbering at 0
+
+int pd2asic[8] = {3,0,2,1,4,7,5,6};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
 // beam-right side first, low z to high z, then beam left low z to high z.  Then do
@@ -75,6 +108,9 @@ void MakePD2HDChannelMap_v1() {
 
       for (int ifemb=0; ifemb<nfemb; ++ifemb)
 	{
+	  // keep a list of unpermuted chaninfos so we can permute them
+          std::vector<HDChanInfo_t> chaninfolist;
+
 	  int ofemb = ifemb + 1;  // for output
 	  int owib = WIBFromFEMB[ifemb];
 	  int olink = LinkFromFEMB[ifemb];
@@ -111,19 +147,22 @@ void MakePD2HDChannelMap_v1() {
   	      int ocebchan  = calc_cebchan(oplane,iuchan);
   	      int oasic     = calc_asic(oplane,iuchan);
   	      int oasicchan = calc_asicchan(oplane,iuchan);
-	      fmapfelix << offlchan << "\t" 
-			<< ocrate << "\t"
-			<< oAPAName << "\t"
-			<< owib << "\t"
-			<< olink << "\t"
-			<< ofemb_on_link << "\t"
-			<< ocebchan << "\t"
-			<< oplane << "\t"
-			<< iuchan << "\t"
-			<< ofemb << "\t"
- 			<< oasic << "\t"
-			<< oasicchan << "\t" 
-			<< std::endl;
+              int owibframechan = calc_orig_wibframechan(ofemb_on_link,oplane,iuchan);
+	      HDChanInfo_t chaninfo;
+	      chaninfo.offlchan = offlchan;
+	      chaninfo.crate = ocrate;
+	      chaninfo.APAName = oAPAName;
+	      chaninfo.wib = owib;
+	      chaninfo.link = olink;
+	      chaninfo.femb_on_link = ofemb_on_link;
+	      chaninfo.cebchan = ocebchan;
+	      chaninfo.plane = oplane;
+	      chaninfo.chan_in_plane = iuchan;
+	      chaninfo.femb = ofemb;
+	      chaninfo.asic = oasic;
+	      chaninfo.asicchan = oasicchan;
+	      chaninfo.wibframechan = owibframechan;
+	      chaninfolist.push_back(chaninfo);
 
 	    }
 	  for (int ivchan = 0; ivchan<nichans; ++ivchan)
@@ -156,19 +195,22 @@ void MakePD2HDChannelMap_v1() {
   	      int ocebchan  = calc_cebchan(oplane,ivchan);
   	      int oasic     = calc_asic(oplane,ivchan);
   	      int oasicchan = calc_asicchan(oplane,ivchan);
-	      fmapfelix << offlchan << "\t" 
-			<< ocrate << "\t"
-			<< oAPAName << "\t"
-			<< owib << "\t"
-			<< olink << "\t"
-			<< ofemb_on_link << "\t"
-			<< ocebchan << "\t"
-			<< oplane << "\t"
-			<< ivchan << "\t"
-			<< ofemb << "\t"
- 			<< oasic << "\t"
-			<< oasicchan << "\t"
-			<< std::endl;
+              int owibframechan = calc_orig_wibframechan(ofemb_on_link,oplane,ivchan);
+	      HDChanInfo_t chaninfo;
+	      chaninfo.offlchan = offlchan;
+	      chaninfo.crate = ocrate;
+	      chaninfo.APAName = oAPAName;
+	      chaninfo.wib = owib;
+	      chaninfo.link = olink;
+	      chaninfo.femb_on_link = ofemb_on_link;
+	      chaninfo.cebchan = ocebchan;
+	      chaninfo.plane = oplane;
+	      chaninfo.chan_in_plane = ivchan;
+	      chaninfo.femb = ofemb;
+	      chaninfo.asic = oasic;
+	      chaninfo.asicchan = oasicchan;
+	      chaninfo.wibframechan = owibframechan;
+	      chaninfolist.push_back(chaninfo);
 	    }
 	  for (int ixchan = 0; ixchan<ncchans; ++ixchan)
 	    {
@@ -198,20 +240,65 @@ void MakePD2HDChannelMap_v1() {
   	      int ocebchan  = calc_cebchan(oplane,ixchan);
   	      int oasic     = calc_asic(oplane,ixchan);
   	      int oasicchan = calc_asicchan(oplane,ixchan);
-	      fmapfelix << offlchan << "\t" 
-			<< ocrate << "\t"
-			<< oAPAName << "\t"
-			<< owib << "\t"
-			<< olink << "\t"
-			<< ofemb_on_link << "\t"
-			<< ocebchan << "\t"
-			<< oplane << "\t"
-			<< ixchan << "\t"
-			<< ofemb << "\t"
- 			<< oasic << "\t"
-			<< oasicchan << "\t"
-			<< std::endl;
+              int owibframechan = calc_orig_wibframechan(ofemb_on_link,oplane,ixchan);
+	      HDChanInfo_t chaninfo;
+	      chaninfo.offlchan = offlchan;
+	      chaninfo.crate = ocrate;
+	      chaninfo.APAName = oAPAName;
+	      chaninfo.wib = owib;
+	      chaninfo.link = olink;
+	      chaninfo.femb_on_link = ofemb_on_link;
+	      chaninfo.cebchan = ocebchan;
+	      chaninfo.plane = oplane;
+	      chaninfo.chan_in_plane = ixchan;
+	      chaninfo.femb = ofemb;
+	      chaninfo.asic = oasic;
+	      chaninfo.asicchan = oasicchan;
+	      chaninfo.wibframechan = owibframechan;
+	      chaninfolist.push_back(chaninfo);
 	    }
+
+	  // permute the channel map according to the misnumbered ASICs
+
+	  for (size_t i=0; i<chaninfolist.size(); ++i)
+	    {
+	      HDChanInfo_t ci = chaninfolist.at(i);  // the old chaninfo
+	      // now find the entry in the map that has ASIC and asicchan match the new one.  Keep wibframechan
+	      // but update other things
+	      for (size_t j=0; j<chaninfolist.size(); ++j)
+		{
+		  HDChanInfo_t cf = chaninfolist.at(j);
+		  if (ci.crate == cf.crate &&
+		      ci.wib == cf.wib &&
+		      ci.link == cf.link &&
+		      ci.femb_on_link == cf.femb_on_link &&
+		      ci.asic == pd2asic[cf.asic] &&
+		      ci.asicchan == cf.asicchan)
+		    {
+		      ci.offlchan = cf.offlchan;
+		      ci.cebchan = cf.cebchan;
+		      ci.plane = cf.plane;
+		      ci.chan_in_plane = cf.chan_in_plane;
+		      fmapfelix << ci.offlchan << "\t" 
+				<< ci.crate << "\t"
+				<< ci.APAName << "\t"
+				<< ci.wib << "\t"
+				<< ci.link << "\t"
+				<< ci.femb_on_link << "\t"
+				<< ci.cebchan << "\t"
+				<< ci.plane << "\t"
+				<< ci.chan_in_plane << "\t"
+				<< ci.femb << "\t"
+				<< ci.asic << "\t"
+				<< ci.asicchan << "\t" 
+				<< ci.wibframechan << "\t" 
+				<< std::endl;
+		      break;
+		    }
+		}
+	    }
+
+
 	}
     }
 
@@ -254,4 +341,13 @@ int calc_asicchan(int iplane, int ichan_in_plane)
 	}
     }
   return -1; 
+}
+
+int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane)
+{
+  int wibframechan = 128*femb_on_link + chan_in_plane;
+  if (plane == 1) wibframechan += 40;
+  else if (plane == 2) wibframechan += 80;
+
+  return wibframechan;
 }

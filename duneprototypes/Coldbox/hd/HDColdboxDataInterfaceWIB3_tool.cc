@@ -11,12 +11,10 @@
 #include "TString.h"
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib2/WIB2Frame.hpp"
-//#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
 #include "duneprototypes/Coldbox/hd/ChannelMap/PD2HDChannelMapService.h"
 
 
@@ -149,6 +147,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 
       for (const auto & t : linkNames)
         {
+	  // link below is calculated from the HDF5 group name. However,later a link is calculated from 
+          // WIBFrameHeader and used in the rest of the code.
 	  unsigned int link = atoi(t.substr(4,2).c_str());
 	  hid_t dataset = H5Dopen(linkGroup, t.data(), H5P_DEFAULT);
           hsize_t ds_size = H5Dget_storage_size(dataset);
@@ -166,63 +166,37 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 	      std::cout << "n_frames calc.: " << ds_size << " " << sizeof(FragmentHeader) << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
             }
 	  std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
-          unsigned int slot = 0, fiber = 0, crate = 0;
+          unsigned int slot = 0, link_from_frameheader = 0, crate = 0;
 	  
           for (size_t i = 0; i < n_frames; ++i)
             {
               auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
 	      for (size_t j = 0; j < adc_vectors.size(); ++j)
                 {
-                  if (j<40) adc_vectors[j].push_back(frame->get_u(0,j));
-                  else if (j<80)  adc_vectors[j].push_back(frame->get_v(0,j-40));
-                  else if (j<128) adc_vectors[j].push_back(frame->get_x(0,j-80));
-                  else if (j<168) adc_vectors[j].push_back(frame->get_u(1,j-128));
-                  else if (j<208) adc_vectors[j].push_back(frame->get_v(1,j-168));
-                  else            adc_vectors[j].push_back(frame->get_x(1,j-208));
+		  adc_vectors[j].push_back(frame->get_adc(j));
                 }
 	      
               if (i == 0)
                 {
                   crate = frame->header.crate;
                   slot = frame->header.slot;
-                  fiber = frame->header.link;
+                  link_from_frameheader = frame->header.link;
                 }
             }
           if (fDebugLevel > 0)
             {
-	      std::cout << "HDColdboxDataInterfaceToolWIB3: crate, slot, fiber: "  << crate << ", " << slot << ", " << fiber << std::endl;
+	      std::cout << "HDColdboxDataInterfaceToolWIB3: crate, slot, link(HDF5 group), link(WIB Header): "  << crate << ", " << slot << ", " << link << ", " << link_from_frameheader << std::endl;
             }
-
-	  // unsigned int plane = 0;
-	  // if (
-
 
 	  for (size_t iChan = 0; iChan < 256; ++iChan)
             {
               const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
-	      unsigned int fiberloc = 0;
-              if (fiber == 1)
-                {
-                  fiberloc = 1;
-                }
-
-              else if (fiber == 2)
-                {
-                  fiberloc = 3;
-                }
-	      size_t chloc = iChan;
-              if (chloc > 127)
-                {
-                  chloc -= 128;
-                  fiberloc++;
-                }
 
               uint32_t slotloc = slot;
 
-	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (fDefaultCrate, slotloc, link, iChan); 
+	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (fDefaultCrate, slotloc, link_from_frameheader, iChan); 
 	      unsigned int offline_chan = hdchaninfo.offlchan;
 
-	      if (offline_chan < 0) continue;
               if (offline_chan > fMaxChan) continue;
 
 	      raw::RDTimeStamp rd_ts(frag.get_trigger_timestamp(), offline_chan);
