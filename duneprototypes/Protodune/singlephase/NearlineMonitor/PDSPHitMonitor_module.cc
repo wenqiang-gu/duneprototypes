@@ -23,7 +23,7 @@
 #include "larcore/Geometry/Geometry.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 
 // Data type includes
 #include "lardataobj/RawData/raw.h"

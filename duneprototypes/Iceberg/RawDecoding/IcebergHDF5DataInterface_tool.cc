@@ -8,8 +8,8 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
-// dunecore and dune-raw-data includes
-#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
+// dunecore and dunepdlegacy includes
+#include "dunepdlegacy/Services/ChannelMap/IcebergChannelMapService.h"
 #include "detdataformats/wib2/WIB2Frame.hpp"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"

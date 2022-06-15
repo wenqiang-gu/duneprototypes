@@ -1,7 +1,7 @@
 // IcebergOnlineChannel.cxx
 
 #include "IcebergOnlineChannel.h"
-#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/IcebergChannelMapService.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include <iostream>
 

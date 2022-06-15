@@ -19,10 +19,10 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art_root_io/TFileService.h"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Overlays/SSPFragment.hh"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Overlays/SSPFragment.hh"
 #include "artdaq-core/Data/ContainerFragment.hh"
 
 // larsoft includes

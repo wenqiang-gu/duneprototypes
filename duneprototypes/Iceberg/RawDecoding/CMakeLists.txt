@@ -1,13 +1,13 @@
 
-include_directories( "$ENV{DUNEPDSPRCE_INC}" ) 
-cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEFAULT_PATH )
+#include_directories( "$ENV{DUNEPDSPRCE_INC}" ) 
+#cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEFAULT_PATH )
 
 cet_build_plugin(IcebergTPCRawDecoder art::module
                         lardataobj::RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -17,7 +17,7 @@ cet_build_plugin(IcebergTPCRawDecoder art::module
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
                         BASENAME_ONLY
 )
@@ -25,10 +25,10 @@ cet_build_plugin(IcebergTPCRawDecoder art::module
 
 cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
                         lardataobj::RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -38,7 +38,7 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
                         cetlib::cetlib
                         BASENAME_ONLY
@@ -50,10 +50,10 @@ cet_build_plugin(IcebergDataInterface   art::tool
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -63,7 +63,7 @@ cet_build_plugin(IcebergDataInterface   art::tool
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
              )
 
@@ -74,10 +74,10 @@ cet_build_plugin(IcebergDataInterfaceFELIXBufferMarch2021   art::tool
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -97,10 +97,10 @@ cet_build_plugin(IcebergHDF5DataInterface   art::tool
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_IcebergChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry

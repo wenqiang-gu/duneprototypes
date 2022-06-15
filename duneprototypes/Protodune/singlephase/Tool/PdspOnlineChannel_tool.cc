@@ -1,7 +1,7 @@
 // PdspOnlineChannel.cxx
 
 #include "PdspOnlineChannel.h"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include <iostream>
 

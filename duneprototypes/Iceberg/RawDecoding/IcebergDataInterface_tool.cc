@@ -8,23 +8,23 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Overlays/RceFragment.hh"
-#include "dune-raw-data/Overlays/FelixFragment.hh"
-#include "dune-raw-data/Overlays/Frame14Fragment.hh"
-#include "dune-raw-data/Overlays/FragmentType.hh"
-#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
-#include "dam/HeaderFragmentUnpack.hh"
-#include "dam/DataFragmentUnpack.hh"
-#include "dam/TpcFragmentUnpack.hh"
-#include "dam/TpcStreamUnpack.hh"
-#include "dam/access/WibFrame.hh"
-#include "dam/access/Headers.hh"
-#include "dam/access/TpcStream.hh"
-#include "dam/access/TpcRanges.hh"
-#include "dam/access/TpcToc.hh"
-#include "dam/access/TpcPacket.hh"
-#include "dam/RceFragmentUnpack.hh"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Overlays/RceFragment.hh"
+#include "dunepdlegacy/Overlays/FelixFragment.hh"
+#include "dunepdlegacy/Overlays/Frame14Fragment.hh"
+#include "dunepdlegacy/Overlays/FragmentType.hh"
+#include "dunepdlegacy/Services/ChannelMap/IcebergChannelMapService.h"
+#include "dunepdlegacy/rce/dam/HeaderFragmentUnpack.hh"
+#include "dunepdlegacy/rce/dam/DataFragmentUnpack.hh"
+#include "dunepdlegacy/rce/dam/TpcFragmentUnpack.hh"
+#include "dunepdlegacy/rce/dam/TpcStreamUnpack.hh"
+#include "dunepdlegacy/rce/dam/access/WibFrame.hh"
+#include "dunepdlegacy/rce/dam/access/Headers.hh"
+#include "dunepdlegacy/rce/dam/access/TpcStream.hh"
+#include "dunepdlegacy/rce/dam/access/TpcRanges.hh"
+#include "dunepdlegacy/rce/dam/access/TpcToc.hh"
+#include "dunepdlegacy/rce/dam/access/TpcPacket.hh"
+#include "dunepdlegacy/rce/dam/RceFragmentUnpack.hh"
 
 IcebergDataInterface::IcebergDataInterface(fhicl::ParameterSet const& p)
 {
@@ -373,7 +373,7 @@ bool IcebergDataInterface::_process_RCE_AUX(
 
   artdaq::Fragment cfragloc(frag);
   size_t cdsize = cfragloc.dataSizeBytes();
-  const uint64_t* cdptr = (uint64_t const*) (cfragloc.dataBeginBytes() + 12);  // see dune-raw-data/Overlays/RceFragment.cc
+  const uint64_t* cdptr = (uint64_t const*) (cfragloc.dataBeginBytes() + 12);  // see dunepdlegacy/Overlays/RceFragment.cc
   HeaderFragmentUnpack const cdheader(cdptr);
   //bool isOkay = RceFragmentUnpack::isOkay(cdptr,cdsize+sizeof(cdheader));
   if (cdsize>16) cdsize -= 16;

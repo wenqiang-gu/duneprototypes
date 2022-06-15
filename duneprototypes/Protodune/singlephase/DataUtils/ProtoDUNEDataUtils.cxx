@@ -6,7 +6,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 #include "dunecore/DuneObj/ProtoDUNEBeamEvent.h"
 
 protoana::ProtoDUNEDataUtils::ProtoDUNEDataUtils(fhicl::ParameterSet const& p){
