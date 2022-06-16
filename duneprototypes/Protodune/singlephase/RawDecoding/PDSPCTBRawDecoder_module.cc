@@ -19,11 +19,11 @@
 
 #include <memory>
 
-// artdaq and dune-raw-data includes
+// artdaq and dunepdlegacy includes
 
-#include "dune-raw-data/Overlays/CTBFragment.hh"
+#include "dunepdlegacy/Overlays/CTBFragment.hh"
 #include "artdaq-core/Data/ContainerFragment.hh"
-#include "dune-raw-data/Overlays/FragmentType.hh"
+#include "dunepdlegacy/Overlays/FragmentType.hh"
 
 // dunetpc includes
 

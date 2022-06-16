@@ -9,8 +9,8 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Services/ChannelMap/IcebergChannelMapService.h"
 
 IcebergDataInterfaceFELIXBufferMarch2021::IcebergDataInterfaceFELIXBufferMarch2021(fhicl::ParameterSet const& p)
 {

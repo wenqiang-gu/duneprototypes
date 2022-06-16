@@ -16,7 +16,7 @@ art_make( LIBRARY_NAME ProtoDUNEDataUtils
                         larsim_Simulation 
                         lardataobj_Simulation
                         dunecore_DuneObj
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         larsim_MCCheater_PhotonBackTrackerService_service
                         larsim_MCCheater_BackTrackerService_service
                         larsim_MCCheater_ParticleInventoryService_service

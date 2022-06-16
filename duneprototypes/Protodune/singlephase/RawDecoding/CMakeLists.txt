@@ -1,5 +1,5 @@
-include_directories( "$ENV{DUNEPDSPRCE_INC}" )
-cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEFAULT_PATH )
+#include_directories( "$ENV{DUNEPDSPRCE_INC}" )
+#cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEFAULT_PATH )
 
 cet_build_plugin(PDSPTPCDataInterface   art::tool
 				     art_utilities
@@ -7,10 +7,10 @@ cet_build_plugin(PDSPTPCDataInterface   art::tool
 				     cetlib::cetlib
 				     cetlib_except::cetlib_except
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
                         ART_FRAMEWORK_SERVICES_REGISTRY
@@ -21,14 +21,14 @@ cet_build_plugin(PDSPTPCDataInterface   art::tool
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
              )
 
 
 cet_build_plugin(TimingRawDecoder art::module
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         dunecore_DuneObj
 			artdaq-core_Utilities
                         ART_FRAMEWORK_CORE
@@ -47,8 +47,8 @@ cet_build_plugin(TimingRawDecoder art::module
 cet_build_plugin(SSPRawDecoder art::module
                         lardataobj_RawData
                         lardataobj_RecoBase
-                        dune_raw_data::dune-raw-data_Overlays
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Overlays
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
                         ART_FRAMEWORK_CORE
@@ -68,8 +68,8 @@ cet_build_plugin(SSPRawDecoder art::module
 cet_build_plugin(PDWaveform art::module
                          lardataobj_RawData
                          lardataobj_RecoBase
-                         dune_raw_data::dune-raw-data_Overlays
-                         dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                         dunepdlegacy_Overlays
+                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
  			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
                          ART_FRAMEWORK_CORE
@@ -90,10 +90,10 @@ cet_build_plugin(PDWaveform art::module
 
 cet_build_plugin(RceRawDecoder art::module
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
                         ART_FRAMEWORK_SERVICES_REGISTRY
@@ -104,16 +104,16 @@ cet_build_plugin(RceRawDecoder art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         BASENAME_ONLY
 )
 
 cet_build_plugin(FelixRawDecoder art::module
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
 			dunecore_Geometry
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
@@ -125,17 +125,17 @@ cet_build_plugin(FelixRawDecoder art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(FelixIntegrityTest art::module
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
 			dunecore_Geometry
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
@@ -147,17 +147,17 @@ cet_build_plugin(FelixIntegrityTest art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDSPTPCRawDecoder art::module
                         lardataobj_RawData
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
-                        dune_raw_data::dune-raw-data_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
                         ART_FRAMEWORK_SERVICES_REGISTRY
@@ -168,13 +168,13 @@ cet_build_plugin(PDSPTPCRawDecoder art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(CRTRawDecoder art::module
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
                         dunecore_Geometry
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
@@ -188,12 +188,12 @@ cet_build_plugin(CRTRawDecoder art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDSPCTBRawDecoder art::module
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy_Overlays
 			artdaq_core::artdaq-core_Data
 			artdaq-core_Utilities
                         ART_FRAMEWORK_CORE
@@ -207,7 +207,7 @@ cet_build_plugin(PDSPCTBRawDecoder art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy_rce_dataaccess
                         BASENAME_ONLY
 )
 
@@ -216,7 +216,7 @@ art_make_library( LIBRARY_NAME dunetpc_protodune_RawDecodingUtils
                   RawDecodingUtils.cc
                   LIBRARIES
                   lardataobj_RawData
-                  dune_raw_data::dune-raw-data_Overlays
+                  dunepdlegacy_Overlays
                   artdaq_core::artdaq-core_Data
 		  artdaq-core_Utilities
                   ART_FRAMEWORK_CORE
@@ -232,7 +232,7 @@ art_make_library( LIBRARY_NAME dunetpc_protodune_RawDecodingUtils
 
                   CETLIB
                   ROOT_BASIC_LIB_LIST
-                  RCEDAMLIB
+                  dunepdlegacy_rce_dataaccess
 )
 
 

@@ -19,8 +19,8 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art_root_io/TFileService.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Overlays/TimingFragment.hh"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Overlays/TimingFragment.hh"
 
 #include "dunecore/DuneObj/ProtoDUNETimeStamp.h"
 
