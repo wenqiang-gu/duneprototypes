@@ -10,12 +10,12 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art_root_io/TFileService.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Overlays/RceFragment.hh"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Overlays/RceFragment.hh"
 #include "artdaq-core/Data/Fragment.hh"
 #include "artdaq-core/Data/ContainerFragment.hh"
-#include "dune-raw-data/Overlays/FragmentType.hh"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Overlays/FragmentType.hh"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 
 // larsoft includes
 #include "lardataobj/RawData/RawDigit.h"

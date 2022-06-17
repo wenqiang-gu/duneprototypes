@@ -16,7 +16,7 @@
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
 #include "detdataformats/wib/WIBFrame.hpp"
-#include "dune-raw-data/Services/ChannelMap/PdspChannelMapService.h"
+#include "dunepdlegacy/Services/ChannelMap/PdspChannelMapService.h"
 
 
 

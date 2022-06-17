@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.53.01d00)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.53.02d00)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -43,7 +43,7 @@ find_ups_product( duneopdet )
 find_ups_product( dunecalib )
 find_ups_product( dunesim )
 find_ups_product( nusimdata )
-find_ups_product( dune_raw_data )
+find_ups_product( dunepdlegacy )
 find_ups_product( artdaq_core )
 find_ups_product( clhep )
 find_ups_product( hdf5 )

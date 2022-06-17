@@ -1,7 +1,7 @@
 cet_build_plugin(PDSPmatch art::module
                         lardataobj_RawData
                         lardataobj_RecoBase
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy::dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         dunecore_Geometry
                         ART_FRAMEWORK_CORE
@@ -14,14 +14,14 @@ cet_build_plugin(PDSPmatch art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy::dunepdlegacy_rce_dataaccess
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDSPmatchmc art::module
                         lardataobj_RawData
                         lardataobj_RecoBase
-                        dune_raw_data::dune-raw-data_Overlays
+                        dunepdlegacy::dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         dunecore_Geometry
                         nusimdata::SimulationBase
@@ -37,7 +37,7 @@ cet_build_plugin(PDSPmatchmc art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        RCEDAMLIB
+                        dunepdlegacy::dunepdlegacy_rce_dataaccess
                         BASENAME_ONLY
 )
 

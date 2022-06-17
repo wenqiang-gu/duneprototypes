@@ -26,8 +26,8 @@
 //dune-artdaq includes
 #include "artdaq-core/Data/ContainerFragment.hh"
 
-//dune-raw-data includes
-#include "dune-raw-data/Overlays/CRTFragment.hh"
+//dunepdlegacy includes
+#include "dunepdlegacy/Overlays/CRTFragment.hh"
 
 //dunetpc includes
 #include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"

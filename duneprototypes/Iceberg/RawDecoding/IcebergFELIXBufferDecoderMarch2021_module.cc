@@ -26,8 +26,8 @@
 // ROOT includes
 #include "TMath.h"
 
-// artdaq and dune-raw-data includes
-#include "dune-raw-data/Services/ChannelMap/IcebergChannelMapService.h"
+// artdaq and dunepdlegacy includes
+#include "dunepdlegacy/Services/ChannelMap/IcebergChannelMapService.h"
 
 // larsoft includes
 #include "lardataobj/RawData/RawDigit.h"
