@@ -170,6 +170,18 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 	  
           for (size_t i = 0; i < n_frames; ++i)
             {
+	      // dump WIB frames in hex
+	      //std::cout << "Frame number: " << i << std::endl;
+	      // size_t wfs32 = sizeof(WIB2Frame)/4;
+	      //uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
+	      //std::cout << std::dec;
+	      //for (size_t iwdt = 0; iwdt < 1; iwdt++)  // dumps just the first 32 bits.  use wfs32 if you want them all
+	      //{
+	      //  std::cout << iwdt << " : 10987654321098765432109876543210" << std::endl;
+	      //  std::cout << iwdt << " : " << std::bitset<32>{fdp[iwdt]} << std::endl;
+	      //}
+	      //std::cout << std::dec;
+
               auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
 	      for (size_t j = 0; j < adc_vectors.size(); ++j)
                 {
@@ -193,6 +205,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
               const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
 
               uint32_t slotloc = slot;
+	      slotloc &= 0x7;
 
 	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (fDefaultCrate, slotloc, link_from_frameheader, iChan); 
 	      unsigned int offline_chan = hdchaninfo.offlchan;
