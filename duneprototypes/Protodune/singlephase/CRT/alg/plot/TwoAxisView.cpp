@@ -3,7 +3,7 @@
 //Author: Andrew Olivier aolivier@ur.rochester.edu
 
 //Include header
-#include "plot/TwoAxisView.h"
+#include "duneprototypes/Protodune/singlephase/CRT/alg/plot/TwoAxisView.h"
 
 //ROOT includes
 #include "TStyle.h"
