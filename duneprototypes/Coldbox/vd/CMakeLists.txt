@@ -7,7 +7,7 @@ cet_build_plugin(VDColdboxDataInterface   art::tool
                         lardataobj_RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
                         LIBHDF5

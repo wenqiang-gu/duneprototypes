@@ -1,5 +1,3 @@
-#include_directories( "$ENV{DUNEPDSPRCE_INC}" )
-#cet_find_library( RCEDAMLIB NAMES protodune-dam PATHS ENV DUNEPDSPRCE_LIB NO_DEFAULT_PATH )
 
 cet_build_plugin(PDSPTPCDataInterface   art::tool
 				     art_utilities
@@ -7,36 +5,36 @@ cet_build_plugin(PDSPTPCDataInterface   art::tool
 				     cetlib::cetlib
 				     cetlib_except::cetlib_except
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         z
              )
 
 
 cet_build_plugin(TimingRawDecoder art::module
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         dunecore_DuneObj
-			artdaq-core_Utilities
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
@@ -47,16 +45,16 @@ cet_build_plugin(TimingRawDecoder art::module
 cet_build_plugin(SSPRawDecoder art::module
                         lardataobj_RawData
                         lardataobj_RecoBase
-                        dunepdlegacy_Overlays
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy::Overlays
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
@@ -68,16 +66,16 @@ cet_build_plugin(SSPRawDecoder art::module
 cet_build_plugin(PDWaveform art::module
                          lardataobj_RawData
                          lardataobj_RecoBase
-                         dunepdlegacy_Overlays
-                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+                         dunepdlegacy::Overlays
+                         dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
  			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                         ART_FRAMEWORK_CORE
-                         ART_FRAMEWORK_PRINCIPAL
-                         ART_FRAMEWORK_SERVICES_REGISTRY
-                         ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                         art::Framework_Core
+                         art::Framework_Principal
+                         art::Framework_Services_Registry
+                         art_root_io::tfile_support
                          ROOT::Core
-                         ART_ROOT_IO_TFILESERVICE_SERVICE
+                         art_root_io::TFileService_service
                          messagefacility::MF_MessageLogger
 			 dunecore_Geometry
 			 CETLIB
@@ -90,124 +88,124 @@ cet_build_plugin(PDWaveform art::module
 
 cet_build_plugin(RceRawDecoder art::module
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         BASENAME_ONLY
 )
 
 cet_build_plugin(FelixRawDecoder art::module
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+			artdaq_core::artdaq-core_Utilities
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
 			dunecore_Geometry
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(FelixIntegrityTest art::module
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+			artdaq_core::artdaq-core_Utilities
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
 			dunecore_Geometry
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDSPTPCRawDecoder art::module
                         lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         z
                         BASENAME_ONLY
 )
 
 cet_build_plugin(CRTRawDecoder art::module
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         dunecore_Geometry
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDSPCTBRawDecoder art::module
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
 			artdaq_core::artdaq-core_Data
-			artdaq-core_Utilities
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+			artdaq_core::artdaq-core_Utilities
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        art_root_io::TFileService_service
                         ART_PERSISTENCY_PROVENANCE
                         messagefacility::MF_MessageLogger
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-                        dunepdlegacy_rce_dataaccess
+                        dunepdlegacy::rce_dataaccess
                         BASENAME_ONLY
 )
 
@@ -216,23 +214,22 @@ art_make_library( LIBRARY_NAME dunetpc_protodune_RawDecodingUtils
                   RawDecodingUtils.cc
                   LIBRARIES
                   lardataobj_RawData
-                  dunepdlegacy_Overlays
+                  dunepdlegacy::Overlays
                   artdaq_core::artdaq-core_Data
-		  artdaq-core_Utilities
-                  ART_FRAMEWORK_CORE
-                  ART_FRAMEWORK_PRINCIPAL
-                  ART_FRAMEWORK_SERVICES_REGISTRY
-                  ART_ROOT_IO_TFILE_SUPPORT
+		  artdaq_core::artdaq-core_Utilities
+                  art::Framework_Core
+                  art::Framework_Principal
+                  art::Framework_Services_Registry
+                  art_root_io::tfile_support
                   ROOT::Core
-                  ART_ROOT_IO_TFILESERVICE_SERVICE
+                  art_root_io::TFileService_service
  #                 art::Persistency_Common canvas_Persistency_Common
  #                 art::Persistency_Provenance canvas_Persistency_Provenance
  #                 art::Utilities canvas_Utilities
                   messagefacility::MF_MessageLogger
-
                   CETLIB
                   ROOT_BASIC_LIB_LIST
-                  dunepdlegacy_rce_dataaccess
+                  dunepdlegacy::rce_dataaccess
 )
 
 

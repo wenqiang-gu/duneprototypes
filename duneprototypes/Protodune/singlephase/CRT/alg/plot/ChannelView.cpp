@@ -4,7 +4,7 @@
 //Author: Andrew Olivier aolivier@ur.rochester.edu  
 
 //Include header
-#include "plot/ChannelView.h"
+#include "duneprototypes/Protodune/singlephase/CRT/alg/plot/ChannelView.h"
 
 namespace CRT
 {

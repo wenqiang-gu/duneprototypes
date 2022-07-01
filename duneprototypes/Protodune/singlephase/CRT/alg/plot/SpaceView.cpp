@@ -3,13 +3,13 @@
 //Author: Andrew Olivier aolivier@ur.rochester.edu
 
 //Include header
-#include "plot/SpaceView.h"
+#include "duneprototypes/Protodune/singlephase/CRT/alg/plot/SpaceView.h"
 
 //ROOT includes
 #include "TStyle.h"
 
 //Local includes
-#include "StyleSentry.cpp"
+#include "duneprototypes/Protodune/singlephase/CRT/alg/plot/StyleSentry.h"
 
 //c++ includes
 #include <iostream>

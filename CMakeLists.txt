@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.53.02d00)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.54.00d00)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -50,10 +50,11 @@ find_ups_product( hdf5 )
 find_ups_product( dunedaqdataformats )
 find_ups_product( dunedetdataformats )
 find_ups_product( postgresql )
+find_ups_product( libwda )
+find_ups_product( ifdh_art )
+find_ups_product( ifdhc )
+find_ups_product( ifbeam )
 find_ups_geant4( )
-
-# artdaq_core Utility library
-cet_find_library( ARTDAQ-CORE_UTILITIES NAMES artdaq-core_Utilities PATHS ENV ARTDAQ_CORE_LIB )
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BTYPE_UC )
 if( ${BTYPE_UC} MATCHES "DEBUG" )

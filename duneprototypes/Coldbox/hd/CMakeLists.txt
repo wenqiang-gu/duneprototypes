@@ -7,7 +7,7 @@ cet_build_plugin(HDColdboxDataInterface   art::tool
                         lardataobj_RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
                         LIBHDF5
@@ -32,7 +32,7 @@ cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         duneprototypes_Coldbox_hd_ChannelMap_PD2HDChannelMapService_service
 			art::Framework_Core
                         art::Framework_Principal

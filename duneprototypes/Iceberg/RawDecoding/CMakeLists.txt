@@ -6,7 +6,7 @@ cet_build_plugin(IcebergTPCRawDecoder art::module
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
@@ -27,7 +27,7 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
@@ -52,7 +52,7 @@ cet_build_plugin(IcebergDataInterface   art::tool
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
@@ -76,7 +76,7 @@ cet_build_plugin(IcebergDataInterfaceFELIXBufferMarch2021   art::tool
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal
@@ -99,7 +99,7 @@ cet_build_plugin(IcebergHDF5DataInterface   art::tool
                         lardataobj::RawData
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
-                        artdaq-core_Utilities
+                        artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
                         art::Framework_Core
                         art::Framework_Principal

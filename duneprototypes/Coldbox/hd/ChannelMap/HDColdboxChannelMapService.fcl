@@ -5,7 +5,7 @@ BEGIN_PROLOG
 # as PD2HD.
 
 hdcoldboxchannelmap: {
-  FileName:         "PD2HDChannelMap_v1.txt"
+  FileName:         "PD2HDChannelMap_v2.txt"
 }
 
 END_PROLOG

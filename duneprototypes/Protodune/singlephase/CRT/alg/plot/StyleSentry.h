@@ -1,4 +1,4 @@
-//File: StyleSentry.cpp
+//File: StyleSentry.h
 //Brief: Allows for changes to TStyle that are local to some scope by making a copy 
 //       of the old gStyle for changes and restoring back to the original on destruction.
 //       Inspired by how ART's TFileService handles gFile.
