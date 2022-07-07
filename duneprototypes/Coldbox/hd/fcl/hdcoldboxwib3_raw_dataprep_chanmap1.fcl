@@ -1,0 +1,5 @@
+# fcl file for use in ProtoDUNE-HD coldbox runs 13368 and prior
+
+#include "hdcoldboxwib3_raw_dataprep.fcl"
+
+services.PD2HDChannelMapService.FileName: "PD2HDChannelMap_v1.txt"
