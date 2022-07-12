@@ -1,6 +1,5 @@
 # fcl file for use in ProtoDUNE-HD coldbox runs starting with 13672 
-# and up to to (ongoing as of
-# July 7, 2022 -- fill in upper-bound run number when WIB firmware is updated)
+# and up to 14174, inclusive
 
 #include "hdcoldboxwib3_raw_dataprep.fcl"
 
