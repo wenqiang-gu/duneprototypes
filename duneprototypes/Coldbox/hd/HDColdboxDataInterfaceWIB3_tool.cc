@@ -24,7 +24,7 @@ HDColdboxDataInterface::HDColdboxDataInterface(fhicl::ParameterSet const& p)
     fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fMaxChan(p.get<int>("MaxChan",1000000)),
     fDefaultCrate(p.get<unsigned int>("DefaultCrate", 2)),
-    fDebugLevel(p.get<int>("DebugLevel",1))
+    fDebugLevel(p.get<int>("DebugLevel",0))
 {
 }
 

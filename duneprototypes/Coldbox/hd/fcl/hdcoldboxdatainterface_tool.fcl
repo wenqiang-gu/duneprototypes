@@ -12,6 +12,8 @@ hdcoldboxdatainterfacewib3_tool:
 {
   tool_type: "HDColdboxDataInterfaceWIB3"
 
+  DebugLevel: 0
+
   APA1InputLabels: [ "daq:TPC001", "daq:ContainerTPC001", "daq:FELIX001", "daq:ContainerFELIX001",  "daq:TPC", "daq:ContainerTPC", "daq:FELIX", "daq:ContainerFELIX" ]
 
 }
