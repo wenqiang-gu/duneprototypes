@@ -13,13 +13,17 @@
 // v1 has a scrambled ASIC map due to the WIB firmware not being updated
 // for the monolithic FEMBs.  This map reverts to the original spec.
 
-// v2 is the unscrambled origianal version.
+// v2 is the unscrambled original version.
 
 // both v1 and v2 assume the wire endpoints in the offline geometry are the
 // places where the electronics are connected.
 
 // v3 shifts the offline map numbers by 3 channels so that the offline wire
 // endpoints correspond to the place where wires emerge from under the cover boards
+
+// Updade July 20 to invert the channel ordering within the FEMB, so that
+// the channels now increase in the same direction as the FEMB numbering.
+// From an e-mail discussion with Roger Huang
 
 using namespace std;
 
@@ -86,7 +90,7 @@ int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane);
 // 6->8
 
 // start ASIC numbering at 0
-// the following map is the identity -- no unscrambling for v2
+// the following map is the identity -- no unscrambling for v3
 int pd2asic[8] = {0,1,2,3,4,5,6,7};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
@@ -136,26 +140,27 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 348 + nichans*ifemb - iuchan + nichans - 1;
+		      offlchan = 348 + nichans*ifemb + iuchan;
 		    }
 		  else
 		    {
-		      int tmpchan = 347 + nichans*(ifemb - 19) - iuchan;
+		      int tmpchan = 348 + nichans*(ifemb - 20) + iuchan;
 		      if (tmpchan < 0) tmpchan += 800;
                       offlchan = tmpchan;
 		    }
 		  offlchan -= 3;
 		  if (offlchan <0) offlchan += 800;
+
 		}
 	      else
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 399 - nichans*ifemb - nichans + iuchan + 1;
+		      offlchan = 399 - nichans*ifemb - iuchan;
 		    }
 		  else
 		    {
-		      offlchan = 400 + nichans*(19-ifemb)  + iuchan;
+		      offlchan = 400 + nichans*(20-ifemb) - iuchan - 1;
 		    }
 		  offlchan += 3;
 		  if (offlchan > 799) offlchan -= 800;
@@ -190,11 +195,11 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 1547 - nichans*ifemb + ivchan - nichans + 1;
+		      offlchan = 1547 - nichans*ifemb - ivchan;
 		    }
 		  else
 		    {
-		      int tmpchan = 1548 - nichans*(ifemb-19) + ivchan;
+		      int tmpchan = 1548 - nichans*(ifemb-20) - ivchan -1;
 		      if (tmpchan > 1599) tmpchan -= 800;
 		      offlchan = tmpchan;
 		    }
@@ -205,17 +210,17 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 800 + nichans*ifemb + nichans - ivchan - 1;
+		      offlchan = 800 + nichans*ifemb + ivchan;
 		    }
 		  else
 		    {
-		      offlchan = 1599 + nichans*(ifemb-19) - ivchan;
+		      offlchan = 1599 + nichans*(ifemb-20) + ivchan + 1;
 		    }
 		  offlchan += 3;
 		  if (offlchan > 1599) offlchan -= 800;
 		}
 	      offlchan += 2560*icrate;
-
+	      
   	      int ocebchan  = calc_cebchan(oplane,ivchan);
   	      int oasic     = calc_asic(oplane,ivchan);
   	      int oasicchan = calc_asicchan(oplane,ivchan);
@@ -243,22 +248,22 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 2080 + ncchans*ifemb + ncchans - ixchan - 1;
+		      offlchan = 2080 + ncchans*ifemb  + ixchan;
 		    }
 		  else
 		    {
-		      offlchan = 1600 + ncchans*(19-ifemb) + ixchan;
+		      offlchan = 1600 + ncchans*(20-ifemb) - ixchan - 1;
 		    }
 		}
 	      else
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 1600 + ncchans*ifemb + ncchans - ixchan - 1;
+		      offlchan = 1600 + ncchans*ifemb + ixchan;
 		    }
 		  else
 		    {
-		      offlchan = 2080 + ncchans*(19-ifemb) + ixchan;
+		      offlchan = 2080 + ncchans*(20-ifemb) - ixchan - 1;
 		    }
 		}
 	      offlchan += 2560*icrate;
