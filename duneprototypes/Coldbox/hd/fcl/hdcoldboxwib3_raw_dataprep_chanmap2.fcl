@@ -1,0 +1,7 @@
+# fcl file for use in ProtoDUNE-HD and coldbox with the as-intended 
+# channel map, as described in DUNE-Doc-14947-v4 in the 2021-12-01 file 
+# HD Coldbox runs 14175 and later are to use the v2 channel map
+
+#include "hdcoldboxwib3_raw_dataprep.fcl"
+
+services.PD2HDChannelMapService.FileName: "PD2HDChannelMap_v2.txt"

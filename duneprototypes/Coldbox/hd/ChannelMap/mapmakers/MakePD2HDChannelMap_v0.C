@@ -4,11 +4,11 @@
 #include <vector>
 
 /*************************************************************************
-    > File Name: MakePD2HDChannelMap_v1.C
+    > File Name: MakePD2HDChannelMap_v0.C
     > Author: Tom Junk
 ************************************************************************/
 
-// v1 has a scrambled ASIC map due to the WIB firmware not being updated
+// v0 has a second scrambled ASIC map due to the WIB firmware not being updated
 // for the monolithic FEMBs.  
 // Updade July 20 to invert the channel ordering within the FEMB, so that
 // the channels now increase in the same direction as the FEMB numbering.
@@ -79,9 +79,9 @@ int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane);
 // 6->8
 
 // start ASIC numbering at 0
-// v1 unscrambling
+// v0 unscrambling
 
-int pd2asic[8] = {3,0,2,1,4,7,5,6};
+int pd2asic[8] = {1,3,2,0,4,6,7,5};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
 // beam-right side first, low z to high z, then beam left low z to high z.  Then do
@@ -90,10 +90,10 @@ int pd2asic[8] = {3,0,2,1,4,7,5,6};
 int cratelist[4] = {2,4,1,3};
 TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 
-void MakePD2HDChannelMap_v1() {
+void MakePD2HDChannelMap_v0() {
  
   ofstream fmapfelix;
-  fmapfelix.open ("PD2HDChannelMap_v1.txt");
+  fmapfelix.open ("PD2HDChannelMap_v0.txt");
   int asicsperfemb = 8;
   int ncrates = 4;
   int nfemb = 20;
