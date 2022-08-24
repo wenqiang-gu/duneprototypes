@@ -1,0 +1,57 @@
+#include "HDColdboxChannelMapService.fcl"
+#include "HDColdboxDAQWriter.fcl"
+
+process_name: HDDAQWriter
+
+services: {
+  
+  TimeTracker:           {}
+  MemoryTracker:         {}
+  PD2HDChannelMapService: @local::hdcoldboxchannelmap
+ 
+  TFileService: { 
+    closeFileFast: true  # default
+    fileName: "hist_%ifb_decoder_reco1.root"
+    tmpDir: "<parent-path-of-filename>"  # default
+  }
+}
+
+# standard root otuput but not used here.  Uncomment and
+# add to the output path if you want an artROOT file.
+
+# outputs: {
+#  rootout: {
+#    module_type: RootOutput
+#    fileName: "tmptest.root"
+#    dataTier:    "full-reconstructed"
+#    compressionLevel: 1
+#  }
+#}
+
+# example input file and input tag from a hd coldbox decode+dataprep
+# file.
+
+source: {
+   fileNames: [
+      "out_raw_dataprep.root"
+   ]
+   maxEvents: -1
+   module_label: "source"
+   module_type: "RootInput"
+   saveMemoryObjectThreshold: 0
+}
+
+physics: {
+  analyzers: {
+    daqwriter: @local::hdcoldboxdaqwriter
+  }
+
+  produce: [
+  ]
+
+  output : [ daqwriter ]
+  trigger_paths: [ ]
+  end_paths : [ output ]
+}
+
+physics.analyzers.daqwriter.rawdigitlabel: "caldata:dataprep"
