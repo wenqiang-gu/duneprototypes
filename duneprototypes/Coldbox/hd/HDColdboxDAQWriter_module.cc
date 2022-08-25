@@ -28,12 +28,13 @@
 #include <iomanip>
 #include <vector>
 #include <map>
-#include "daqdataformats/TriggerRecordHeader.hpp"
+//  #include "daqdataformats/TriggerRecordHeader.hpp"
 #include "daqdataformats/Fragment.hpp"
 #include "detdataformats/wib2/WIB2Frame.hpp"
 #include "lardataobj/RawData/raw.h"
 #include "lardataobj/RawData/RawDigit.h"
 #include "duneprototypes/Coldbox/hd/ChannelMap/PD2HDChannelMapService.h"
+#include "dunecore/HDF5Utils/HDF5Utils.h"
 
 class HDColdboxDAQWriter;
 
@@ -64,7 +65,6 @@ private:
   std::string fOutfilename;
   std::string fRawDigitLabel;
   std::string fOperationalEnvironment;
-  const size_t nLinksPerAPA = 10;
   size_t fBytesWritten;
 
 };
@@ -169,23 +169,27 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
               std::ostringstream ofm3;
               ofm3 << std::internal << std::setfill('0') << std::setw(2) << ilink;
               lgname += ofm3.str();
-        
-	      uint32_t firstchan = curapa*2560;
-	      auto firstchaninfo = channelMap->GetChanInfoFromOfflChan(firstchan);
+
+	      uint32_t first_chan_on_link = cml[ilink][0] + curapa*2560;
+	      auto cinfo = channelMap->GetChanInfoFromOfflChan(first_chan_on_link);
+	      uint32_t crate = cinfo.crate;
+	      uint32_t wib = cinfo.wib;
+	      uint32_t link = cinfo.link;
+
               std::vector<dunedaq::detdataformats::wib2::WIB2Frame> frames(nSamples);
 	      for (size_t isample=0; isample<nSamples; ++isample)
 		{
-		  frames.at(isample).header.crate = firstchaninfo.crate;
-		  frames.at(isample).header.slot = firstchaninfo.wib + 7;  // 8-1:  extra bit set to mimic WIB firmware
-		  frames.at(isample).header.link = firstchaninfo.link;
 		  frames.at(isample).header.version = 2;
 		  frames.at(isample).header.timestamp_1 = 0;  
 		  frames.at(isample).header.timestamp_2 = 25*isample;
+		  frames.at(isample).header.crate = crate;
+		  frames.at(isample).header.slot =  wib + 7;  // 8-1:  extra bit set to mimic WIB firmware
+		  frames.at(isample).header.link =  link;
 		}
 
 	      for (size_t wibframechan = 0; wibframechan < 256; ++wibframechan)
 		{
-		  uint32_t offlchan = cml[ilink][wibframechan];
+		  uint32_t offlchan = 2560*curapa + cml[ilink][wibframechan];
 		  auto rdmi = rdmap.find(offlchan);
 		  if (rdmi == rdmap.end())  // channel not list of raw::RawDigits.  Fill ADC values with zeros
 		    {
@@ -233,19 +237,25 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
     }
   H5Gclose(tpcg);
 
-  // todo -- what to put in the trigger record header
+  // make our own trigger record header
 
-  std::vector<dunedaq::daqdataformats::ComponentRequest> crvec(2);
-  dunedaq::daqdataformats::TriggerRecordHeader trHeader(crvec);
+  //std::vector<dunedaq::daqdataformats::ComponentRequest> crvec(2);
+  //dunedaq::daqdataformats::TriggerRecordHeader trHeader(crvec);
+
+  dune::HDF5Utils::HeaderInfo trhinfo;
+  trhinfo.runNum = runno;
+  trhinfo.trigNum = evtno;
+
   hid_t dspl = H5Pcreate(H5P_LINK_CREATE);
   H5Pset_char_encoding(dspl,H5T_CSET_UTF8);
   hsize_t dims[2];
-  dims[0] = trHeader.get_total_size_bytes();
+  //dims[0] = trHeader.get_total_size_bytes();
+  dims[0] = sizeof(trhinfo);
   dims[1] = 1;
   //std::cout << "trheader size: " << dims[0] << std::endl;
   hid_t trhspace = H5Screate_simple(2,dims,NULL);
   hid_t trdset = H5Dcreate2(trg,"TriggerRecordHeader",H5T_STD_I8LE,trhspace,dspl,H5P_DEFAULT,H5P_DEFAULT);
-  H5Dwrite(trdset,H5T_STD_I8LE,H5S_ALL,H5S_ALL,H5P_DEFAULT,&trHeader);
+  H5Dwrite(trdset,H5T_STD_I8LE,H5S_ALL,H5S_ALL,H5P_DEFAULT,&trhinfo);
   H5Dclose(trdset);
   H5Pclose(dspl);
   H5Sclose(trhspace);
