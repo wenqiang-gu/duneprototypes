@@ -64,7 +64,6 @@ private:
   std::string fOutfilename;
   std::string fRawDigitLabel;
   std::string fOperationalEnvironment;
-  const size_t nLinksPerAPA = 10;
   size_t fBytesWritten;
 
 };
