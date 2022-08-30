@@ -365,9 +365,10 @@ namespace raw
 	outR = __sourceHelper.makeRunPrincipal(rn, tstamp);
 	doupdate = true;
       }
-    if( (doupdate = (srn != __currentSubRunID.subRun())) )
+    if( (doupdate || (srn != __currentSubRunID.subRun())) )
       {
 	outSR = __sourceHelper.makeSubRunPrincipal(rn, srn, tstamp);
+	doupdate = true;
       }
     
     if( doupdate )
