@@ -96,7 +96,7 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
   trgname += ofm1.str();
   trgname += ".0000";
   hid_t trg = H5Gcreate(fFilePtr,trgname.c_str(),gpl,H5P_DEFAULT,H5P_DEFAULT);
-  std::string tpcgname = trgname += "/TPC";
+  std::string tpcgname = trgname + "/TPC";
   hid_t tpcg = H5Gcreate(fFilePtr,tpcgname.c_str(),gpl,H5P_DEFAULT,H5P_DEFAULT);
 
 
