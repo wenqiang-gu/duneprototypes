@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+
+hdcoldboxdaqwriter:
+{
+  module_type:              "HDColdboxDAQWriter"
+  filename:                 "hdcoldboxrawsim.hdf5"
+  rawdigitlabel:            "tpcrawdecoder:daq"
+  operational_environment:  "np04_coldbox"
+}
+
+END_PROLOG
