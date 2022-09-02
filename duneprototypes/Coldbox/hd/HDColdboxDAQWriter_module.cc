@@ -242,7 +242,7 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
 			      adc = 0;
 			      if (!warnedNegative)
 				{
-				  MF_LOG_WARNING("FDHDDAQWriter_module") << "Negative ADC value in raw::RawDigit.  Setting to zero to put in WIB frame\n";
+				  MF_LOG_WARNING("HDColdboxDAQWriter_module") << "Negative ADC value in raw::RawDigit.  Setting to zero to put in WIB frame\n";
 				  warnedNegative = true;
 				}
 			    }
