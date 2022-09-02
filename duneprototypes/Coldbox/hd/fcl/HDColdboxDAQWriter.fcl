@@ -6,6 +6,8 @@ hdcoldboxdaqwriter:
   filename:                 "hdcoldboxrawsim.hdf5"
   rawdigitlabel:            "tpcrawdecoder:daq"
   operational_environment:  "np04_coldbox"
+  CollectionPedestalOffset:    0    # to be added to all collection-plane ADC values. Set to 900 for MC
+  InductionPedestalOffset:     0    # to be added to all induction-plane ADC values.  Set to 2000 for MC
 }
 
 END_PROLOG

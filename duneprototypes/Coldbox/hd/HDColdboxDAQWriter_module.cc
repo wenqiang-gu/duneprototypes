@@ -66,7 +66,8 @@ private:
   std::string fRawDigitLabel;
   std::string fOperationalEnvironment;
   size_t fBytesWritten;
-
+  int fCollectionPedestalOffset;
+  int fInductionPedestalOffset;
 };
 
 
@@ -77,6 +78,8 @@ HDColdboxDAQWriter::HDColdboxDAQWriter(fhicl::ParameterSet const& p)
   fOutfilename = p.get<std::string>("filename","hdcoldboxrawsim.hdf5");
   fRawDigitLabel = p.get<std::string>("rawdigitlabel","tpcrawdecoder:daq");
   fOperationalEnvironment = p.get<std::string>("operational_environment","np04_coldbox");
+  fCollectionPedestalOffset = p.get<int>("CollectionPedestalOffset",900);
+  fInductionPedestalOffset = p.get<int>("InductionPedestalOffset",2000);
   fFilePtr = H5I_INVALID_HID;
 }
 
@@ -133,15 +136,36 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
   // use the first 2560 channels in the map as a template.
 
   const uint32_t nLinks = 10;
-  uint32_t cml[nLinks][256];  // first index is link in HDF5 file, second is wibframechan
+
+  uint32_t cml_upright[nLinks][256];  // first index is link in HDF5 file, second is wibframechan.
+  uint32_t cml_inverted[nLinks][256];  // the same, but for an inverted APA
+
   // link goes from 0 to 9, like the dataset names in the HDF5 file
   // two links per WIB, two FEMBs per link
 
-  for (unsigned int ichan = 0; ichan < 2560; ++ichan)
+  // APA 0 is upright, 1 is inverted, for ProtoDUNE-HD
+
+  for (unsigned int iapa = 0; iapa < 2; iapa++)
     {
-      auto cinfo = channelMap->GetChanInfoFromOfflChan(ichan);
-      unsigned int link = (cinfo.wib-1)*2 + cinfo.link;
-      cml[link][cinfo.wibframechan] = ichan;
+      unsigned int ifc = iapa*2560;  // first channel in this apa
+      if (iapa == 0)
+	{
+          for (unsigned int ichan = 0; ichan < 2560; ++ichan)
+            {
+              auto cinfo = channelMap->GetChanInfoFromOfflChan(ichan+ifc);
+              unsigned int link = (cinfo.wib-1)*2 + cinfo.link;
+              cml_upright[link][cinfo.wibframechan] = ichan;
+            }
+	}
+      if (iapa == 1)
+	{
+          for (unsigned int ichan = 0; ichan < 2560; ++ichan)
+            {
+              auto cinfo = channelMap->GetChanInfoFromOfflChan(ichan+ifc);
+              unsigned int link = (cinfo.wib-1)*2 + cinfo.link;
+              cml_inverted[link][cinfo.wibframechan] = ichan;
+            }
+	}
     }
 
   int curapa = -1;
@@ -154,6 +178,8 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
       if (curapa == -1 || (int) channo > (curapa+1)*2560 - 1)
 	{
 	  curapa = channo / 2560;
+	  uint32_t upright = 1;
+	  if (curapa == 1 || curapa == 3) upright = 0;
 
           std::string agname = tpcgname + "/APA";
           std::ostringstream ofm2;
@@ -172,7 +198,7 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
               ofm3 << std::internal << std::setfill('0') << std::setw(2) << ilink;
               lgname += ofm3.str();
 
-	      uint32_t first_chan_on_link = cml[ilink][0] + curapa*2560;
+	      uint32_t first_chan_on_link = curapa*2560 + (upright ? cml_upright[ilink][0] : cml_inverted[ilink][0]);
 	      auto cinfo = channelMap->GetChanInfoFromOfflChan(first_chan_on_link);
 	      uint32_t crate = cinfo.crate;
 	      uint32_t wib = cinfo.wib;
@@ -191,13 +217,17 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
 
 	      for (size_t wibframechan = 0; wibframechan < 256; ++wibframechan)
 		{
-		  uint32_t offlchan = 2560*curapa + cml[ilink][wibframechan];
+		  uint32_t offlchan = 2560*curapa + (upright ? cml_upright[ilink][wibframechan] : cml_inverted[ilink][wibframechan]);
+	          auto cinfo2 = channelMap->GetChanInfoFromOfflChan(offlchan);
+		  uint32_t plane = cinfo2.plane;
+		  int pedestaloffset = (plane == 2) ? fCollectionPedestalOffset : fInductionPedestalOffset;
+
 		  auto rdmi = rdmap.find(offlchan);
 		  if (rdmi == rdmap.end())  // channel not list of raw::RawDigits.  Fill ADC values with zeros
 		    {
 		      for (size_t isample=0; isample<nSamples; ++isample)
 			{
-			  frames.at(isample).set_adc(wibframechan,0);
+			  frames.at(isample).set_adc(wibframechan,pedestaloffset);
 			}
 		    }
 		  else
@@ -206,7 +236,7 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
                       raw::Uncompress(RawDigits[rdmi->second]->ADCs(), uncompressed, pedestal, RawDigits[rdmi->second]->Compression());
 		      for (size_t isample=0; isample<nSamples; ++isample)
 			{
-			  auto adc = uncompressed.at(isample);
+			  auto adc = uncompressed.at(isample) + pedestaloffset;
 			  if (adc < 0)
 			    {
 			      adc = 0;
