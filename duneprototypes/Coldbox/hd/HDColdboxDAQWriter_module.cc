@@ -132,41 +132,9 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
     }
   std::vector<short> uncompressed(nSamples);
 
-  // need a map of offline channels by link and wibframechan for each APA
-  // use the first 2560 channels in the map as a template.
-
   const uint32_t nLinks = 10;
-
-  uint32_t cml_upright[nLinks][256];  // first index is link in HDF5 file, second is wibframechan.
-  uint32_t cml_inverted[nLinks][256];  // the same, but for an inverted APA
-
-  // link goes from 0 to 9, like the dataset names in the HDF5 file
-  // two links per WIB, two FEMBs per link
-
-  // APA 0 is upright, 1 is inverted, for ProtoDUNE-HD
-
-  for (unsigned int iapa = 0; iapa < 2; iapa++)
-    {
-      unsigned int ifc = iapa*2560;  // first channel in this apa
-      if (iapa == 0)
-	{
-          for (unsigned int ichan = 0; ichan < 2560; ++ichan)
-            {
-              auto cinfo = channelMap->GetChanInfoFromOfflChan(ichan+ifc);
-              unsigned int link = (cinfo.wib-1)*2 + cinfo.link;
-              cml_upright[link][cinfo.wibframechan] = ichan;
-            }
-	}
-      if (iapa == 1)
-	{
-          for (unsigned int ichan = 0; ichan < 2560; ++ichan)
-            {
-              auto cinfo = channelMap->GetChanInfoFromOfflChan(ichan+ifc);
-              unsigned int link = (cinfo.wib-1)*2 + cinfo.link;
-              cml_inverted[link][cinfo.wibframechan] = ichan;
-            }
-	}
-    }
+  // link goes from 0 to 9, and are used to name the datasets in the HDF5 file
+  // two links per WIB, two FEMBs per link. 
 
   int curapa = -1;
   hid_t agrp = H5I_INVALID_HID;
@@ -178,8 +146,6 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
       if (curapa == -1 || (int) channo > (curapa+1)*2560 - 1)
 	{
 	  curapa = channo / 2560;
-	  uint32_t upright = 1;
-	  if (curapa == 1 || curapa == 3) upright = 0;
 
           std::string agname = tpcgname + "/APA";
           std::ostringstream ofm2;
@@ -190,7 +156,10 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
 	      H5Gclose(agrp);
 	    }
           agrp = H5Gcreate(fFilePtr,agname.c_str(),gpl,H5P_DEFAULT,H5P_DEFAULT);
- 
+
+	  uint32_t first_chan_on_apa = 2560*curapa;
+          auto cinfofca = channelMap->GetChanInfoFromOfflChan(first_chan_on_apa);
+
           for (size_t ilink=0; ilink<nLinks; ++ilink)
             {
               std::string lgname = agname + "/Link";
@@ -198,11 +167,11 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
               ofm3 << std::internal << std::setfill('0') << std::setw(2) << ilink;
               lgname += ofm3.str();
 
-	      uint32_t first_chan_on_link = curapa*2560 + (upright ? cml_upright[ilink][0] : cml_inverted[ilink][0]);
-	      auto cinfo = channelMap->GetChanInfoFromOfflChan(first_chan_on_link);
-	      uint32_t crate = cinfo.crate;
-	      uint32_t wib = cinfo.wib;
-	      uint32_t link = cinfo.link;
+	      uint32_t crate = cinfofca.crate;
+	      uint32_t wib = ilink/2 + 1;  // runs from 1 to 5
+	      uint32_t slot = wib + 7;     // 7 = 8 - 1:  extra bit set to mimic WIB firmware (ProtoDUNE-HD)
+	      uint32_t sloc = slot & 0x7;
+	      uint32_t daqlink = ilink % 2;
 
               std::vector<dunedaq::detdataformats::wib2::WIB2Frame> frames(nSamples);
 	      for (size_t isample=0; isample<nSamples; ++isample)
@@ -211,19 +180,18 @@ void HDColdboxDAQWriter::analyze(art::Event const& e)
 		  frames.at(isample).header.timestamp_1 = 0;  
 		  frames.at(isample).header.timestamp_2 = 25*isample;
 		  frames.at(isample).header.crate = crate;
-		  frames.at(isample).header.slot =  wib + 7;  // 8-1:  extra bit set to mimic WIB firmware
-		  frames.at(isample).header.link =  link;
+		  frames.at(isample).header.slot =  slot;
+		  frames.at(isample).header.link =  daqlink;
 		}
 
 	      for (size_t wibframechan = 0; wibframechan < 256; ++wibframechan)
 		{
-		  uint32_t offlchan = 2560*curapa + (upright ? cml_upright[ilink][wibframechan] : cml_inverted[ilink][wibframechan]);
-	          auto cinfo2 = channelMap->GetChanInfoFromOfflChan(offlchan);
-		  uint32_t plane = cinfo2.plane;
-		  int pedestaloffset = (plane == 2) ? fCollectionPedestalOffset : fInductionPedestalOffset;
+		  auto cinfo2 = channelMap->GetChanInfoFromWIBElements(crate,sloc,daqlink,wibframechan);
+		  uint32_t offlchan = cinfo2.offlchan;
+		  int pedestaloffset = (cinfo2.plane == 2) ? fCollectionPedestalOffset : fInductionPedestalOffset;
 
 		  auto rdmi = rdmap.find(offlchan);
-		  if (rdmi == rdmap.end())  // channel not list of raw::RawDigits.  Fill ADC values with zeros
+		  if (rdmi == rdmap.end())  // channel not list of raw::RawDigits.  Fill ADC values with pedestaloffset + 0
 		    {
 		      for (size_t isample=0; isample<nSamples; ++isample)
 			{
