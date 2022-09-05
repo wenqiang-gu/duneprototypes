@@ -10,7 +10,7 @@
 namespace dune { namespace tde {
     const short ch_per_kel = 32;
     const short ch_per_amc = 64;
-    
+
     typedef struct kel_connector
     {
       kel_connector()
@@ -20,63 +20,72 @@ namespace dune { namespace tde {
 	_reverse  = false;
 	_first_view_ch = 0;
       }
-      
-      kel_connector( int id, int view, bool reverse, int first_view_ch )
+    
+      kel_connector( int id, int view, bool reverse,
+		     int first_view_ch, short nch )
       {
 	_id   = id;
 	_view = view;
 	_reverse = reverse;
 	_first_view_ch = first_view_ch;
+	_nch           = nch; // number of this view channels per this connector
       }
-    
+
       void print() const{
 	std::cout<<"KEL "<<_id<<" : view "<<_view
 		 <<" reverse order "<<_reverse
-		 <<" first view ch for this connector "<<_first_view_ch<<std::endl;
+		 <<" first view ch for this connector "<<_first_view_ch
+		 <<" total ch in this view "<<_nch<<std::endl;
       }
-      
-      bool operator < (const kel_connector &other) const { return _id < other._id; }
     
-      int  _id;
-      int  _view;
-      bool _reverse;
-      int  _first_view_ch;
-      
+      bool operator < (const kel_connector &other) const
+      {
+	if( _id != other._id ) return _id < other._id;
+	return _view < other._view;
+      }
+     
+      int   _id;
+      int   _view;
+      bool  _reverse;
+      int   _first_view_ch;
+      short _nch; 
     } kel_connector;
-    
+
     typedef std::set<kel_connector> connectors;
-    
+  
     //
     typedef struct crp_connectors
     {
-      
-      crp_connectors( int crp, int views ){
+    
+      crp_connectors( int crp ){
 	_crp = crp;
-	_view_kels.resize( views );
-      }
-      
-      //
-      size_t views() const { return _view_kels.size(); }
-
-      //
-      size_t nch_view( int iview ) const {
-	size_t nch = 0;
-	if( iview >= (int)_view_kels.size())
-	  return nch;
-	auto nkel = _view_kels[iview];
-	nch = nkel * ch_per_kel;
-	return nch;
       }
 
-      void add_connector( int id, int view, bool reverse, int first_view_ch ){
-	_kels.insert( kel_connector( id, view, reverse, first_view_ch ) );
+      void add_connector( int id, int view, bool reverse,
+			  int first_view_ch, short nch = ch_per_kel ){
+	_kels.insert( kel_connector( id, view, reverse, first_view_ch, nch) );
       }
+
+      // get number connector attributed to different readout planes
+      std::vector<kel_connector> get_connector_views( int kel_id ){
+	std::vector<kel_connector> conn_views;
+	// just do a brute force loop to find all view for this connector
+	for( const auto c: _kels ){
+	  if( c._id == kel_id ){
+	    conn_views.push_back( c );
+	  }
+	}
+	//std::cout<<"For KEL "<<kel_id
+	//<<" found "<<conn_views.size()
+	//<<" entries\n";
+	return conn_views;
+      }
+
     
       int _crp;
       connectors _kels;
-      std::vector< int > _view_kels;
     } crp_connectors;
-    
+  
     //
     typedef struct crate
     {
@@ -86,7 +95,7 @@ namespace dune { namespace tde {
       }
 
       //
-      void add_crp_connection( int icrp, int fslot,
+      void add_crp_connection( int icrp, int fslot, //slot to add or starting ...
 			       const std::vector<int> &kel_ids )
       {
 	auto nconn = kel_ids.size();
@@ -120,7 +129,8 @@ namespace dune { namespace tde {
       std::vector< std::tuple< int, int, int, int> > _crp_conn;
     } crate;
   
-  } //tde
+  }//tde
 }//dune
+
 
 #endif
