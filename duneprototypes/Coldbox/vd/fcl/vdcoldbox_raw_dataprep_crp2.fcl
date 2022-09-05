@@ -1,0 +1,12 @@
+#include "vdcoldbox_raw_dataprep.fcl"
+
+services: {
+  TimeTracker:       @local::dune_time_tracker
+  MemoryTracker:     @local::dune_memory_tracker
+  RandomNumberGenerator: {} 
+  FileCatalogMetadata:  @local::art_file_catalog_data
+  message:              @local::dune_message_services_prod
+                        @table::vdcb_crp2_top_data_services
+  ChannelStatusService: @local::data.ChannelStatusService_vdcrp2
+}
+
