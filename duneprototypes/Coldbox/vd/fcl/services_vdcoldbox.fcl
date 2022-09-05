@@ -76,6 +76,13 @@ vdcb_crp1_top_data_services: {
 vdcb_crp1_top_data_services.DetectorPropertiesService.NumberTimeSamples: 10000
 vdcb_crp1_top_data_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
+#
+# data services for CRP2 (top only) 
+vdcb_crp2_data_services: @local::vdcb_crp1_top_data_services
+vdcb_crp2_data_services.ChannelMapService.MapName: "vdcb2crp"
+
+#
+#
 # data services for Bottom CRU
 vdcb_crp1_bot_data_services: {
   @table::vdcb_crp1_bot_services
