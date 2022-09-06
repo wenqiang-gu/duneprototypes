@@ -73,6 +73,11 @@ dune::VDColdboxTDEChannelMapService::VDColdboxTDEChannelMapService(fhicl::Parame
   unsigned ncardsInMap = p.get<unsigned>("MapCardNb", 10);
   unsigned nviewsInMap = p.get<unsigned>("MapViewNb",  1);
   fLogLevel            = p.get<int>("LogLevel", 0);
+
+  if( fLogLevel ){
+    std::cout<<"VDColdboxTDEChannelMapService::ctor: MapName : "<<MapName<<std::endl;
+  }
+
   //initialize channel map
   initMap( MapName, ncrateInMap, ncardsInMap, nviewsInMap );
 
