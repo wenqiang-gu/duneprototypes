@@ -3,11 +3,15 @@
 #  
 #  Vyacheslav Galymov
 #  November, 2021
-#
+#  
+#  VG, Sep 6 / 2022:
+#    added option for VD CRP2 channel map
+# 
 
 vdct_channelmap: {
   service_provider: VDColdboxTDEChannelMapService
-  MapName  : "vdcb1crp"
+  MapName  : "vdcb2crp"
+#  MapName  : "vdcb1crp"
   LogLevel : 1
 }
 

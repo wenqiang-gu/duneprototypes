@@ -1,4 +1,5 @@
-#include "vdcoldbox_raw_dataprep.fcl"
+#include "vdcoldbox_raw_tdedataprep.fcl"
+#include "channelstatus_vdcrp2.fcl"
 
 services: {
   TimeTracker:       @local::dune_time_tracker
@@ -6,7 +7,15 @@ services: {
   RandomNumberGenerator: {} 
   FileCatalogMetadata:  @local::art_file_catalog_data
   message:              @local::dune_message_services_prod
-                        @table::vdcb_crp2_top_data_services
+                        @table::vdcb_crp2_data_services
   ChannelStatusService: @local::data.ChannelStatusService_vdcrp2
 }
 
+physics.producers.caldata.DecoderTool: ""
+physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
+physics.producers.caldata.WireName: "dataprep"
+physics.producers.caldata.ChannelGroups: ["cru"]
+physics.producers.caldata.DoGroups: true
+physics.producers.caldata.OnlineChannelMapTool: ""
+
+services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
