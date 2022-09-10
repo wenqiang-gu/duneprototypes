@@ -4,7 +4,7 @@
 // Author:      Vyacheslav Galymov
 //
 // Mappings for VD CRP1 from docdb 23910 
-// 
+// Mappings for VD CRP2 from docdb 25847 
 // 
 // Classes to facility channel order translation between different 
 // representations
@@ -208,6 +208,9 @@ namespace dune
     
     // VD CRP cold box 1
     void vdcb1crpMap();
+
+    // VD CRP cold box 2 (60D anode)
+    void vdcb2crpMap();
 
     
     // Just remove by hand channels which do not exists here 

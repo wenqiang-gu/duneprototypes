@@ -1,8 +1,9 @@
 BEGIN_PROLOG
 
-
+#
 vdct_channelmap: {
-  MapName  : "vdcb1crp"
+  MapName  : "vdcb2crp"  # 60D CRP in coldbox
+# MapName  : "vdcb1crp"  # CRP1 in coldbox
   LogLevel : 1
 }
 

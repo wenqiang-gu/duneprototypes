@@ -1,0 +1,32 @@
+# channelstatus_vdcrp2.fcl
+#
+# Channel status for CRP2 coldbox tests
+# Vyacheslav Galymov
+# Sep 2022
+# 
+#
+
+# Dead channels. 
+# These channels have lower noise than their neigbours
+# most likely due to interuption somewhere on the CRP
+data.vdcrp2_jul22_dead_channels: []
+
+# Very noisy channels.
+data.vdcrp2_jul22_hirms_channels: [263, 264, 265, 266, 
+				  1297, 1298, 2667, 2668]
+
+# Somewhat noisy channels.
+data.vdcrp2_jul22_modrms_channels: []
+
+
+# Bad channels.
+data.vdcrp2_bad_channels: @local::data.vdcrp2_jul22_dead_channels
+data.vdcrp2_noisy_channels: [
+  @sequence::data.vdcrp2_jul22_hirms_channels
+]
+
+data.ChannelStatusService_vdcrp2: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdcrp2_bad_channels
+  NoisyChannels: @local::data.vdcrp2_noisy_channels
+}

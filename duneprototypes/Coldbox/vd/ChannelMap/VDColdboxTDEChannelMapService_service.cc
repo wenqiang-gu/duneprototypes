@@ -3,7 +3,8 @@
 // File:        VDColdboxTDEChannelMapService_service.cc
 // Author:      Vyacheslav Galymov
 //
-// Mappings for VD CRP1 from docdb 23910 
+// Mappings for VD CRP1 from docdb 23910
+// Mappings for VD CRP2 from docdb 25847
 // 
 // Classes to facility channel order translation between different 
 // representations
@@ -30,6 +31,10 @@
 //    a given view in a specified CRP
 //  - CRP index, view index, and channel number, tag IndexCrpViewChan, to access 
 //    a given view channel in a given CRP
+//
+// Modified:
+//   VG Mon Sep  5 14:47:39 CEST 2022: added CB CRP2 channel map based
+//                                     on docdb-25847
 // 
 ////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +53,7 @@
 
 #include "VDColdboxTDEChannelMapService.h"
 #include "tde_cmap_utils.h"
+#include "kel_chan_map.h"
 
 using dune::tde::ChannelId;
 using std::vector;
@@ -67,6 +73,11 @@ dune::VDColdboxTDEChannelMapService::VDColdboxTDEChannelMapService(fhicl::Parame
   unsigned ncardsInMap = p.get<unsigned>("MapCardNb", 10);
   unsigned nviewsInMap = p.get<unsigned>("MapViewNb",  1);
   fLogLevel            = p.get<int>("LogLevel", 0);
+
+  if( fLogLevel ){
+    std::cout<<"VDColdboxTDEChannelMapService::ctor: MapName : "<<MapName<<std::endl;
+  }
+
   //initialize channel map
   initMap( MapName, ncrateInMap, ncardsInMap, nviewsInMap );
 
@@ -91,7 +102,11 @@ void dune::VDColdboxTDEChannelMapService::initMap( std::string mapname, unsigned
   mapname_ = mapname;
   if( mapname.compare("vdcb1crp") == 0 ) {
     vdcb1crpMap();
-  } else {
+  } 
+  else if( mapname.compare("vdcb2crp") == 0 ) {
+    vdcb2crpMap();
+  }
+  else {
     simpleMap( ncrates, ncards, nviews );
   }
 }
@@ -436,7 +451,7 @@ void dune::VDColdboxTDEChannelMapService::vdcb1crpMap(){
   std::reverse(kel_view2.begin(), kel_view2.end());
 
   
-  dune::tde::crp_connectors crp_conn( 0, nview );
+  dune::tde::crp_connectors crp_conn( 0 ); //, nview );
   int ch_start = 0;
   for( auto const k : kel_view0 ){
     //crp_conn.add_connector( k, 0, true, ch_start );
@@ -536,5 +551,214 @@ void dune::VDColdboxTDEChannelMapService::vdcb1crpMap(){
 }
 
 
- 
- DEFINE_ART_SERVICE(dune::VDColdboxTDEChannelMapService)
+// VD coldbox CRP2 channel map
+void dune::VDColdboxTDEChannelMapService::vdcb2crpMap(){
+  int nslots  = 10;
+  int nview   = 3;
+
+  // utca crate 1
+  tde::crate c1( 0, nslots );
+  vector<int> c1_kel{4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+  c1.add_crp_connection( 0, 0, c1_kel );
+
+  // utca crate 2
+  tde::crate c2( 1, nslots );
+  vector<int> c2_kel{24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43};
+  c2.add_crp_connection( 0, 0, c2_kel );
+
+  // utca crate 3
+  tde::crate c3( 2, nslots );
+  vector<int> c3_kel{44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63};
+  c3.add_crp_connection( 0, 0, c3_kel );
+
+  // utca crate 4
+  tde::crate c4( 3, nslots );
+  vector<int> c4_kel{0,1,2,3,94,95,92,93,90,91,88,89,86,87,84,85,82,83};
+  c4.add_crp_connection( 0, 0, c4_kel );
+
+  // utca crate 5
+  tde::crate c5( 4, nslots );
+  vector<int> c5_kel{80,81,78,79,76,77,74,75,72,73,70,71,68,69,66,67,64,65};
+  c5.add_crp_connection( 0, 0, c5_kel );
+
+
+  
+  vector<tde::crate> crates{c1, c2, c3, c4, c5};
+
+  //
+  // channel order with 8 ch inversion and flange swap
+  vector<unsigned> kel_order = {24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22,
+				23,  8,  9, 10, 11, 12, 13, 14, 15,  0,  1,  2,  3,  4,  5,  6,  7 };
+
+  
+  // kel connectors for each view sorted in the view channel order
+  // induction 1
+  vector<int> kel_view0{12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,37,41,45,
+			93,89,85,83,82,81,80,79,78,77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60};
+  // induction 2
+  vector<int> kel_view1{1,5,9,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
+			83,82,81,80,79,78,77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,57,53,49};
+
+  // collection
+  vector<int> kel_view2{12,11,10, 8, 7, 6, 4, 3, 2, 0, // reversed
+			35,36,38,39,40,42,43,44,46,47, // not reversed
+  			95,94,92,91,90,88,87,86,84,83, // reveresed
+  			48,50,51,52,54,55,56,58,59,60  // not reversed
+  };
+
+  // pin mappings
+  tde::crp_connectors crp_conn( 0 );
+  short nkel_cru = dune::tde::vdcb_crp_v1::nkel_cru;
+  auto pin_map   = dune::tde::vdcb_crp_v1::pin_map;
+  int ch_start = 0;
+
+  //ind1
+  for( auto const k : kel_view0 ){
+    bool reverse = (k >= nkel_cru );
+    auto pm      = pin_map[k%nkel_cru];
+    short nch    = dune::tde::viewChCount( pm, dune::tde::Ind1 );
+    crp_conn.add_connector( k, dune::tde::Ind1, reverse, ch_start, nch );
+    ch_start += nch;
+  }
+  
+  // ind2
+  ch_start = 0;
+  for( auto const k : kel_view1 ){
+    bool reverse = (k >= nkel_cru );
+    auto pm   = pin_map[k%nkel_cru];
+    short nch = dune::tde::viewChCount( pm, dune::tde::Ind2 );
+    crp_conn.add_connector( k, dune::tde::Ind2, reverse, ch_start, nch );
+    ch_start += nch;
+  }
+  
+  // col 
+  ch_start = 0;
+  for( auto const k : kel_view2 ){
+    bool reverse = false;
+    if( (k <= 12) ||
+	(k >= 83 && k <= 95) ){
+	reverse = true;
+    }
+    auto pm   = pin_map[k%nkel_cru];
+    short nch = dune::tde::viewChCount( pm, dune::tde::Col );
+    crp_conn.add_connector( k, dune::tde::Col, reverse, ch_start, nch );
+    ch_start += nch;
+  }
+
+  /*
+  size_t ch_tot = 0;
+  for( auto const &k : crp_conn._kels ){
+    k.print();
+    ch_tot += k._nch;
+  }
+  cout<<"channels in total "<<ch_tot<<endl;
+  //auto conn_views = crp_conn.get_connector_views( 12 );
+  */
+  unsigned errval  = std::numeric_limits<unsigned>::max(); 
+  
+  // only one crp
+  unsigned crp_id  = 0;
+  unsigned seqn    = 0;
+
+  unsigned view_na    = (unsigned)nview;
+  unsigned view_na_ch = 0;
+  
+  for( auto const &utca : crates ) {
+    unsigned utca_id = (unsigned)utca._id;
+    //if( utca_id <= 1 ) continue;
+    auto utca_conn   = utca._crp_conn;
+    auto utca_nconn  = utca_conn.size();
+    auto utca_slots  = (unsigned)utca._cards; // max possible cards per crate
+    for( unsigned amc = 0; amc < utca_slots; ++amc ){
+      // unconnected AMCs
+      if( amc >= utca_nconn ){
+	for( unsigned cardch = 0; cardch < dune::tde::ch_per_amc; ++cardch ){
+	  seqn = (utca_id * utca_slots + amc ) * dune::tde::ch_per_amc + cardch % dune::tde::ch_per_amc;
+	  add( seqn, utca_id, amc, cardch, crp_id, view_na, view_na_ch++, 0);
+	}
+	continue;
+      }
+      
+      // connected to CRU
+      auto conn = utca_conn[ amc ];
+      unsigned islot   = (unsigned)std::get<0>(conn);
+      //unsigned icrp  = (unsigned)std::get<1>(conn);
+      auto kel1_id  = std::get<2>(conn);
+      auto kel2_id  = std::get<3>(conn);
+      if( islot != amc ){
+	throw cet::exception("VDColdboxTDEChannelMap")
+	  <<"Mismatch in slot and AMC index. Should not happen\n";
+	amc = islot;
+      }
+      
+      { // 1st connector
+	auto conn_views = crp_conn.get_connector_views( kel1_id );
+	if( conn_views.empty() ){
+	  throw cet::exception("VDColdboxTDEChannelMap")
+	    <<"Could not find KEL "<<kel1_id<<"\n"; continue;
+	}
+
+	auto pm = pin_map[kel1_id % nkel_cru];
+	for( const auto &kel : conn_views ){
+	  vector<unsigned> order_ = kel_order; ////(kel._reverse)? kel_inv : kel_nor;
+	  int iview   = kel._view;
+	  int viewch  = kel._first_view_ch;
+	  int vwchstp = 1;
+	  if( kel._reverse ){
+	    viewch += kel._nch - 1;
+	    vwchstp = -1;
+	  }
+	  //cout<<" amc "<<amc<<"    KEL connectors -> "<<kel1_id<<"* "
+	  //<<kel2_id<<" "<<iview<<" "<<viewch<<endl;    
+	  for( unsigned kelch = 0; kelch < dune::tde::ch_per_kel; ++kelch ){
+	    if( pm[kelch] != iview ) continue;
+	    unsigned cardch = order_[ kelch ];
+	    assert( cardch != errval ); //all channels should be unique
+	    order_[kelch] = errval;     //mark this channel as used
+	    seqn = (utca_id * utca_slots + amc) * dune::tde::ch_per_amc + cardch % dune::tde::ch_per_amc;
+	    add( seqn, utca_id, amc, cardch, crp_id,
+		 (unsigned)iview, (unsigned)viewch, 0 );
+	    viewch += vwchstp;
+	  }
+	}
+      }// 1st connector
+
+      {// 2nd connector
+	auto conn_views = crp_conn.get_connector_views( kel2_id );
+	if( conn_views.empty() ){
+	  throw cet::exception("VDColdboxTDEChannelMap")
+	    <<"Could not find KEL "<<kel2_id<<"\n"; continue;
+	}
+	auto pm = pin_map[kel2_id % nkel_cru];
+	for( const auto &kel : conn_views ){
+	  vector<unsigned> order_ = kel_order; ////(kel._reverse)? kel_inv : kel_nor;
+	  int iview  = kel._view;
+	  int viewch = kel._first_view_ch;
+	  int vwchstp = 1;
+	  if( kel._reverse ){
+	    viewch += kel._nch - 1;
+	    vwchstp = -1;
+	  }
+	  //cout<<" amc "<<amc<<"    KEL connectors -> "<<kel1_id<<" "
+	  //<<kel2_id<<"* "<<iview<<" "<<viewch<<endl;
+	  for( unsigned kelch = 0; kelch < dune::tde::ch_per_kel; ++kelch ){
+	    if( pm[kelch] != iview ) continue;
+	    unsigned cardch = order_[ kelch ];
+	    assert( cardch != errval ); //all channels should be unique
+	    order_[kelch] = errval;     //mark this channel as used
+	    cardch += dune::tde::ch_per_kel;  // add offset for previous connector
+	    seqn = (utca_id * utca_slots + amc) * dune::tde::ch_per_amc + cardch % dune::tde::ch_per_amc;
+	    add( seqn, utca_id, amc, cardch, crp_id,
+		 (unsigned)iview, (unsigned)viewch, 0 );
+	    viewch += vwchstp;
+	  }
+	}
+      } // 2nd connector
+    } // loop over AMCs
+  } // loop over crates
+
+  // that is it...
+  //cout<<seqn<<endl;
+}
+
+DEFINE_ART_SERVICE(dune::VDColdboxTDEChannelMapService)
