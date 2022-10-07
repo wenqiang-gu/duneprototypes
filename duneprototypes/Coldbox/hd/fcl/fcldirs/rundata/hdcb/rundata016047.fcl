@@ -1,0 +1,8 @@
+run: 16047
+apas: [1]
+gain:  14.0
+shaping: 2.0
+leakage:  500
+hvfrac: 0.0
+pulserAmplitude: 12
+pulserSource: 1
