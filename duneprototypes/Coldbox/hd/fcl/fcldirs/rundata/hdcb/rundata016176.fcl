@@ -1,0 +1,6 @@
+run: 16176
+apas: [1]
+gain:  14.0
+shaping: 0.5
+leakage: 1000
+hvfrac: 0.0

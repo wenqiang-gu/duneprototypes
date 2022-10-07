@@ -5,5 +5,6 @@
 
 # Dec.07, 2021
 
-
 install_fhicl()
+
+add_subdirectory(fcldirs)

@@ -674,7 +674,7 @@ void dune::VDColdboxTDEChannelMapService::vdcb2crpMap(){
       if( amc >= utca_nconn ){
 	for( unsigned cardch = 0; cardch < dune::tde::ch_per_amc; ++cardch ){
 	  seqn = (utca_id * utca_slots + amc ) * dune::tde::ch_per_amc + cardch % dune::tde::ch_per_amc;
-	  add( seqn, utca_id, amc, cardch, crp_id, view_na, view_na_ch++, 0);
+	  add( seqn, utca_id, amc, cardch, crp_id, view_na, view_na_ch++, 1);
 	}
 	continue;
       }

@@ -34,7 +34,6 @@ vdcb_services.DetectorPropertiesService.TimeOffsetZ: 0
 data.vdcb_nov21_Efield:  [0.404, 1.0, 1.0] 
 data.vdcb_dec21_Efield:  [0.411, 1.0, 1.0] 
 
-
 # set efield
 vdcb_services.DetectorPropertiesService.Efield: @local::data.vdcb_nov21_Efield
 
@@ -50,7 +49,6 @@ vdcb_crp1_top_services: @local::vdcb_services
 vdcb_crp1_top_services.DetectorClocksService.FramePeriod:   4000
 vdcb_crp1_top_services.DetectorClocksService.ClockSpeedTPC: 2.5
 
-
 # Default tools for RawDigitPrepService ToolNames: [
 #    "digitReader",
 #    "adcSampleFiller",
@@ -63,6 +61,7 @@ vdcb_dataprep_base_services: {
    AdcWireBuildingService:     @local::adcwire_std
 }
 
+#
 # data services for Top CRU
 vdcb_crp1_top_data_services: {
   @table::vdcb_crp1_top_services
@@ -75,11 +74,6 @@ vdcb_crp1_top_data_services: {
 }
 vdcb_crp1_top_data_services.DetectorPropertiesService.NumberTimeSamples: 10000
 vdcb_crp1_top_data_services.DetectorPropertiesService.ReadOutWindowSize: 10000
-
-#
-# data services for CRP2 (top only) 
-vdcb_crp2_data_services: @local::vdcb_crp1_top_data_services
-vdcb_crp2_data_services.ChannelMapService.MapName: "vdcb2crp"
 
 #
 #
@@ -135,6 +129,26 @@ vdcb_bot_reco_services: {
     @table::vdcb_crp1_bot_services
     SpaceCharge: @local::dunefd_spacecharge
 }
+
+#
+# Top CRP services
+# 
+vdcb_crp2_services: @local::vdcb_crp1_top_services
+vdcb_crp2_services.Geometry: @local::dunecrpcb_geo
+vdcb_crp2_services.DetectorPropertiesService.Efield: @local::data.vdcb_nov21_Efield
+
+# data services for CRP2 (top only)
+vdcb_crp2_data_services: {
+  @table::vdcb_crp2_services
+  @table::vdcb_dataprep_base_services
+  ChannelMapService: {
+    service_provider: VDColdboxTDEChannelMapService
+    MapName  : "vdcb2crp"
+    LogLevel : 1
+  }
+}
+vdcb_crp2_data_services.DetectorPropertiesService.NumberTimeSamples: 10000
+vdcb_crp2_data_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
 
 END_PROLOG
