@@ -33,7 +33,7 @@ cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
                         dunepdlegacy_Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
-                        duneprototypes_Coldbox_hd_ChannelMap_PD2HDChannelMapService_service
+                        duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
 			art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -60,7 +60,7 @@ cet_build_plugin(HDColdboxDAQWriter art::module
                         CETLIB
                         ROOT_BASIC_LIB_LIST
 			LIBHDF5
-                        duneprototypes_Coldbox_hd_ChannelMap_PD2HDChannelMapService_service
+                        duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
                         BASENAME_ONLY
 )
 
