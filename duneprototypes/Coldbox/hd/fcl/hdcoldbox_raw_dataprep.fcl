@@ -54,6 +54,7 @@ physics: {
 
 source: {
   module_type: HDF5RawInput
+  ClockFrequencyMHz: 62.5    # frequency needed to interpret timestamps, in MHz
 }
 
 tools.hdtool: {
