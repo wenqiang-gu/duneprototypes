@@ -33,7 +33,7 @@
 #include "detdataformats/wib2/WIB2Frame.hpp"
 #include "lardataobj/RawData/raw.h"
 #include "lardataobj/RawData/RawDigit.h"
-#include "duneprototypes/Coldbox/hd/ChannelMap/PD2HDChannelMapService.h"
+#include "duneprototypes/Protodune/hd/ChannelMap/PD2HDChannelMapService.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
 
 class HDColdboxDAQWriter;

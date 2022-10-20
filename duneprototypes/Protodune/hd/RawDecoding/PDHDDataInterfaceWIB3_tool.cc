@@ -1,4 +1,4 @@
-#include "HDColdboxDataInterface.h"
+#include "PDHDDataInterface.h"
 
 #include <hdf5.h>
 #include <iostream>
@@ -19,11 +19,11 @@
 
 
 
-HDColdboxDataInterface::HDColdboxDataInterface(fhicl::ParameterSet const& p)
+PDHDDataInterface::PDHDDataInterface(fhicl::ParameterSet const& p)
   : fForceOpen(p.get<bool>("ForceOpen", false)),
     fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fMaxChan(p.get<int>("MaxChan",1000000)),
-    fDefaultCrate(p.get<unsigned int>("DefaultCrate", 2)),
+    fDefaultCrate(p.get<unsigned int>("DefaultCrate", 1)),
     fDebugLevel(p.get<int>("DebugLevel",0))
 {
 }
@@ -31,7 +31,7 @@ HDColdboxDataInterface::HDColdboxDataInterface(fhicl::ParameterSet const& p)
 
 // wrapper for backward compatibility.  Return data for all APA's represented 
 // in the fragments on these labels
-int HDColdboxDataInterface::retrieveData(art::Event &evt,
+int PDHDDataInterface::retrieveData(art::Event &evt,
 					    std::string inputLabel,
 					    std::vector<raw::RawDigit> &raw_digits,
 					    std::vector<raw::RDTimeStamp> &rd_timestamps,
@@ -41,7 +41,7 @@ int HDColdboxDataInterface::retrieveData(art::Event &evt,
  }
 
 
-int HDColdboxDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
+int PDHDDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
                                                          std::vector<raw::RawDigit> &raw_digits,
                                                          std::vector<raw::RDTimeStamp> &rd_timestamps,
                                                          std::vector<raw::RDStatus> &rdstatuses,
@@ -56,8 +56,8 @@ int HDColdboxDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
 
   if (fDebugLevel > 0)
     {
-      std::cout << "HDColdboxDataInterface : " << "HDF5 FileName: " << file_name << std::endl;
-      std::cout << "HDColdboxDataInterface :" << "Top-Level Group Name: " << toplevel_groupname << std::endl;
+      std::cout << "PDHDDataInterface : " << "HDF5 FileName: " << file_name << std::endl;
+      std::cout << "PDHDDataInterface :" << "Top-Level Group Name: " << toplevel_groupname << std::endl;
     }
 
   // If the fcl file said to force open the file (i.e. because one is just running DataPrep), then open
@@ -74,18 +74,15 @@ int HDColdboxDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
   
   if (fDebugLevel > 0)
     {
-      std::cout << "HDColdboxDataInterface : " <<  "Retrieving Data for " << apalist.size() << " APAs " << std::endl;
+      std::cout << "PDHDDataInterface : " <<  "Retrieving Data for " << apalist.size() << " APAs " << std::endl;
     }
 
-  // NOTE: The "apalist" that DataPrep hands to the method is always of size 1.
-  // Also "apalist" should technically hand you the current APA No. we are looking at but there is exception.
-  // CAUTION: This is only and only for HDColdBox.The reason is VDColdBox has only one APA/CRU.
   for (const int & i : apalist)
     {
       int apano = i;
       if (fDebugLevel > 0)
         {
-	  std::cout << "HDColdboxDataInterface :" << "apano: " << i << std::endl;
+	  std::cout << "PDHDDataInterface :" << "apano: " << i << std::endl;
         }
 
       getFragmentsForEvent(the_group, raw_digits, rd_timestamps, apano);
@@ -100,7 +97,7 @@ int HDColdboxDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
 
 
 // get data for a specific label, but only return those raw digits that correspond to APA's on the list
-int HDColdboxDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
+int PDHDDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
                                                            std::string inputLabel,
                                                            std::vector<raw::RawDigit> &raw_digits,
                                                            std::vector<raw::RDTimeStamp> &rd_timestamps,
@@ -113,7 +110,7 @@ int HDColdboxDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
 
 // This is designed to read 1APA/CRU, only for VDColdBox data. The function uses "apano", handed by DataPrep,
 // as an argument.
-void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
+void PDHDDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
 {
   using namespace dune::HDF5Utils;
   using dunedaq::detdataformats::wib2::WIB2Frame;
@@ -130,7 +127,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
       
       if (fDebugLevel > 0)
         {
-	  std::cout << "HDColdboxDataInterfaceWIB3 :"  << "Detector type:  " << det << std::endl;
+	  std::cout << "PDHDDataInterfaceWIB3 :"  << "Detector type:  " << det << std::endl;
         }
       hid_t geoGroup = getGroupFromPath(the_group, det);
       std::deque<std::string> apaNames
@@ -138,8 +135,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
       
       if (fDebugLevel > 0)
         {
-	  std::cout << "HDColdboxDataInterfaceWIB3 :" << "Size of apaNames: " << apaNames.size() << std::endl;
-	  std::cout << "HDColdboxDataInterfaceWIB3 :" << "apaNames[0]: "  << apaNames[0] << std::endl;
+	  std::cout << "PDHDDataInterfaceWIB3 :" << "Size of apaNames: " << apaNames.size() << std::endl;
+	  std::cout << "PDHDDataInterfaceWIB3 :" << "apaNames[0]: "  << apaNames[0] << std::endl;
         }
       // apaNames is a vector whose elements start at [0].
       hid_t linkGroup = getGroupFromPath(geoGroup, apaNames[0]);
@@ -197,7 +194,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
             }
           if (fDebugLevel > 0)
             {
-	      std::cout << "HDColdboxDataInterfaceToolWIB3: crate, slot, link(HDF5 group), link(WIB Header): "  << crate << ", " << slot << ", " << link << ", " << link_from_frameheader << std::endl;
+	      std::cout << "PDHDDataInterfaceToolWIB3: crate, slot, link(HDF5 group), link(WIB Header): "  << crate << ", " << slot << ", " << link << ", " << link_from_frameheader << std::endl;
             }
 
 	  for (size_t iChan = 0; iChan < 256; ++iChan)
@@ -207,7 +204,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
               uint32_t slotloc = slot;
 	      slotloc &= 0x7;
 
-	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (fDefaultCrate, slotloc, link_from_frameheader, iChan); 
+	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link_from_frameheader, iChan); 
 	      unsigned int offline_chan = hdchaninfo.offlchan;
 
               if (offline_chan > fMaxChan) continue;
@@ -229,7 +226,7 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 
  
 
-void HDColdboxDataInterface::getMedianSigma(const raw::RawDigit::ADCvector_t &v_adc, float &median,
+void PDHDDataInterface::getMedianSigma(const raw::RawDigit::ADCvector_t &v_adc, float &median,
                                             float &sigma) {
   size_t asiz = v_adc.size();
   int imed=0;
@@ -264,4 +261,4 @@ void HDColdboxDataInterface::getMedianSigma(const raw::RawDigit::ADCvector_t &v_
   
 }
 
-DEFINE_ART_CLASS_TOOL(HDColdboxDataInterface)
+DEFINE_ART_CLASS_TOOL(PDHDDataInterface)
