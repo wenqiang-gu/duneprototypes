@@ -3,6 +3,9 @@
 #include "protodune_tools_dune.fcl"
 #include "vdcb_tools.fcl"
 
+# DLA October 2022
+# Above includes vdcb_tools insrtead of hdcb_dataprep_tools
+# Must be wrong????
 
 
 process_name: HDRawDigit
@@ -70,8 +73,6 @@ tools.hdtool: {
 }
 
 
-tools.channelRanges: @local::tools.channelRangesColdbox
-tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
