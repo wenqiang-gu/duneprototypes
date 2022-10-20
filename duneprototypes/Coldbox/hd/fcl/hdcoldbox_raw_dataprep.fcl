@@ -61,8 +61,6 @@ tools.hdtool: {
 }
 
 
-tools.channelRanges: @local::tools.channelRangesColdbox
-tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
