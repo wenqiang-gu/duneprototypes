@@ -57,7 +57,7 @@ outputs: {
     saveMemoryObjectThreshold: 10485760
     fileName: "%ifb_reco1.root"
     dataTier:    "full-reconstructed"
-    #outputCommands: [ "drop *", "keep raw::RawDigitrecob*_*_*_*", "keep recob::*_*_*_*" ]
+    #outputCommands: [ "drop *", "keep raw::RawDigit*_*_*_*", "keep recob::*_*_*_*" ]
   }
 }
 

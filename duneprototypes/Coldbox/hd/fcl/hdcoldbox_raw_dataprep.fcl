@@ -74,3 +74,5 @@ services.RawDigitPrepService.ToolNames: [
   adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
 ]
 
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups
