@@ -54,6 +54,7 @@ physics: {
 
 source: {
   module_type: HDF5RawInput
+  ClockFrequencyMHz: 62.5    # frequency needed to interpret timestamps, in MHz
 }
 
 tools.hdtool: {
@@ -61,8 +62,6 @@ tools.hdtool: {
 }
 
 
-tools.channelRanges: @local::tools.channelRangesColdbox
-tools.channelGroups: @local::tools.channelGroups
 services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: "hdtool"
 physics.producers.caldata.OnlineChannelMapTool: pd_onlineChannelMapByFemb
@@ -75,3 +74,5 @@ services.RawDigitPrepService.ToolNames: [
   adcKeepAllSignalFinder  # Flag all samples as signal, i.e. acd.signal[] = true
 ]
 
+tools.channelRanges: @local::tools.channelRangesColdbox
+tools.channelGroups: @local::tools.channelGroups

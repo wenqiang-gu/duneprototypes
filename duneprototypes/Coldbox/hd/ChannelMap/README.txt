@@ -1,6 +1,10 @@
 
 Channel map evolution for the HD Coldbox and ProtoDUNE-HD, 2022
 
+We use the PD2HD Channel Map service and map files.  They started
+off being developed in the coldbox directory but have been
+moved to duneprototypes/protodue/hd/ChannelMap.
+
 Channel map files where the offline channel numbering is based on
 the soldered endpoints of the wires.  This is natural for making
 plots of pedestal and RMS in electronics coordinates, but wires
