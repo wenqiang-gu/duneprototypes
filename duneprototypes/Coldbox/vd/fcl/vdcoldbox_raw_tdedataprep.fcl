@@ -59,4 +59,4 @@ physics.producers.caldata.OnlineChannelMapTool: ""
 #]
 
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
-services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
+services.RawDigitPrepService.ToolNames: @local::data.vdtcb2_dataprep_seqs.adc_cnr
