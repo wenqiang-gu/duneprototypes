@@ -69,7 +69,8 @@ physics.producers.caldata.DoGroups: true
 physics.producers.caldata.OnlineChannelMapTool: ""
 
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
-services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
+services.RawDigitPrepService.ToolNames: @local::data.vdtcb1_dataprep_seqs.adc_cnr
+#services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
 
 # modifications to reco
 # set TDE in wirecell signal processing

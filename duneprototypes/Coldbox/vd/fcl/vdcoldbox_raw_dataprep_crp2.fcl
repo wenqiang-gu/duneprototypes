@@ -18,5 +18,5 @@ physics.producers.caldata.ChannelGroups: ["cru"]
 physics.producers.caldata.DoGroups: true
 physics.producers.caldata.OnlineChannelMapTool: ""
 
-services.RawDigitPrepService.ToolNames: @local::data.vdcb_dataprep_seqs.nocal
-#services.RawDigitPrepService.ToolNames: @local::data.vdtcb_dataprep_seqs.adc_cnr
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdtcb2_dataprep_seqs.adc_cnr
