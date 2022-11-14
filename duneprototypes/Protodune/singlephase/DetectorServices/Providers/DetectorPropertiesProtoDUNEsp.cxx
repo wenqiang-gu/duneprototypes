@@ -543,20 +543,21 @@ namespace spdp{
     double triggerOffset  = trigger_offset(clockData);
     std::vector<std::vector<std::vector<double>>> x_ticks_offsets(fGeo->Ncryostats());
     std::vector<std::vector<double>> drift_direction(fGeo->Ncryostats());
-    for(size_t cstat = 0; cstat < fGeo->Ncryostats(); ++cstat){
-      x_ticks_offsets[cstat].resize(fGeo->Cryostat(cstat).NTPC());
-      drift_direction[cstat].resize(fGeo->Cryostat(cstat).NTPC());
-      for(size_t tpc = 0; tpc < fGeo->Cryostat(cstat).NTPC(); ++tpc) {
-        const geo::TPCGeo& tpcgeom = fGeo->Cryostat(cstat).TPC(tpc);
+    for(auto const& cryostat : fGeo->Iterate<geo::CryostatGeo>()) {
+      auto const cstat = cryostat.ID().Cryostat;
+      x_ticks_offsets[cstat].resize(cryostat.NTPC());
+      drift_direction[cstat].resize(cryostat.NTPC());
+      for(auto const& tpcgeom : fGeo->Iterate<geo::TPCGeo>(cryostat.ID())) {
+        auto const tpc = tpcgeom.ID().TPC;
         const double dir((tpcgeom.DriftDirection() == geo::kNegX) ? +1.0 :-1.0);
         drift_direction[cstat][tpc] = dir;
         int nplane = tpcgeom.Nplanes();
         x_ticks_offsets[cstat][tpc].resize(nplane, 0.);
 
-        for(int plane = 0; plane < nplane; ++plane) {
-          const geo::PlaneGeo& pgeom = tpcgeom.Plane(plane);
           auto const xyz = tpcgeom.Plane(0).GetCenter();
-          x_ticks_offsets[cstat][tpc][plane] = -xyz[0]/(dir * x_ticks_coefficient) + triggerOffset;
+        for(auto const& pgeom : fGeo->Iterate<geo::PlaneGeo>()) {
+          auto const plane = pgeom.ID().Plane;
+          x_ticks_offsets[cstat][tpc][plane] = -xyz.X()/(dir * x_ticks_coefficient) + triggerOffset;
 
           // Add view dependent offset
           // FIXME the offset should be plane-dependent

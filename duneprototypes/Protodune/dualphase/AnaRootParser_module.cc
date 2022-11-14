@@ -4126,19 +4126,17 @@ dune::AnaRootParser::AnaRootParser(fhicl::ParameterSet const& pset) :
   ActiveBounds[1] = ActiveBounds[3] = ActiveBounds[5] = -DBL_MAX;
   // assume single cryostats
   auto const* geom = lar::providerFrom<geo::Geometry>();
-  for (geo::TPCGeo const& TPC: geom->IterateTPCs()) {
+  for (geo::TPCGeo const& TPC: geom->Iterate<geo::TPCGeo>()) {
     // get center in world coordinates
-    double origin[3] = {0.};
-    double center[3] = {0.};
-    TPC.LocalToWorld(origin, center);
+    auto const center = TPC.GetCenter();
     double tpcDim[3] = {TPC.HalfWidth(), TPC.HalfHeight(), 0.5*TPC.Length() };
 
-    if( center[0] - tpcDim[0] < ActiveBounds[0] ) ActiveBounds[0] = center[0] - tpcDim[0];
-    if( center[0] + tpcDim[0] > ActiveBounds[1] ) ActiveBounds[1] = center[0] + tpcDim[0];
-    if( center[1] - tpcDim[1] < ActiveBounds[2] ) ActiveBounds[2] = center[1] - tpcDim[1];
-    if( center[1] + tpcDim[1] > ActiveBounds[3] ) ActiveBounds[3] = center[1] + tpcDim[1];
-    if( center[2] - tpcDim[2] < ActiveBounds[4] ) ActiveBounds[4] = center[2] - tpcDim[2];
-    if( center[2] + tpcDim[2] > ActiveBounds[5] ) ActiveBounds[5] = center[2] + tpcDim[2];
+    if( center.X() - tpcDim[0] < ActiveBounds[0] ) ActiveBounds[0] = center.X() - tpcDim[0];
+    if( center.X() + tpcDim[0] > ActiveBounds[1] ) ActiveBounds[1] = center.X() + tpcDim[0];
+    if( center.Y() - tpcDim[1] < ActiveBounds[2] ) ActiveBounds[2] = center.Y() - tpcDim[1];
+    if( center.Y() + tpcDim[1] > ActiveBounds[3] ) ActiveBounds[3] = center.Y() + tpcDim[1];
+    if( center.X() - tpcDim[2] < ActiveBounds[4] ) ActiveBounds[4] = center.Z() - tpcDim[2];
+    if( center.X() + tpcDim[2] > ActiveBounds[5] ) ActiveBounds[5] = center.Z() + tpcDim[2];
   } // for all TPC
   std::cout << "Active Boundaries: "
     << "\n\tx: " << ActiveBounds[0] << " to " << ActiveBounds[1]
@@ -5517,7 +5515,7 @@ if (fSaveTrackInfo) {
           for (unsigned int h = 0; h < vhit.size(); h++)
           {
             //corrected pitch
-            double angleToVert = geomhandle->WireAngleToVertical(vhit[h]->View(), vhit[h]->WireID().TPC, vhit[h]->WireID().Cryostat) - 0.5*::util::pi<>();
+            double angleToVert = geomhandle->WireAngleToVertical(vhit[h]->View(), vhit[h]->WireID().asPlaneID().asTPCID()) - 0.5*::util::pi<>();
             const TVector3& dir = tracklist[iTracker][iTrk]->DirectionAtPoint<TVector3>(h);
             const TVector3& loc = tracklist[iTracker][iTrk]->LocationAtPoint<TVector3>(h);
             double cosgamma = std::abs(std::sin(angleToVert)*dir.Y() + std::cos(angleToVert)*dir.Z());
@@ -6930,13 +6928,12 @@ double dune::AnaRootParser::driftedLength(detinfo::DetectorPropertiesData const&
       //compute the drift x range
       double vDrift = detProp.DriftVelocity()*1e-3; //cm/ns
       double xrange[2] = {DBL_MAX, -DBL_MAX };
-      for (unsigned int c=0; c<geom->Ncryostats(); ++c) {
-        for (unsigned int t=0; t<geom->NTPC(c); ++t) {
-          double Xat0 = detProp.ConvertTicksToX(0,0,t,c);
-          double XatT = detProp.ConvertTicksToX(detProp.NumberTimeSamples(),0,t,c);
+      for (auto const& tpcid : geom->Iterate<geo::TPCID>()) {
+        geo::PlaneID const planeID{tpcid, 0};
+        double Xat0 = detProp.ConvertTicksToX(0,planeID);
+        double XatT = detProp.ConvertTicksToX(detProp.NumberTimeSamples(),planeID);
           xrange[0] = std::min(std::min(Xat0, XatT), xrange[0]);
           xrange[1] = std::max(std::max(Xat0, XatT), xrange[1]);
-        }
       }
 
       double result = 0.;
@@ -6982,13 +6979,12 @@ double dune::AnaRootParser::driftedLength(detinfo::DetectorPropertiesData const&
       //compute the drift x range
       double vDrift = detProp.DriftVelocity()*1e-3; //cm/ns
       double xrange[2] = {DBL_MAX, -DBL_MAX };
-      for (unsigned int c=0; c<geom->Ncryostats(); ++c) {
-        for (unsigned int t=0; t<geom->NTPC(c); ++t) {
-          double Xat0 = detProp.ConvertTicksToX(0,0,t,c);
-          double XatT = detProp.ConvertTicksToX(detProp.NumberTimeSamples(),0,t,c);
+      for (auto const& tpcid : geom->Iterate<geo::TPCID>()) {
+        geo::PlaneID const planeID{tpcid, 0};
+        double Xat0 = detProp.ConvertTicksToX(0,planeID);
+        double XatT = detProp.ConvertTicksToX(detProp.NumberTimeSamples(),planeID);
           xrange[0] = std::min(std::min(Xat0, XatT), xrange[0]);
           xrange[1] = std::max(std::max(Xat0, XatT), xrange[1]);
-        }
       }
 
       double result = 0.;

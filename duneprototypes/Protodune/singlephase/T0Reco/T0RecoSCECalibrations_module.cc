@@ -187,19 +187,16 @@ T0RecoSCECalibrations::T0RecoSCECalibrations(fhicl::ParameterSet const & p)
   FRONT = fTPCResolution;
   BACK = fTPCResolution;
 
-  for (geo::TPCID const& tID: geom->IterateTPCIDs()) {
-    geo::TPCGeo const& TPC = geom->TPC(tID);
+  for (auto const& TPC: geom->Iterate<geo::TPCGeo>()) {
    
     if(TPC.DriftDistance() < 25.0) continue;
    
-    double origin[3] = {0.};
-    double center[3] = {0.};
-    TPC.LocalToWorld(origin, center);
-   
-    double top = center[1] + TPC.HalfHeight() - fTPCResolution;
-    double bottom = center[1] - TPC.HalfHeight() + fTPCResolution;
-    double front = center[2] - TPC.HalfLength() + fTPCResolution;
-    double back = center[2] + TPC.HalfLength() - fTPCResolution;
+    auto const center = TPC.GetCenter();
+
+    double top = center.Y() + TPC.HalfHeight() - fTPCResolution;
+    double bottom = center.Y() - TPC.HalfHeight() + fTPCResolution;
+    double front = center.Z() - TPC.HalfLength() + fTPCResolution;
+    double back = center.Z() + TPC.HalfLength() - fTPCResolution;
    
     if (top > TOP) TOP = top;
     if (bottom < BOTTOM) BOTTOM = bottom;
@@ -458,12 +455,12 @@ void T0RecoSCECalibrations::analyze(art::Event const & e){
     auto const* geom = lar::providerFrom<geo::Geometry>();   
     auto const* hit = Hit_v.at(0);
     const geo::WireID wireID = hit->WireID();
-    const auto TPCGeoObject = geom->TPC(wireID.TPC,wireID.Cryostat);
+    const auto TPCGeoObject = geom->TPC(wireID.asPlaneID().asTPCID());
     short int driftDir1 = TPCGeoObject.DetectDriftDirection();
     bool cross_cathode = false;
     for (size_t ii = 1; ii < Hit_v.size(); ii++) {
       const geo::WireID wireID2 = Hit_v.at(ii)->WireID();
-      const auto TPCGeoObject2 = geom->TPC(wireID2.TPC,wireID2.Cryostat);
+      const auto TPCGeoObject2 = geom->TPC(wireID2.asPlaneID().asTPCID());
       short int driftDir2 = TPCGeoObject2.DetectDriftDirection(); 
                 
       if(driftDir1 + driftDir2 == 0){

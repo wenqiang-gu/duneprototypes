@@ -421,7 +421,7 @@ void Signal2Noise::analyze(art::Event const& e)
       hit_plane[ntrks][ihit] = wireplane;
 
       // calculate track angle w.r.t. wire
-      double angleToVert = geom->WireAngleToVertical(geom->View(allhits[ihit]->WireID()), allhits[ihit]->WireID().TPC, allhits[ihit]->WireID().Cryostat)-0.5*::util::pi<>();
+      double angleToVert = geom->WireAngleToVertical(geom->View(allhits[ihit]->WireID()), allhits[ihit]->WireID().asPlaneID().asTPCID())-0.5*::util::pi<>();
       
       //cout << "tpc: " << tpc << "; plane: " << wireplane << ";  wire: " << wire <<  "channel: " << channel << "; WireangleToVert: " << angleToVert << "; x: " << xyz[0] << endl;
 
