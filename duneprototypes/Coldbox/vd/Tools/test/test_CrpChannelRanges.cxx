@@ -98,13 +98,13 @@ int test_CrpChannelRanges(bool useExistingFcl, string det) {
     checkran(*cma, "cruCz", 1904, 1168);
   } else if ( det == "pdvd2022" ) {
     checkran(*cma, "crdet",    0, 2*6144);
-    checkran(*cma,   "crt",    0,   6144);
-    checkran(*cma,   "crb", 6144,   6144);
-    checkran(*cma,  "crtA",    0,   3072);
-    checkran(*cma,  "crtB", 3072,   3072);
-    checkran(*cma,  "crbA", 6144,   3072);
-    checkran(*cma,  "crbB", 9216,   3072);
-    string nams[4] = {"crtA", "crtB", "crbA", "crbB"};
+    checkran(*cma,   "crb",    0,   6144);
+    checkran(*cma,   "crt", 6144,   6144);
+    checkran(*cma,  "crbA",    0,   3072);
+    checkran(*cma,  "crbB", 3072,   3072);
+    checkran(*cma,  "crtA", 6144,   3072);
+    checkran(*cma,  "crtB", 9216,   3072);
+    string nams[4] = {"crbA", "crbB", "crtA", "crtB"};
     Index  begs[4] = {     0,   3072,   6144,   9216};
     for ( Index icru=0; icru<4; ++icru ) {
       string nam = nams[icru];

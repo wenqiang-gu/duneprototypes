@@ -33,12 +33,10 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
   const Index nsc = nsu + nsv + nsz;
   Index ncru = 0;
   Index npla = 3;
-  NameVector endLabs = {"t", "b"};
   NameVector plaLabs = {"u", "v", "z"};
   NameVector cruLabs;
   if ( m_Detector == "cb2022" ) {
     ncru = 1;
-    endLabs = NameVector(1, "p");
     cruLabs.push_back("C");
   } else if ( m_Detector == "pdvd2022" ) {
     ncru = 4;
@@ -59,7 +57,7 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
   for ( Index icru=0; icru<ncru; ++icru ) {
     string crulab = cruLabs[icru];
     string scr = "cru";
-    if ( ncru > 1 ) scr = icru < ncru/2 ? "crt" : "crb";
+    if ( ncru > 1 ) scr = icru < ncru/2 ? "crb" : "crt";
     string uscr = toupper(scr);
     // Detector ends: crt, crb
     if ( ncru > 1 && (icru == 0 || icru == ncru/2) ) {
