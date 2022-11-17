@@ -59,3 +59,16 @@ cet_test(test_CrpChannelRanges SOURCES test_CrpChannelRanges.cxx
     Boost::filesystem
 )
 
+cet_test(test_CrpChannelGroups SOURCES test_CrpChannelGroups.cxx
+  LIBRARIES
+    dunecore_ArtSupport
+    art::Utilities
+    canvas::canvas
+    fhiclcpp
+    cetlib::cetlib cetlib_except
+    cetlib_except::cetlib_except
+    ROOT_BASIC_LIB_LIST
+    SQLITE3
+    Boost::filesystem
+)
+

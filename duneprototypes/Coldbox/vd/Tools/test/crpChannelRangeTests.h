@@ -49,7 +49,7 @@ Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp, Index nex
 
 template<class T>
 int checkChannelRanges(string callname, string det, const T& rt, string line) {
-  string myname = callname + "checkChannelranges: ";
+  string myname = callname + "checkChannelRanges: ";
   cout << myname << line << endl;
   cout << myname << "Check detector." << endl;
   if ( det == "cb2022" ) {
