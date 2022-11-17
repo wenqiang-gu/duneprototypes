@@ -22,6 +22,13 @@ cet_build_plugin(VDColdboxOnlineChannel  art::tool
                 ROOT_BASIC_LIB_LIST
              )
 
+cet_build_plugin(CrpChannelRanges  art::tool
+                dunecore_ArtSupport
+                art::Utilities canvas
+                cetlib::cetlib cetlib_except
+                ROOT_BASIC_LIB_LIST
+             )
+
 
 install_fhicl()
 
