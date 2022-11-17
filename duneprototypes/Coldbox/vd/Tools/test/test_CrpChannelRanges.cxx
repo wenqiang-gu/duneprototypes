@@ -13,6 +13,7 @@
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include "TH1F.h"
+#include "crpChannelRangeTests.h"
 
 #undef NDEBUG
 #include <cassert>
@@ -28,21 +29,6 @@ using fhicl::ParameterSet;
 using Index = IndexRange::Index;
 using IndexVector = std::vector<Index>;
 
-Index checkran(const IndexRangeTool& rm, string sran, Index bexp, Index nexp =0, bool chkvalid =true) {
-  const string myname = "checkran: ";
-  IndexRange ran = rm.get(sran);
-  if ( ran.isValid() ) cout << ran << endl;
-  if ( chkvalid && ! ran.isValid() ) {
-    cout << myname << "Unable to find range " << sran << endl;
-    assert(false);
-  }
-  if ( nexp ) {
-    assert( ran.begin == bexp );
-    assert( ran.size() == nexp );
-  }
-  return ran.size();
-}
-  
 //**********************************************************************
 
 int test_CrpChannelRanges(bool useExistingFcl, string det) {
@@ -88,43 +74,11 @@ int test_CrpChannelRanges(bool useExistingFcl, string det) {
   auto cma = tm.getPrivate<IndexRangeTool>(det);
   assert( cma != nullptr );
 
-  cout << myname << line << endl;
-  cout << myname << "Check detector." << endl;
-  if ( det == "cb2022" ) {
-    checkran(*cma, "crdet",    0, 3072);
-    checkran(*cma,  "cruC",    0, 3072);
-    checkran(*cma, "cruCu",    0,  952);
-    checkran(*cma, "cruCv",  952,  952);
-    checkran(*cma, "cruCz", 1904, 1168);
-  } else if ( det == "pdvd2022" ) {
-    checkran(*cma, "crdet",    0, 2*6144);
-    checkran(*cma,   "crb",    0,   6144);
-    checkran(*cma,   "crt", 6144,   6144);
-    checkran(*cma,  "crbA",    0,   3072);
-    checkran(*cma,  "crbB", 3072,   3072);
-    checkran(*cma,  "crtA", 6144,   3072);
-    checkran(*cma,  "crtB", 9216,   3072);
-    string nams[4] = {"crbA", "crbB", "crtA", "crtB"};
-    Index  begs[4] = {     0,   3072,   6144,   9216};
-    for ( Index icru=0; icru<4; ++icru ) {
-      string nam = nams[icru];
-      Index  beg = begs[icru];
-      checkran(*cma,  nam+"u",      beg,    952);
-      checkran(*cma,  nam+"v",  beg+952,    952);
-      checkran(*cma,  nam+"z", beg+1904,   1168);
-    }
-  } else {
-    assert(false);
-  }
-
-  cout << myname << line << endl;
-  cout << myname << "Check adapters." << endl;
-
-  cout << myname << line << endl;
-  cout << myname << "Check kels." << endl;
+  checkChannelRanges(myname, det, *cma, line);
 
   cout << myname << line << endl;
   cout << myname << "Done." << endl;
+
   return 0;
 }
 

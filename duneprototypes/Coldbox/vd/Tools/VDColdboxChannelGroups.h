@@ -1,7 +1,7 @@
 // VDColdboxChannelGroups.h
 //
 // Returns groups for the vertical drift coldbox test in 2021.
-// At present, single ranges from channelranges ar returned.
+// At present, single ranges from channelranges are returned.
 
 #ifndef VDColdboxChannelGroups_H
 #define VDColdboxChannelGroups_H
