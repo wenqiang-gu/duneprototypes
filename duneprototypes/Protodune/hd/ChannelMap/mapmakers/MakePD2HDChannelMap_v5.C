@@ -4,7 +4,7 @@
 #include <vector>
 
 /*************************************************************************
-    > File Name: MakePD2HDChannelMap_v3.C
+    > File Name: MakePD2HDChannelMap_v5.C
     > Author: Tom Junk
 ************************************************************************/
 
@@ -18,7 +18,7 @@
 // both v1 and v2 assume the wire endpoints in the offline geometry are the
 // places where the electronics are connected.
 
-// v3 shifts the offline map numbers by 3 channels so that the offline wire
+// v5 shifts the offline map numbers by 3 channels so that the offline wire
 // endpoints correspond to the place where wires emerge from under the cover boards
 
 // Updade July 20 to invert the channel ordering within the FEMB, so that
@@ -90,14 +90,14 @@ int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane);
 // 6->8
 
 // start ASIC numbering at 0
-// the following map is the identity -- no unscrambling for v3
+// the following map is the identity -- no unscrambling for v5
 int pd2asic[8] = {0,1,2,3,4,5,6,7};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
 // beam-right side first, low z to high z, then beam left low z to high z.  Then do
 // downstream side.
 
-int cratelist[4] = {2,4,1,3};
+int cratelist[4] = {1,3,2,4};
 TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 
 // APA3               APA4		 
@@ -107,17 +107,17 @@ TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 // TPC 2 (3)	      TPC 6 (7)	 
 // 1st channel: 2560  1st channel: 7680
 
-// APA2               APA1		   
+// APA1               APA2		   
 // APA_P02SU	      APA_P01SU	   
 // FEMBs 1-20	      FEMBs 1-20
 // TPS0		      TPS2		   
 // TPC 1 (0)	      TPC 5 (4)	   
 // 1st channel: 0     1st channel: 5120  
 
-void MakePD2HDChannelMap_v3() {
+void MakePD2HDChannelMap_v5() {
  
   ofstream fmapfelix;
-  fmapfelix.open ("PD2HDChannelMap_v3.txt");
+  fmapfelix.open ("PD2HDChannelMap_v5.txt");
   int asicsperfemb = 8;
   int ncrates = 4;
   int nfemb = 20;

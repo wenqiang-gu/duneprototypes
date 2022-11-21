@@ -44,7 +44,7 @@
 
 int main(int argc, char **argv)
 {
-  std::string channelMapFile("PD2HDChannelMap_v1.txt");
+  std::string channelMapFile("PD2HDChannelMap_v5.txt");
 
   std::ifstream inFile(channelMapFile, std::ios::in);
   std::string line;
