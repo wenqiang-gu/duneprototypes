@@ -1,4 +1,4 @@
-hannel map evolution for the HD Coldbox and ProtoDUNE-HD, 2022
+Channel map evolution for the HD Coldbox and ProtoDUNE-HD, 2022
 
 We use the PD2HD Channel Map service and map files.  They started
 off being developed in the coldbox directory but have been
