@@ -13,12 +13,14 @@ v0:  Use for HD coldbox runs between 13672 and 14174, inclusive.
 v1:  Use for HD coldbox runs 13368 and prior
 v2:  Use for HD coldbox runs 14175 and later, and for ProtoDUNE-HD
 
-Channel map files where the offline channel numbering is based on
+v3 is a channel map file where the offline channel numbering is based on
 the locations of the wires where they emerge from under the head boards.
 This corresponds more exactly to the offline geometry definition of
 wire endpoints.  To be used for physics analyses.
 
-v3:  Use for HD coldbox runs 14175 and later, and for ProtoDUNE-HD
+v3:  Use for HD coldbox runs 14175 and later, and for ProtoDUNE-HD,
+but see below about the APA numbering.  v2 and v3 also have a bug
+swapping APA 3 and APA 4.
 
 v2 and v3 assume APA numbering as given at the 
 May 2022 collaboration meeting in a talk by V. Tishchenko:
