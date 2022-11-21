@@ -4,23 +4,12 @@
 #include <vector>
 
 /*************************************************************************
-    > File Name: MakePD2HDChannelMap_v3.C
+    > File Name: MakePD2HDChannelMap_v4.C
     > Author: Tom Junk
 ************************************************************************/
 
-// meant to be run as a ROOT macro
-
 // v1 has a scrambled ASIC map due to the WIB firmware not being updated
 // for the monolithic FEMBs.  This map reverts to the original spec.
-
-// v2 is the unscrambled original version.
-
-// both v1 and v2 assume the wire endpoints in the offline geometry are the
-// places where the electronics are connected.
-
-// v3 shifts the offline map numbers by 3 channels so that the offline wire
-// endpoints correspond to the place where wires emerge from under the cover boards
-
 // Updade July 20 to invert the channel ordering within the FEMB, so that
 // the channels now increase in the same direction as the FEMB numbering.
 // From an e-mail discussion with Roger Huang
@@ -90,14 +79,14 @@ int calc_orig_wibframechan(int femb_on_link, int plane, int chan_in_plane);
 // 6->8
 
 // start ASIC numbering at 0
-// the following map is the identity -- no unscrambling for v3
+// the following map is the identity -- no unscrambling for v4
 int pd2asic[8] = {0,1,2,3,4,5,6,7};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
 // beam-right side first, low z to high z, then beam left low z to high z.  Then do
 // downstream side.
 
-int cratelist[4] = {2,4,1,3};
+int cratelist[4] = {1,3,2,4};
 TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 
 // APA3               APA4		 
@@ -107,17 +96,17 @@ TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 // TPC 2 (3)	      TPC 6 (7)	 
 // 1st channel: 2560  1st channel: 7680
 
-// APA2               APA1		   
+// APA1               APA2		   
 // APA_P02SU	      APA_P01SU	   
 // FEMBs 1-20	      FEMBs 1-20
 // TPS0		      TPS2		   
 // TPC 1 (0)	      TPC 5 (4)	   
 // 1st channel: 0     1st channel: 5120  
 
-void MakePD2HDChannelMap_v3() {
+void MakePD2HDChannelMap_v4() {
  
   ofstream fmapfelix;
-  fmapfelix.open ("PD2HDChannelMap_v3.txt");
+  fmapfelix.open ("PD2HDChannelMap_v4.txt");
   int asicsperfemb = 8;
   int ncrates = 4;
   int nfemb = 20;
@@ -154,32 +143,26 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 348 + nichans*ifemb + iuchan;
+		      offlchan = 2560*icrate + 348 + nichans*ifemb + iuchan;
 		    }
 		  else
 		    {
 		      int tmpchan = 348 + nichans*(ifemb - 20) + iuchan;
 		      if (tmpchan < 0) tmpchan += 800;
-                      offlchan = tmpchan;
+                      offlchan = tmpchan + 2560*icrate;
 		    }
-		  offlchan -= 3;
-		  if (offlchan <0) offlchan += 800;
-
 		}
 	      else
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 399 - nichans*ifemb - iuchan;
+		      offlchan = 2560*icrate + 399 - nichans*ifemb - iuchan;
 		    }
 		  else
 		    {
-		      offlchan = 400 + nichans*(20-ifemb) - iuchan - 1;
+		      offlchan = 2560*icrate + 400 + nichans*(20-ifemb) - iuchan - 1;
 		    }
-		  offlchan += 3;
-		  if (offlchan > 799) offlchan -= 800;
 		}
-	      offlchan += 2560*icrate;
 
   	      int ocebchan  = calc_cebchan(oplane,iuchan);
   	      int oasic     = calc_asic(oplane,iuchan);
@@ -209,32 +192,26 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 1547 - nichans*ifemb - ivchan;
+		      offlchan = 2560*icrate + 1547 - nichans*ifemb - ivchan;
 		    }
 		  else
 		    {
 		      int tmpchan = 1548 - nichans*(ifemb-20) - ivchan -1;
 		      if (tmpchan > 1599) tmpchan -= 800;
-		      offlchan = tmpchan;
+		      offlchan = tmpchan + 2560*icrate;
 		    }
-		  offlchan -= 3;
-		  if (offlchan < 800) offlchan += 800;
 		}
 	      else
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 800 + nichans*ifemb + ivchan;
+		      offlchan = 2560*icrate + 800 + nichans*ifemb + ivchan;
 		    }
 		  else
 		    {
-		      offlchan = 1599 + nichans*(ifemb-20) + ivchan + 1;
+		      offlchan = 2560*icrate + 1599 + nichans*(ifemb-20) + ivchan + 1;
 		    }
-		  offlchan += 3;
-		  if (offlchan > 1599) offlchan -= 800;
 		}
-	      offlchan += 2560*icrate;
-	      
   	      int ocebchan  = calc_cebchan(oplane,ivchan);
   	      int oasic     = calc_asic(oplane,ivchan);
   	      int oasicchan = calc_asicchan(oplane,ivchan);
@@ -262,26 +239,24 @@ void MakePD2HDChannelMap_v3() {
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 2080 + ncchans*ifemb  + ixchan;
+		      offlchan = 2560*icrate + 2080 + ncchans*ifemb  + ixchan;
 		    }
 		  else
 		    {
-		      offlchan = 1600 + ncchans*(20-ifemb) - ixchan - 1;
+		      offlchan = 2560*icrate + 1600 + ncchans*(20-ifemb) - ixchan - 1;
 		    }
 		}
 	      else
 		{
 		  if (ifemb<10)
 		    {
-		      offlchan = 1600 + ncchans*ifemb + ixchan;
+		      offlchan = 2560*icrate + 1600 + ncchans*ifemb + ixchan;
 		    }
 		  else
 		    {
-		      offlchan = 2080 + ncchans*(20-ifemb) - ixchan - 1;
+		      offlchan = 2560*icrate + 2080 + ncchans*(20-ifemb) - ixchan - 1;
 		    }
 		}
-	      offlchan += 2560*icrate;
-
   	      int ocebchan  = calc_cebchan(oplane,ixchan);
   	      int oasic     = calc_asic(oplane,ixchan);
   	      int oasicchan = calc_asicchan(oplane,ixchan);
