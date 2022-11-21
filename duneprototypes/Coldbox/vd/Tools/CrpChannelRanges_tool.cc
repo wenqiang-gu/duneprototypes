@@ -51,7 +51,7 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
   insert("crdet", 0, nsdet, "CRDET");
   assert( ncru > 0 );
   if ( ncru > 1 ) assert( ncru/2 == (ncru+1)/2 );
-  assert ( crulabs.size() == ncru );
+  assert ( cruLabs.size() == ncru );
   // Loop over CRUs
   Index its = 0;    // First strip in this CRU
   for ( Index icru=0; icru<ncru; ++icru ) {
