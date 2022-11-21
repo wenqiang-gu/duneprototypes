@@ -6,7 +6,7 @@
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdct.fcl"
 #include "channelstatus_vdcb.fcl"
-#include "vdcb_tools.fcl"
+#include "vdcb1_tools.fcl"
 #include "vdcb_dataprep_sequences.fcl"
 
 process_name: VDBDEDataPrepReco
