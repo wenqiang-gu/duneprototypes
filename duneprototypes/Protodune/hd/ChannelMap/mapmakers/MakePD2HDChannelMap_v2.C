@@ -89,6 +89,20 @@ int pd2asic[8] = {0,1,2,3,4,5,6,7};
 int cratelist[4] = {2,4,1,3};
 TString APANames[4] = {"APA_P02SU","APA_P02NL","APA_P01SU","APA_P01NL"};
 
+// APA3               APA4		 
+// APA_P02NL	      APA_P01NL	 
+// FEMBs 1-20	      FEMBs 1-20	 
+// TPS1		      TPS3		 
+// TPC 2 (3)	      TPC 6 (7)	 
+// 1st channel: 2560  1st channel: 7680
+
+// APA2               APA1		   
+// APA_P02SU	      APA_P01SU	   
+// FEMBs 1-20	      FEMBs 1-20
+// TPS0		      TPS2		   
+// TPC 1 (0)	      TPC 5 (4)	   
+// 1st channel: 0     1st channel: 5120  
+
 void MakePD2HDChannelMap_v2() {
  
   ofstream fmapfelix;
