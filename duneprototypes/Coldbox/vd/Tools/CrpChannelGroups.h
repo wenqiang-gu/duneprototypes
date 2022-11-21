@@ -1,10 +1,14 @@
-// VDColdboxChannelGroups.h
+// CrpChannelGroups.h
 //
-// Returns groups for the vertical drift coldbox test in 2021.
+// David Adams
+// November 2022
+//
+// Returns groups for the vertical drift CRPs used in the late 2022
+// coldbox tests (CRP2+), ProtoDUNE-VD and maybe FD-VD.
 // At present, single ranges from channelranges are returned.
 
-#ifndef VDColdboxChannelGroups_H
-#define VDColdboxChannelGroups_H
+#ifndef CrpChannelGroups_H
+#define CrpChannelGroups_H
 
 #include "art/Utilities/ToolMacros.h"
 #include "fhiclcpp/ParameterSet.h"
@@ -13,15 +17,15 @@
 
 class IndexRangeTool;
 
-class VDColdboxChannelGroups : public IndexRangeGroupTool {
+class CrpChannelGroups : public IndexRangeGroupTool {
 
 public:
 
   // Ctor.
-  VDColdboxChannelGroups(fhicl::ParameterSet const& ps);
+  CrpChannelGroups(fhicl::ParameterSet const& ps);
 
   // Dtor.
-  ~VDColdboxChannelGroups() override =default;
+  ~CrpChannelGroups() override =default;
 
   // Return a range.
   IndexRangeGroup get(std::string nam) const override;
