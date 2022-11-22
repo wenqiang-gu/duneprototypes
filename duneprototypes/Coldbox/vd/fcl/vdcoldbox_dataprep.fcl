@@ -1,7 +1,7 @@
 #include "protoDUNE_reco_data_Dec2018.fcl"
 #include "protodune_tools_dune.fcl"
 #include "channelstatus_vdcb.fcl"
-#include "vdcb_tools.fcl"
+#include "vdcb1_tools.fcl"
 #include "vdcb_dataprep_sequences.fcl"
 
 process_name: VDRawDigit
@@ -95,4 +95,6 @@ physics.producers.caldata.LogLevel: 3
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
 services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr_adc
 
+tools.channelRanges: @local::tools.channelRangesVdcb1
+tools.channelGroups: @local::tools.channelGroupsVdcb1
 tools.vdcbb_adcChannelRawRmsPlotter.MetricMax: 100

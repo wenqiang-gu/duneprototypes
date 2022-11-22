@@ -1,5 +1,14 @@
-#include "vdcoldbox_raw_tdedataprep.fcl"
+# vdcoldbox_raw_dataprep_crp2.fcl
+#
+#include "services_vdcoldbox.fcl"
+#include "protoDUNE_reco_data_Dec2018.fcl"
+#include "protodune_tools_dune.fcl"
+#include "channelstatus_vdcb.fcl"
+#include "vdcb2_tools.fcl"
+#include "vdcb_dataprep_sequences.fcl"
 #include "channelstatus_vdcrp2.fcl"
+
+process_name: VDSourcePrep
 
 services: {
   TimeTracker:       @local::dune_time_tracker
@@ -11,12 +20,48 @@ services: {
   ChannelStatusService: @local::data.ChannelStatusService_vdcrp2
 }
 
+outputs: {
+  rootout: {
+    module_type: RootOutput
+    fileName: "out_raw_dataprep.root"
+    dataTier:    "full-reconstructed"
+    compressionLevel: 1
+  }
+}
+
+physics: {
+  producers: {
+    caldata: @local::protoDUNE_reco_data_producers.caldata
+  }
+
+  produce: [
+    caldata
+  ]
+}
+
+source: {
+  module_type: HDF5RawInput
+}
+
+tools.vdtool: {
+  tool_type: "VDColdboxDataInterface"
+}
+
+services.LArFFT.FFTSize: 10000
 physics.producers.caldata.DecoderTool: ""
+physics.producers.caldata.OnlineChannelMapTool: onlineChannelMapVdcb
+physics.producers.caldata.OutputDigitName: "dataprep"
 physics.producers.caldata.DigitLabel:    "tpcrawdecoder:daq"
 physics.producers.caldata.WireName: "dataprep"
-physics.producers.caldata.ChannelGroups: ["cru"]
+physics.producers.caldata.ChannelGroups: ["crdet"]
 physics.producers.caldata.DoGroups: true
 physics.producers.caldata.OnlineChannelMapTool: ""
+
+
+# See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
+services.RawDigitPrepService.ToolNames: @local::data.vdbcb_dataprep_seqs.nomcal_cnr_adc
+
+tools.vdbcb_adcChannelRawRmsPlotter.MetricMax: 100
 
 # See dune/DataPrep/fcl/vdcb_dataprep_sequences for other options.
 services.RawDigitPrepService.ToolNames: @local::data.vdtcb2_dataprep_seqs.adc_cnr
