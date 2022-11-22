@@ -11,7 +11,7 @@
 #include "particleid.fcl"
 #include "showerfindermodules_dune.fcl"
 #include "channelstatus_pddp.fcl"
-#include "./calorimetry_pdune_yoann.fcl"
+#include "calorimetry_pdune.fcl"
 
 #include "tools_dune.fcl"
 
