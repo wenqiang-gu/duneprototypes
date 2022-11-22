@@ -10,8 +10,8 @@
 #include "t0reco.fcl"
 #include "particleid.fcl"
 #include "showerfindermodules_dune.fcl"
-#include "./channelstatus_pddp.fcl"
-#include "calorimetry_pdune.fcl"
+#include "channelstatus_pddp.fcl"
+#include "./calorimetry_pdune_yoann.fcl"
 
 #include "tools_dune.fcl"
 
@@ -48,6 +48,7 @@ services.SignalShapingServiceDUNEDPhase.ColFilterParams: [ 1.0, 0.0, 0.1 ]
 
 # electric field configuration
 services.DetectorPropertiesService.Efield:	[0.495, 4.0, 0.0]
+services.DetectorPropertiesService.Electronlifetime: 1875
 
 ### to add to common
 tools.pddp_adcThreshSignalFinder:{
@@ -177,11 +178,12 @@ physics:
 
 ### calorimetry
        calo:               @local::pdune_dp_calodata
+       gnocalo:		   @local::pdune_dp_gnocalodata
  }
 
  #define the producer and filter modules for this path, order matters, 
  #filters reject all following items.  see lines starting physics.producers below
- reco: [ rns, caldata, gaushit, pandora, pandoraTrack, pandoraShower, calo ] 
+ reco: [ rns, caldata, gaushit, pandora, pandoraTrack, pandoraShower, calo, gnocalo ] 
 
  #define the output stream, there could be more than one if using filters 
  stream1:  [ out1 ]
@@ -237,23 +239,23 @@ physics.producers.gaushit.HitFinderToolVec.CandidateHitsPlane1.RoiThreshold: 3.0
 ## Pandora
 ################################################################################
 
-physics.producers.pandora.ConfigFile: "PandoraSettings_Master_ProtoDUNE_DP.xml"
-physics.producers.pandora.EnableLineGaps: true
-physics.producers.pandora.EnableMCParticles: false
-physics.producers.pandora.EnableProduction: true
-physics.producers.pandora.GeantModuleLabel: "largeant"
-physics.producers.pandora.HitFinderModuleLabel: "gaushit"
-physics.producers.pandora.PrintOverallRecoStatus: false
-physics.producers.pandora.ShouldPerformSliceId: false
+physics.producers.pandora.ConfigFile:                 "PandoraSettings_Master_ProtoDUNE_DP.xml"
+physics.producers.pandora.EnableLineGaps:             true
+physics.producers.pandora.EnableMCParticles:          false
+physics.producers.pandora.EnableProduction:           true
+physics.producers.pandora.GeantModuleLabel:           "largeant"
+physics.producers.pandora.HitFinderModuleLabel:       "gaushit"
+physics.producers.pandora.PrintOverallRecoStatus:     false
+physics.producers.pandora.ShouldPerformSliceId:       false
 physics.producers.pandora.ShouldRunAllHitsCosmicReco: true
-physics.producers.pandora.ShouldRunCosmicHitRemoval: false
-physics.producers.pandora.ShouldRunCosmicRecoOption: false
-physics.producers.pandora.ShouldRunNeutrinoRecoOption: false
-physics.producers.pandora.ShouldRunSlicing: false
-physics.producers.pandora.ShouldRunStitching: true
-physics.producers.pandora.UseGlobalCoordinates: false
-physics.producers.pandora.UseHitWidths: true
-physics.producers.pandoraTrack.PFParticleLabel:         "pandora"
-physics.producers.pandoraShower.PFParticleLabel:        "pandora"
+physics.producers.pandora.ShouldRunCosmicHitRemoval:  false
+physics.producers.pandora.ShouldRunCosmicRecoOption:  false
+physics.producers.pandora.ShouldRunNeutrinoRecoOption:false
+physics.producers.pandora.ShouldRunSlicing:           false
+physics.producers.pandora.ShouldRunStitching:         true
+physics.producers.pandora.UseGlobalCoordinates:       false
+physics.producers.pandora.UseHitWidths:               true
+physics.producers.pandoraTrack.PFParticleLabel:       "pandora"
+physics.producers.pandoraShower.PFParticleLabel:      "pandora"
 
 #Optical detector configuration
