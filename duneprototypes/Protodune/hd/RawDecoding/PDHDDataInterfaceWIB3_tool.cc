@@ -1,6 +1,5 @@
 #include "PDHDDataInterface.h"
 
-#include <hdf5.h>
 #include <iostream>
 #include <list>
 #include <set>
@@ -8,20 +7,16 @@
 #include <cstring>
 #include <string>
 #include "TMath.h"
-#include "TString.h"
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
-#include "dunecore/HDF5Utils/HDF5Utils.h"
+#include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
+#include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
 #include "detdataformats/wib2/WIB2Frame.hpp"
 #include "duneprototypes/Protodune/hd/ChannelMap/PD2HDChannelMapService.h"
 
-
-
 PDHDDataInterface::PDHDDataInterface(fhicl::ParameterSet const& p)
-  : fForceOpen(p.get<bool>("ForceOpen", false)),
-    fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
+  : fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fMaxChan(p.get<int>("MaxChan",1000000)),
     fDefaultCrate(p.get<unsigned int>("DefaultCrate", 1)),
     fDebugLevel(p.get<int>("DebugLevel",0))
@@ -32,60 +27,45 @@ PDHDDataInterface::PDHDDataInterface(fhicl::ParameterSet const& p)
 // wrapper for backward compatibility.  Return data for all APA's represented 
 // in the fragments on these labels
 int PDHDDataInterface::retrieveData(art::Event &evt,
-					    std::string inputLabel,
-					    std::vector<raw::RawDigit> &raw_digits,
-					    std::vector<raw::RDTimeStamp> &rd_timestamps,
-					    std::vector<raw::RDStatus> &rdstatuses)
- {
-   return 0;
- }
+                                    std::string inputLabel,
+                                    std::vector<raw::RawDigit> &raw_digits,
+                                    std::vector<raw::RDTimeStamp> &rd_timestamps,
+                                    std::vector<raw::RDStatus> &rdstatuses)
+{
+  return 0;
+}
 
 
 int PDHDDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
-                                                         std::vector<raw::RawDigit> &raw_digits,
-                                                         std::vector<raw::RDTimeStamp> &rd_timestamps,
-                                                         std::vector<raw::RDStatus> &rdstatuses,
-                                                         std::vector<int> &apalist)
+                                                    std::vector<raw::RawDigit> &raw_digits,
+                                                    std::vector<raw::RDTimeStamp> &rd_timestamps,
+                                                    std::vector<raw::RDStatus> &rdstatuses,
+                                                    std::vector<int> &apalist)
 {
-  using namespace dune::HDF5Utils;
-  auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo>(fFileInfoLabel);
-  const std::string & toplevel_groupname = infoHandle->GetEventGroupName();
+  auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo2>(fFileInfoLabel);
   const std::string & file_name = infoHandle->GetFileName();
-  hid_t file_id = infoHandle->GetHDF5FileHandle();
-  hid_t the_group = getGroupFromPath(file_id, toplevel_groupname);
+  uint32_t runno = infoHandle->GetRun();
+  size_t   evtno = infoHandle->GetEvent();
+  size_t   seqno = infoHandle->GetSequence();
+
+  dunedaq::hdf5libs::HDF5RawDataFile::record_id_t rid = std::make_pair(evtno, seqno);
 
   if (fDebugLevel > 0)
     {
-      std::cout << "PDHDDataInterface : " << "HDF5 FileName: " << file_name << std::endl;
-      std::cout << "PDHDDataInterface :" << "Top-Level Group Name: " << toplevel_groupname << std::endl;
-    }
-
-  // If the fcl file said to force open the file (i.e. because one is just running DataPrep), then open
-  // but only if we are on a new file -- identified by if the handle stored in the event is different.
-  if (fForceOpen && (file_id != fPrevStoredHandle))
-    {
-      fHDFFile = H5Fopen(file_name.data(), H5F_ACC_RDONLY, H5P_DEFAULT);
-    } // If the handle is the same, fHDFFile won't change
-  else if (!fForceOpen)
-    {
-      fHDFFile = file_id;
-    }
-  fPrevStoredHandle = file_id;
-  
-  if (fDebugLevel > 0)
-    {
+      std::cout << "PDHDDataInterface HDF5 FileName: " << file_name << std::endl;
+      std::cout << "PDHDDataInterface Run:Event:Seq: " << runno << ":" << evtno << ":" << seqno << std::endl;
       std::cout << "PDHDDataInterface : " <<  "Retrieving Data for " << apalist.size() << " APAs " << std::endl;
     }
-
+  
   for (const int & i : apalist)
     {
       int apano = i;
       if (fDebugLevel > 0)
         {
-	  std::cout << "PDHDDataInterface :" << "apano: " << i << std::endl;
+          std::cout << "PDHDDataInterface :" << "apano: " << i << std::endl;
         }
 
-      getFragmentsForEvent(the_group, raw_digits, rd_timestamps, apano);
+      getFragmentsForEvent(rid, raw_digits, rd_timestamps, apano);
 
       //Currently putting in dummy values for the RD Statuses
       rdstatuses.clear();
@@ -95,139 +75,131 @@ int PDHDDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
   return 0;
 }
 
+// get data for APAs on the list.  Retrieve the HDF5 raw file pointer from the HDF5RawFile2Service
 
-// get data for a specific label, but only return those raw digits that correspond to APA's on the list
 int PDHDDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
-                                                           std::string inputLabel,
-                                                           std::vector<raw::RawDigit> &raw_digits,
-                                                           std::vector<raw::RDTimeStamp> &rd_timestamps,
-                                                           std::vector<raw::RDStatus> &rdstatuses,
-                                                           std::vector<int> &apalist)
+                                                      std::string inputLabel,
+                                                      std::vector<raw::RawDigit> &raw_digits,
+                                                      std::vector<raw::RDTimeStamp> &rd_timestamps,
+                                                      std::vector<raw::RDStatus> &rdstatuses,
+                                                      std::vector<int> &apalist)
 {
   return 0;
 }
 
 
-// This is designed to read 1APA/CRU, only for VDColdBox data. The function uses "apano", handed by DataPrep,
-// as an argument.
-void PDHDDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
+// This is designed to get data from one APA. 
+void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile::record_id_t &rid, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
 {
-  using namespace dune::HDF5Utils;
   using dunedaq::detdataformats::wib2::WIB2Frame;
-
-  // art::ServiceHandle<dune::PdspChannelMapService> channelMap;
   art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
-
-  std::deque<std::string> det_types
-    = getMidLevelGroupNames(the_group);
-  
-  for (const auto & det : det_types)
+  art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
+  auto rf = rawFileService->GetPtr();
+  auto sourceids = rf->get_source_ids(rid);
+  for (const auto &source_id : sourceids)  
     {
-      if (det != "TPC") continue;
-      
-      if (fDebugLevel > 0)
+      // look through the geo IDs and see if we are in the right crate
+      bool has_desired_apa = false;
+      auto gids = rf->get_geo_ids_for_source_id(rid, source_id);
+      for (const auto &gid : gids)
         {
-	  std::cout << "PDHDDataInterfaceWIB3 :"  << "Detector type:  " << det << std::endl;
+          if (fDebugLevel > 1)
+            {
+              std::cout << "PDHDDataInterfaceWIB3 Tool Geoid: " << std::hex << gid << std::endl;
+            }
+          uint16_t detid = 0xffff & gid;
+          dunedaq::detdataformats::DetID::Subdetector detidenum = static_cast<dunedaq::detdataformats::DetID::Subdetector>(detid);
+          auto subdetector_string = dunedaq::detdataformats::DetID::subdetector_to_string(detidenum);
+          if (subdetector_string == "HD_TPC")
+            {
+              uint16_t crate_from_geo = 0xffff & (gid >> 16);
+              if (crate_from_geo == apano)
+                {
+                  has_desired_apa = true;
+                  break;
+                }
+            }
         }
-      hid_t geoGroup = getGroupFromPath(the_group, det);
-      std::deque<std::string> apaNames
-        = getMidLevelGroupNames(geoGroup);
-      
-      if (fDebugLevel > 0)
+      if (has_desired_apa)
         {
-	  std::cout << "PDHDDataInterfaceWIB3 :" << "Size of apaNames: " << apaNames.size() << std::endl;
-	  std::cout << "PDHDDataInterfaceWIB3 :" << "apaNames[0]: "  << apaNames[0] << std::endl;
-        }
-      // apaNames is a vector whose elements start at [0].
-      hid_t linkGroup = getGroupFromPath(geoGroup, apaNames[0]);
-      std::deque<std::string> linkNames = getMidLevelGroupNames(linkGroup);
-
-      for (const auto & t : linkNames)
-        {
-	  // link below is calculated from the HDF5 group name. However,later a link is calculated from 
-          // WIBFrameHeader and used in the rest of the code.
-	  unsigned int link = atoi(t.substr(4,2).c_str());
-	  hid_t dataset = H5Dopen(linkGroup, t.data(), H5P_DEFAULT);
-          hsize_t ds_size = H5Dget_storage_size(dataset);
-          if (ds_size <= sizeof(FragmentHeader)) continue; //Too small
-
-	  std::vector<char> ds_data(ds_size);
-          H5Dread(dataset, H5T_STD_I8LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ds_data.data());
-          H5Dclose(dataset);
-
-	  //Each fragment is a collection of WIB Frames
-          Fragment frag(&ds_data[0], Fragment::BufferAdoptionMode::kReadOnlyMode);
-          size_t n_frames = (ds_size - sizeof(FragmentHeader))/sizeof(WIB2Frame);
+          // this reads the relevant dataset and returns a std::unique_ptr.  Memory is released when 
+          // it goes out of scope.
+ 
+          auto frag = rf->get_frag_ptr(rid, source_id);
+          auto frag_size = frag->get_size();
+          size_t fhs = sizeof(dunedaq::daqdataformats::FragmentHeader);
+          if (frag_size <= fhs) continue; // Too small to even have a header
+          size_t n_frames = (frag_size - fhs)/sizeof(WIB2Frame);
           if (fDebugLevel > 0)
             {
-	      std::cout << "n_frames calc.: " << ds_size << " " << sizeof(FragmentHeader) << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
+              std::cout << "n_frames calc.: " << frag_size << " " << fhs << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
             }
-	  std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
-          unsigned int slot = 0, link_from_frameheader = 0, crate = 0;
-	  
+
+          std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
+          unsigned int slot = 0, link = 0, crate = 0;
+          
           for (size_t i = 0; i < n_frames; ++i)
             {
-	      // dump WIB frames in hex
-	      //std::cout << "Frame number: " << i << std::endl;
-	      // size_t wfs32 = sizeof(WIB2Frame)/4;
-	      //uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
-	      //std::cout << std::dec;
-	      //for (size_t iwdt = 0; iwdt < 1; iwdt++)  // dumps just the first 32 bits.  use wfs32 if you want them all
-	      //{
-	      //  std::cout << iwdt << " : 10987654321098765432109876543210" << std::endl;
-	      //  std::cout << iwdt << " : " << std::bitset<32>{fdp[iwdt]} << std::endl;
-	      //}
-	      //std::cout << std::dec;
-
-              auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
-	      for (size_t j = 0; j < adc_vectors.size(); ++j)
+              if (fDebugLevel > 2)
                 {
-		  adc_vectors[j].push_back(frame->get_adc(j));
+                  // dump WIB frames in hex
+                  std::cout << "Frame number: " << i << std::endl;
+                  //size_t wfs32 = sizeof(WIB2Frame)/4;
+                  uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIB2Frame));
+                  std::cout << std::dec;
+                  for (size_t iwdt = 0; iwdt < 1; iwdt++)  // dumps just the first 32 bits.  use wfs32 if you want them all
+                    {
+                      std::cout << iwdt << " : 10987654321098765432109876543210" << std::endl;
+                      std::cout << iwdt << " : " << std::bitset<32>{fdp[iwdt]} << std::endl;
+                    }
+                  std::cout << std::dec;
                 }
-	      
+
+              auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIB2Frame));
+              for (size_t j = 0; j < adc_vectors.size(); ++j)
+                {
+                  adc_vectors[j].push_back(frame->get_adc(j));
+                }
+              
               if (i == 0)
                 {
                   crate = frame->header.crate;
                   slot = frame->header.slot;
-                  link_from_frameheader = frame->header.link;
+                  link = frame->header.link;
                 }
             }
           if (fDebugLevel > 0)
             {
-	      std::cout << "PDHDDataInterfaceToolWIB3: crate, slot, link(HDF5 group), link(WIB Header): "  << crate << ", " << slot << ", " << link << ", " << link_from_frameheader << std::endl;
+              std::cout << "PDHDDataInterfaceToolWIB3: crate, slot, link: "  << crate << ", " << slot << ", " << link << std::endl;
             }
 
-	  for (size_t iChan = 0; iChan < 256; ++iChan)
+          for (size_t iChan = 0; iChan < 256; ++iChan)
             {
               const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
 
               uint32_t slotloc = slot;
-	      slotloc &= 0x7;
+              slotloc &= 0x7;
 
-	      auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link_from_frameheader, iChan); 
-	      unsigned int offline_chan = hdchaninfo.offlchan;
+              auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, iChan); 
+              unsigned int offline_chan = hdchaninfo.offlchan;
 
               if (offline_chan > fMaxChan) continue;
 
-	      raw::RDTimeStamp rd_ts(frag.get_trigger_timestamp(), offline_chan);
+              raw::RDTimeStamp rd_ts(frag->get_trigger_timestamp(), offline_chan);
               timestamps.push_back(rd_ts);
 
               float median = 0., sigma = 0.;
               getMedianSigma(v_adc, median, sigma);
-	      raw::RawDigit rd(offline_chan, v_adc.size(), v_adc);
+              raw::RawDigit rd(offline_chan, v_adc.size(), v_adc);
               rd.SetPedestal(median, sigma);
               raw_digits.push_back(rd);
             }
-
         }
-      H5Gclose(linkGroup);
     }
 }
 
- 
-
 void PDHDDataInterface::getMedianSigma(const raw::RawDigit::ADCvector_t &v_adc, float &median,
-                                            float &sigma) {
+                                       float &sigma) {
   size_t asiz = v_adc.size();
   int imed=0;
   if (asiz == 0) {
@@ -252,13 +224,12 @@ void PDHDDataInterface::getMedianSigma(const raw::RawDigit::ADCvector_t &v_adc, 
     if (sm > 0) {
       float mcorr = (-0.5 + (0.5*(float) asiz - (float) s1)/ ((float) sm) );
       if (fDebugLevel > 0)
-	{
-	  if (std::abs(mcorr)>1.0) std::cout << "mcorr: " << mcorr << std::endl;
-	}
+        {
+          if (std::abs(mcorr)>1.0) std::cout << "mcorr: " << mcorr << std::endl;
+        }
       median += mcorr;
     }
   }
-  
 }
 
 DEFINE_ART_CLASS_TOOL(PDHDDataInterface)

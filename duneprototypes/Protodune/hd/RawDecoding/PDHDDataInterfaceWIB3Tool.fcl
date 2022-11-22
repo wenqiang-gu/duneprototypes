@@ -1,0 +1,14 @@
+# defaults for the PDHDDataInterfaceWIB3 tool
+
+BEGIN_PROLOG
+
+PDHDDataInterfaceWIB3Defaults:
+{
+   tool_type: "PDHDDataInterfaceWIB3"
+   FileInfoLabel: "daq"
+   MaxChan:  10000000
+   DefaultCrate: 1
+   DebugLevel: 0
+}
+
+END_PROLOG

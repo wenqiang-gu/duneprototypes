@@ -56,6 +56,8 @@ find_ups_product( ifdh_art )
 find_ups_product( ifdhc )
 find_ups_product( ifbeam )
 find_ups_geant4( )
+find_ups_product( nlohmann_json )
+find_ups_product( highfive )
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BTYPE_UC )
 if( ${BTYPE_UC} MATCHES "DEBUG" )
