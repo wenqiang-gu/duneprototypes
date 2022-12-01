@@ -177,12 +177,7 @@ void IcebergHDF5DataInterface::getIcebergHDF5Data(
               auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag.get_data()) + i*sizeof(WIB2Frame));
               for (size_t j = 0; j < adc_vectors.size(); ++j)
                 {
-                  if (j<40) adc_vectors[j].push_back(frame->get_u(0,j));
-                  else if (j<80)  adc_vectors[j].push_back(frame->get_v(0,j-40));
-                  else if (j<128) adc_vectors[j].push_back(frame->get_x(0,j-80));
-                  else if (j<168) adc_vectors[j].push_back(frame->get_u(1,j-128));
-                  else if (j<208) adc_vectors[j].push_back(frame->get_v(1,j-168));
-                  else            adc_vectors[j].push_back(frame->get_x(1,j-208));
+		  adc_vectors[j].push_back(frame->get_adc(j));
                 }
         
               if (i == 0)

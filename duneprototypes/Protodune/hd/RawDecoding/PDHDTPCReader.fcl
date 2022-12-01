@@ -1,0 +1,16 @@
+# defaults for the PDHDTPCReader module
+
+#include "PDHDDataInterfaceWIB3Tool.fcl"
+
+BEGIN_PROLOG
+
+PDHDTPCReaderDefaults:
+{
+  module_type: "PDHDTPCReader"
+  InputLabel:  "daq"
+  OutputInstance: "daq"
+  APAList:     [ 1, 2, 3, 4 ]
+  DecoderToolParams: @local::PDHDDataInterfaceWIB3Defaults 
+}
+
+END_PROLOG

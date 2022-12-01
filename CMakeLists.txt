@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.63.00d01)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.63.01d00)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -56,6 +56,8 @@ find_ups_product( ifdh_art )
 find_ups_product( ifdhc )
 find_ups_product( ifbeam )
 find_ups_geant4( )
+find_ups_product( nlohmann_json )
+find_ups_product( highfive )
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BTYPE_UC )
 if( ${BTYPE_UC} MATCHES "DEBUG" )

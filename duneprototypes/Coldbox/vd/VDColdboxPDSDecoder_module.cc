@@ -22,7 +22,7 @@
 #include <hdf5.h>
 #include "dunecore/DuneObj/DUNEHDF5FileInfo.h"
 #include "dunecore/HDF5Utils/HDF5Utils.h"
-#include "daqdataformats/Fragment.hpp"
+#include "daqdataformats/v3_3_3/Fragment.hpp"
 #include "detdataformats/ssp/SSPTypes.hpp"
 
 #include <memory>
