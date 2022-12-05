@@ -21,6 +21,7 @@
 //
 // Configuration:
 //   LogLevel: Message level (0, none, 1 init, ...)
+//   Detector: cb2022 or pdvd
 //   ....
 
 #include "art/Utilities/ToolMacros.h"
