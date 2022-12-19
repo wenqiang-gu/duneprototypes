@@ -64,6 +64,17 @@ data.ChannelStatusService_vdcb1: {
   NoisyChannels: @local::data.vdcb1_noisy_channels
 }
 
+tools.chanstat_vdcrp1a: {
+  tool_type: ChannelStatusConfigTool
+  DefaultIndex: 0
+  IndexVectors: [
+    @sequence::data.vdcb1_bad_channels,
+    @sequence::data.vdcb1_noisy_channels,
+    @sequence::data.vdcb1_modrms_channels,
+    @sequence::data.vdcb1_modsc_channels
+  ]
+}
+
 ################## Run period 2. Run 12065 (cold) and later. ###################
 
 # Dead channels.
@@ -152,3 +163,13 @@ data.ChannelStatusService_vdcb2: {
   NoisyChannels: @local::data.vdcb2_noisy_channels
 }
 
+tools.chanstat_vdcrp1b: {
+  tool_type: ChannelStatusConfigTool
+  DefaultIndex: 0
+  IndexVectors: [
+    @sequence::data.vdcb2_bad_channels,
+    @sequence::data.vdcb2_noisy_channels,
+    [],
+    @sequence::data.vdcb2_losc_channels
+  ]
+}

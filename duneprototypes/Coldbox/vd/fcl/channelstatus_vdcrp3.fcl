@@ -29,3 +29,13 @@ data.ChannelStatusService_vdcrp3: {
   BadChannels:   @local::data.vdcrp3_bad_channels
   NoisyChannels: @local::data.vdcrp3_noisy_channels
 }
+
+tools.chanstat_vdcrp3_oct2022: {
+  tool_type: ChannelStatusConfigTool
+  DefaultIndex: 0
+  IndexVectors: [
+    @sequence::data.vdcrp3_oct22_dead_channels,
+    @sequence::data.vdcrp3_oct22_hirms_channels,
+    @sequence::data.vdcrp3_oct22_modrms_channels
+  ]
+}
