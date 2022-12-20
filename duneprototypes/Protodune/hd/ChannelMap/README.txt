@@ -39,6 +39,9 @@ TPS0		     TPS2
 TPC 1 (0)	     TPC 5 (4)	   
 1st channel: 0 	     1st channel: 5120  
 
+The APA numbers in the first line are assumed to match the crate 
+numbers in the WIB frames.
+
 ---------------------------------------------------
 
 Note as of November 21, 2022:    Roger Huang
@@ -71,4 +74,19 @@ See the directory "mapmakers" for ROOT macros that create the channel
 map txt files.  They are not compiled or installed with the release
 of this product, but can be run interactively once the source has
 been checked out.
+
+Here are the column names for the channel map text files:
+
+offlchan crate APAname wib link femb_on_link cebchan plane planechan femb asic asicchan wibframechan
+
+The APAname strings follow this convention:
+
+APA_P[nn][N,S][U,L] 
+
+  Where "P" means ProtoDUNE
+  nn is the row number (01 or 02)
+  N: North, S: South
+  U: Upper, L: Lower 
+
+In ProtoDUNE-HD, the North APAs are Lower (inverted), and the South APAs are Upper (upright).
 
