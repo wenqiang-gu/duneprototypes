@@ -161,7 +161,7 @@ void evgen::CRTGen::beginRun(art::Run& run)
 {
     art::ServiceHandle<geo::Geometry const> geo;
     run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
-    driftcoordinate = (geo->TPC(0)).DetectDriftDirection();
+    driftcoordinate = geo->TPC(geo::TPCID{0, 0}).DetectDriftDirection();
 
     if( driftcoordinate==1 || driftcoordinate==2 )
       {

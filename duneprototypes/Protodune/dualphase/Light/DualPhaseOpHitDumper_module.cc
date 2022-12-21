@@ -454,14 +454,11 @@ void DualPhaseOpHitDumper::analyze(art::Event const & evt)
 
         map_of_ophit[gen].push_back(ophitlist.at(i));
 
-        double xyz_optdet[3]={0,0,0};
-        double xyz_world [3]={0,0,0};
-
-        geo->OpDetGeoFromOpChannel(ophitlist[i]->OpChannel()).LocalToWorld(xyz_optdet,xyz_world);
+        auto const xyz_world = geo->OpDetGeoFromOpChannel(ophitlist[i]->OpChannel()).GetCenter();
         PDS_OpHit_OpChannel   .push_back(ophitlist[i]->OpChannel());
-        PDS_OpHit_X           .push_back(xyz_world[0]);
-        PDS_OpHit_Y           .push_back(xyz_world[1]);
-        PDS_OpHit_Z           .push_back(xyz_world[2]);
+        PDS_OpHit_X           .push_back(xyz_world.X());
+        PDS_OpHit_Y           .push_back(xyz_world.Y());
+        PDS_OpHit_Z           .push_back(xyz_world.Z());
         PDS_OpHit_PeakTimeAbs .push_back(ophitlist[i]->PeakTimeAbs());
         PDS_OpHit_PeakTime    .push_back(ophitlist[i]->PeakTime());
         PDS_OpHit_Frame       .push_back(ophitlist[i]->Frame());
