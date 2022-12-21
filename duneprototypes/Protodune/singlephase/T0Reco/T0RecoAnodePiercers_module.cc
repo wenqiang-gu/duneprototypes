@@ -187,19 +187,16 @@ T0RecoAnodePiercers::T0RecoAnodePiercers(fhicl::ParameterSet const & fcl)
 	det_front = fEdgeWidth;
 	det_back = fEdgeWidth;
 
-	for (geo::TPCID const& tID: geom->IterateTPCIDs()) {
-		geo::TPCGeo const& TPC = geom->TPC(tID);
+        for (auto const& TPC: geom->Iterate<geo::TPCGeo>()) {
 
 		if(TPC.DriftDistance() < 25.0) continue;
 
-		double origin[3] = {0.};
-		double center[3] = {0.};
-		TPC.LocalToWorld(origin, center);
+                auto const center = TPC.GetCenter();
 
-		double tpc_top = center[1] + TPC.HalfHeight();
-		double tpc_bottom = center[1] - TPC.HalfHeight();
-		double tpc_front = center[2] - TPC.HalfLength();
-		double tpc_back = center[2] + TPC.HalfLength();
+                double tpc_top = center.Y() + TPC.HalfHeight();
+                double tpc_bottom = center.Y() - TPC.HalfHeight();
+                double tpc_front = center.Z() - TPC.HalfLength();
+                double tpc_back = center.Z() + TPC.HalfLength();
 
 		if (tpc_top 	> det_top) 		det_top = tpc_top;
 		if (tpc_bottom 	< det_bottom) 	det_bottom = tpc_bottom;
@@ -431,7 +428,7 @@ void T0RecoAnodePiercers::produce(art::Event& event){
 		auto const* geom = lar::providerFrom<geo::Geometry>();   
 		auto const* first_hit = hit_v.at(0);
 		const geo::WireID wireID_start = first_hit->WireID();
-		const auto TPCGeoObject_start = geom->TPC(wireID_start.TPC,wireID_start.Cryostat);
+                const auto TPCGeoObject_start = geom->TPC(wireID_start.asPlaneID().asTPCID());
 		short int driftDir_start = TPCGeoObject_start.DetectDriftDirection();
 
 		short int driftDir_end = 0;
@@ -439,7 +436,7 @@ void T0RecoAnodePiercers::produce(art::Event& event){
 
 	    for (size_t ii = 1; ii < hit_v.size(); ii++) {
     		const geo::WireID wireID_end = hit_v.at(ii)->WireID();
-			const auto TPCGeoObject_end = geom->TPC(wireID_end.TPC,wireID_end.Cryostat);
+                        const auto TPCGeoObject_end = geom->TPC(wireID_end.asPlaneID().asTPCID());
 			driftDir_end = TPCGeoObject_end.DetectDriftDirection(); 
 		
 			if(driftDir_end + driftDir_start == 0){

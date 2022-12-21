@@ -1,1 +1,12 @@
 offlchan crate APAname wib link femb_on_link cebchan plane planechan femb asic asicchan wibframechan
+
+The APAname strings follow this convention:
+
+APA_P[nn][N,S][U,L] 
+
+  Where "P" means ProtoDUNE
+  nn is the row number (01 or 02)
+  N: North, S: South
+  U: Upper, L: Lower 
+
+In ProtoDUNE-HD, the North APAs are Lower (inverted), and the South APAs are Upper (upright).

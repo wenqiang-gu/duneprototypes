@@ -35,3 +35,13 @@ data.ChannelStatusService_vdct1: {
   BadChannels:   @local::data.vdct1_bad_channels
   NoisyChannels: @local::data.vdct1_noisy_channels
 }
+
+data.ChannelStatusTool_vdct1: {
+  tool_type: ChannelStatusConfigTool
+  DefaultIndex: 0
+  IndexVectors: [
+    @sequence::data.data.vdct1_dead_channels
+    @sequence::data.data.vdct1_hirms_channels
+    @sequence::data.data.vdct1_modrms_channels
+  ]
+}
