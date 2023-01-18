@@ -1,0 +1,27 @@
+# vdct_reco_tools.fcl
+#
+# David Adams
+# January 2023
+#
+# Reco tool used in reconstruction VD top coldbox data.
+
+# Channel lists by index:
+#   0 - good channels
+#   1 - bad channels
+#   2 - noisy channels
+#   3 - Moderated noise (RMS)
+#   4 - Moderate sticky codes
+# The run number used for VD top can overlap those for other prototypes.
+data.vdct_channelstatus: {
+  tool_name: DuneRunToolRedirector
+  tool_redirecting: true
+  DefaultName: chanstat_allgood
+  Ranges: [
+    "401:1036:data.chanstat_vdct1",            # CRP1 in 2021
+    "1037:1372:tools.chanstat_vdcrp1b",        # CRP1 in 2022
+    "1373:1622:chanstat_vdcrp2_jul2022",       # CRP2 in July 2022
+    "1521:1555:chanstat_vdcrp2_jul2022",       # CRP2 in July 2022 good runs
+    "1623:1856:chanstat_vdcrp3_oct2022",       # CRP3 (placeholder for end of run range)
+    "1857:1898:chanstat_allgood"               # CRP2 in November 2022
+  ]
+}

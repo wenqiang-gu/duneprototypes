@@ -34,8 +34,9 @@ tools.chanstat_vdcrp3_oct2022: {
   tool_type: ChannelStatusConfigTool
   DefaultIndex: 0
   IndexVectors: [
-    @sequence::data.vdcrp3_oct22_dead_channels,
-    @sequence::data.vdcrp3_oct22_hirms_channels,
-    @sequence::data.vdcrp3_oct22_modrms_channels
+    [],
+    @local::data.vdcrp3_oct22_dead_channels,
+    @local::data.vdcrp3_oct22_hirms_channels,
+    @local::data.vdcrp3_oct22_modrms_channels
   ]
 }
