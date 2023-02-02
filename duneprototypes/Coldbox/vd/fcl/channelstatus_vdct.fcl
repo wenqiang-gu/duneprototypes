@@ -48,4 +48,4 @@ data.chanstat_vdct1: {
 }
 
 # Keep old name in case anyone is using it.
-data.ChannelStatusTool_vdct1: @local:data.chanstat_vdct1
+data.ChannelStatusTool_vdct1: @local::data.chanstat_vdct1
