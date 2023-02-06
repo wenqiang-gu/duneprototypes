@@ -2,7 +2,7 @@
 
 This directory contains fcl configuration files for processing data from the
 2021-2022 CERN coldobox tests of the vertical-drift detectors.
-The first set of data was taken with CRP1 and then a very differnt geometry was
+The first set of data was taken with CRP1 and then a different geometry was
 used for CRP2, CRP3, ..., collectively references as CRP2+.
 The readout format and electronics are very different for data from the top and bottom.
 
