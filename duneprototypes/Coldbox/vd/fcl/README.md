@@ -2,14 +2,14 @@
 
 This directory contains fcl configuration files for processing data from the
 2021-2022 CERN coldobox tests of the vertical-drift detectors.
-The first set of data was taken with CRP1 and then a very differnt geometry was
+The first set of data was taken with CRP1 and then a different geometry was
 used for CRP2, CRP3, ..., collectively references as CRP2+.
 The readout format and electronics are very different for data from the top and bottom.
 
 * [channelstatus_vdcb.fcl](channelstatus_vdcb.fcl): Channel status for CRP1 bottom 
-* [channelstatus_vdcrp2.fcl](channelstatus_vdcrp2.fcl): Channel status for CRP2 bottom 
-* [channelstatus_vdcrp3.fcl](channelstatus_vdcrp3.fcl): Channel status for CRP3 bottom 
 * [channelstatus_vdct.fcl](channelstatus_vdct.fcl): Channel status for CRP1 top
+* [channelstatus_vdcrp2.fcl](channelstatus_vdcrp2.fcl): Channel status for CRP2 (top)
+* [channelstatus_vdcrp3.fcl](channelstatus_vdcrp3.fcl): Channel status for CRP3 (top)  
 
 * [hdf5_ssp_decoder.fcl](hdf5_ssp_decoder.fcl): 
 * [hdf5_ssp_raw_decoder.fcl](hdf5_ssp_raw_decoder.fcl): 
