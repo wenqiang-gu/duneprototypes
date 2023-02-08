@@ -32,6 +32,7 @@ data.ChannelStatusService_vdcrp3: {
 
 tools.chanstat_vdcrp3_oct2022: {
   tool_type: ChannelStatusConfigTool
+  LogLevel: 1
   DefaultIndex: 0
   IndexVectors: [
     [],

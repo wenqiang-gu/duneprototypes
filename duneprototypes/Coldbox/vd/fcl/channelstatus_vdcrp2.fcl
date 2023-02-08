@@ -6,6 +6,8 @@
 # 
 #
 
+######## July 2022 #########
+
 # Dead channels. 
 # These channels have lower noise than their neigbours
 # most likely due to interuption somewhere on the CRP
@@ -33,11 +35,25 @@ data.ChannelStatusService_vdcrp2: {
 
 tools.chanstat_vdcrp2_jul2022: {
   tool_type: ChannelStatusConfigTool
+  LogLevel: 1
   DefaultIndex: 0
   IndexVectors: [
     [],
     @local::data.vdcrp2_jul22_dead_channels,
     @local::data.vdcrp2_jul22_hirms_channels,
     @local::data.vdcrp2_jul22_modrms_channels
+  ]
+}
+
+######## November 2022 #########
+
+tools.chanstat_vdcrp2_nov2022: {
+  tool_type: ChannelStatusConfigTool
+  LogLevel: 1
+  DefaultIndex: 0
+  IndexVectors: [
+    [],
+    [],
+    []
   ]
 }
