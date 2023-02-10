@@ -1,51 +1,41 @@
 # channelstatus_vdct.fcl
 #
-# Channel status for TDE Coldbox 1
-# Vyacheslav Galymov
-# November 2021
-# 
-# Updated December 2/2021
+# David Adams
+# February 2023
 #
+# This file defines a tool that selects the channel status appropriate
+# for the current in any of the vertical-drift top-electronics data.
 
-# Dead channels. 
-# These channels have lower noise than their neigbours
-# most likely due to interuption somewhere on the CRP
-data.vdct1_dead_channels: [
-223, 515, 523, 1027, 1028, 1032, 1075, 1391, 1392
-]
+#include "channelstatus_vdcrp1t.fcl"
+#include "channelstatus_vdcrp2.fcl"
+#include "channelstatus_vdcrp3.fcl"
 
-# Very noisy channels.
-data.vdct1_hirms_channels: [
-219, 703, 704, 763, 764, 781, 791, 1023
-]
-
-# Somewhat noisy channels.
-data.vdct1_modrms_channels: [
-]
-
-
-# Bad channels.
-data.vdct1_bad_channels: @local::data.vdct1_dead_channels
-data.vdct1_noisy_channels: [
-  @sequence::data.vdct1_hirms_channels
-]
-
-data.ChannelStatusService_vdct1: {
-  service_provider: "SimpleChannelStatusService"
-  BadChannels:   @local::data.vdct1_bad_channels
-  NoisyChannels: @local::data.vdct1_noisy_channels
+tools.chanstat_allbad: {
+  tool_type: ChannelStatusConfigTool
+  LogLevel: 1
+  DefaultIndex: 1
+  IndexVectors: []
 }
 
-data.chanstat_vdct1: {
-  tool_type: ChannelStatusConfigTool
-  DefaultIndex: 0
-  IndexVectors: [
-    [],
-    @local::data.vdct1_dead_channels,
-    @local::data.vdct1_hirms_channels,
-    @local::data.vdct1_modrms_channels
+# Tool for any vdct (vertical-drift top-electronics coldbox) run.
+tools.chanstat_vdct: {
+  tool_type: DuneRunToolRedirector
+  tool_redirector: true
+  LogLevel: 1
+  DefaultName: chanstat_allbad
+  Ranges: [
+     "401:1037:chanstat_vdcrp1t_dec2021",
+    "1037:1373:chanstat_vdcrp1t_apr2022",
+    "1373:1623:chanstat_vdcrp2_jul2022",
+    "1623:1798:chanstat_vdcrp3_oct2022",
+    "1857:1899:chanstat_vdcrp2_nov2022"
   ]
 }
-
-# Keep old name in case anyone is using it.
-data.ChannelStatusTool_vdct1: @local:data.chanstat_vdct1
+    
+# Service for any vdct (vertical-drift top-electronics coldbox) run.
+data.ChannelStatusService_vdct: {
+  service_provider: "ToolBasedChannelStatusService"
+  LogLevel: 1
+  NChannel: 3200
+  ToolName: chanstat_vdct
+}

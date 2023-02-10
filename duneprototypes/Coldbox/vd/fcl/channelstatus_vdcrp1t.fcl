@@ -1,0 +1,67 @@
+# channelstatus_vdct.fcl
+#
+# Channel status for TDE Coldbox 1 (CRP1t)
+# Vyacheslav Galymov
+# November 2021
+# 
+# Updated December 2/2021
+#
+
+########## December 2021 data #########
+
+# Dead channels. 
+# These channels have lower noise than their neigbours
+# most likely due to interuption somewhere on the CRP
+data.vdct1_dead_channels: [
+223, 515, 523, 1027, 1028, 1032, 1075, 1391, 1392
+]
+
+# Very noisy channels.
+data.vdct1_hirms_channels: [
+219, 703, 704, 763, 764, 781, 791, 1023
+]
+
+# Somewhat noisy channels.
+data.vdct1_modrms_channels: [
+]
+
+
+# Bad channels.
+data.vdct1_bad_channels: @local::data.vdct1_dead_channels
+data.vdct1_noisy_channels: [
+  @sequence::data.vdct1_hirms_channels
+]
+
+data.ChannelStatusService_vdct1: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdct1_bad_channels
+  NoisyChannels: @local::data.vdct1_noisy_channels
+}
+
+tools.chanstat_vdcrp1t_dec2021: {
+  tool_type: ChannelStatusConfigTool
+  LogLevel: 1
+  DefaultIndex: 0
+  IndexVectors: [
+    [],
+    @local::data.vdct1_dead_channels,
+    @local::data.vdct1_hirms_channels,
+    @local::data.vdct1_modrms_channels
+  ]
+}
+
+########## April 2022 data #########
+
+data.chanstat_vdcrp1t_apr2022: {
+  tool_type: ChannelStatusConfigTool
+  LogLevel: 1
+  DefaultIndex: 0
+  IndexVectors: [
+    [],
+    [],
+    []
+  ]
+}
+
+# Keep old name in case anyone is using it.
+data.ChannelStatusTool_vdct1: @local::tools.chanstat_vdcrp1t_dec2021

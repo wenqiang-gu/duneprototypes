@@ -3,6 +3,9 @@
 # David Adams
 # November 2021
 #
+# This file holds the bad/noisy channel lists for the 2021-2022 vertical-drift
+# bottom electronics tests.
+#
 # For use with runs after 8225
 #
 # Note the lists are now kept in data instead of prolog
