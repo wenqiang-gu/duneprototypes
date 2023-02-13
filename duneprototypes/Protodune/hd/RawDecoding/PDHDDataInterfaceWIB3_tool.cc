@@ -98,6 +98,9 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
   auto sourceids = rf->get_source_ids(rid);
   for (const auto &source_id : sourceids)  
     {
+      // only want detector readout data (i.e. not trigger info)
+      if (source_id.subsystem != dunedaq::daqdataformats::SourceID::Subsystem::kDetectorReadout) continue;
+
       // look through the geo IDs and see if we are in the right crate
       bool has_desired_apa = false;
       auto gids = rf->get_geo_ids_for_source_id(rid, source_id);

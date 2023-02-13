@@ -79,7 +79,6 @@ void PDHDTPCReader::produce(art::Event& e)
   std::vector<raw::RDStatus> rdstatuscol;
   std::vector<raw::RDTimeStamp> rdtscol;
   art::Assns<raw::RawDigit,raw::RDTimeStamp> rdtacol;
-  std::vector<int> apalist;
 
   m_DecoderTool->retrieveDataForSpecifiedAPAs(e, rawdigitcol, rdtscol, rdstatuscol, m_APAList);
 
