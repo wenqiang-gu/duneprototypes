@@ -136,6 +136,8 @@ vdcb_bot_reco_services: {
 vdcb_crp2_services: @local::vdcb_crp1_top_services
 vdcb_crp2_services.Geometry: @local::dunecrpcb_geo
 vdcb_crp2_services.DetectorPropertiesService.Efield: @local::data.vdcb_nov21_Efield
+vdcb_crp2_services.DetectorPropertiesService.NumberTimeSamples: 10000
+vdcb_crp2_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
 # data services for CRP2 (top only)
 vdcb_crp2_data_services: {
