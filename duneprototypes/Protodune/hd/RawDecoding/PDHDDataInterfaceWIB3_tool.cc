@@ -123,7 +123,10 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
 	  if (subdetector_string == fSubDetectorString)
             {
               uint16_t crate_from_geo = 0xffff & (gid >> 16);
-	      std::cout << "crate from geo: " << crate_from_geo << std::endl;
+	      if (fDebugLevel > 1)
+		{
+	           std::cout << "crate from geo: " << crate_from_geo << std::endl;
+		}
               if (crate_from_geo == apano)
                 {
                   has_desired_apa = true;
