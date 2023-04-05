@@ -60,23 +60,25 @@
 #include "TH2.h"
 #include "TCanvas.h"
 #include "TImage.h"
+#include "TPaveStats.h"
 #include "TTree.h"
 #include "TH1D.h"
 #include "TStyle.h"
 #include "TString.h"
 
 //c++ includes
+#include <bitset>
 #include <numeric> //std::accumulate was moved from <algorithm> to <numeric> in c++14
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <fstream>
-#include "TPaveStats.h"
 #include <iostream>
 #include <string>
 #include "math.h"
 #include "stdio.h"
 #include <iterator>
+
 using namespace std;   // Namespaces established to make life easier
 using namespace ROOT::Math;
 namespace CRT {

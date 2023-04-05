@@ -507,7 +507,7 @@ bool PDSPTPCRawDecoder::_rceProcContNCFrags(art::Handle<artdaq::Fragments> frags
       MF_LOG_WARNING("_process_RCE:") << " No valid nticks to check.  Discarding Event.";
       _discard_data = true; 
       _DiscardedCorruptData = true;
-      evt.removeCachedProduct(frags);
+      frags.removeProduct();
       return false;
     }
   size_t nticksmedian = TMath::Median(nticksvec.size(),nticksvec.data()) + 0.01;  // returns a double -- want to make sure it gets truncated to the right integer
@@ -526,7 +526,7 @@ bool PDSPTPCRawDecoder::_rceProcContNCFrags(art::Handle<artdaq::Fragments> frags
 	      MF_LOG_WARNING("_process_RCE:") << " Small RCE fragment size: " << frag.sizeBytes() << " Discarding Event on request.";
 	      _discard_data = true; 
 	      _DiscardedCorruptData = true;
-	      evt.removeCachedProduct(frags);
+	      frags.removeProduct();
 	      return false;
 	    }
 	  if ( _drop_small_rce_frags )
@@ -553,7 +553,7 @@ bool PDSPTPCRawDecoder::_rceProcContNCFrags(art::Handle<artdaq::Fragments> frags
 	    }
 	}
     }
-  evt.removeCachedProduct(frags);
+  frags.removeProduct();
   return true;
 }
 
@@ -1057,7 +1057,7 @@ bool PDSPTPCRawDecoder::_processFELIX(art::Event &evt, RawDigits& raw_digits, RD
 
 	      else // if (fraghv.at(ihandle).provenance()->inputTag().instance().find("TPC") != std::string::npos) 
 		{
-		  evt.removeCachedProduct(fraghv.at(ihandle));
+		  fraghv.at(ihandle).removeProduct();
 		}
 	    }
 	}
@@ -1101,7 +1101,7 @@ bool PDSPTPCRawDecoder::_felixProcContNCFrags(art::Handle<artdaq::Fragments> fra
 	      MF_LOG_WARNING("_process_FELIX:") << " Small FELIX fragment size: " << frag.sizeBytes() << " Discarding Event on request.";
 	      _discard_data = true; 
 	      _DiscardedCorruptData = true;
-	      evt.removeCachedProduct(frags);
+	      frags.removeProduct();
 	      return false;
 	    }
 	  if ( _drop_small_felix_frags )
@@ -1128,7 +1128,7 @@ bool PDSPTPCRawDecoder::_felixProcContNCFrags(art::Handle<artdaq::Fragments> fra
 	    }
 	}
     }
-  evt.removeCachedProduct(frags);
+  frags.removeProduct();
   return true;
 }
 
