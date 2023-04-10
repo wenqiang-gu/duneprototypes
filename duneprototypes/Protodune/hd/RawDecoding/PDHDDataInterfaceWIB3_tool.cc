@@ -19,7 +19,8 @@ PDHDDataInterface::PDHDDataInterface(fhicl::ParameterSet const& p)
   : fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fMaxChan(p.get<int>("MaxChan",1000000)),
     fDefaultCrate(p.get<unsigned int>("DefaultCrate", 1)),
-    fDebugLevel(p.get<int>("DebugLevel",0))
+    fDebugLevel(p.get<int>("DebugLevel",0)),
+    fSubDetectorString(p.get<std::string>("SubDetectorString","HD_TPC"))
 {
 }
 
@@ -53,7 +54,7 @@ int PDHDDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
   if (fDebugLevel > 0)
     {
       std::cout << "PDHDDataInterface HDF5 FileName: " << file_name << std::endl;
-      std::cout << "PDHDDataInterface Run:Event:Seq: " << runno << ":" << evtno << ":" << seqno << std::endl;
+      std::cout << "PDHDDataInterface Run:Event:Seq: " << std::dec << runno << ":" << evtno << ":" << seqno << std::endl;
       std::cout << "PDHDDataInterface : " <<  "Retrieving Data for " << apalist.size() << " APAs " << std::endl;
     }
   
@@ -108,17 +109,31 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
         {
           if (fDebugLevel > 1)
             {
-              std::cout << "PDHDDataInterfaceWIB3 Tool Geoid: " << std::hex << gid << std::endl;
+              std::cout << "PDHDDataInterfaceWIB3 Tool Geoid: " << std::hex << gid << std::dec << std::endl;
             }
           uint16_t detid = 0xffff & gid;
           dunedaq::detdataformats::DetID::Subdetector detidenum = static_cast<dunedaq::detdataformats::DetID::Subdetector>(detid);
           auto subdetector_string = dunedaq::detdataformats::DetID::subdetector_to_string(detidenum);
-          if (subdetector_string == "HD_TPC")
+	  if (fDebugLevel > 1)
+	    {
+	      std::cout << "PDHDDataInterfaceWIB3 Tool subdetector string: " << subdetector_string << std::endl;
+	      std::cout << "PDHDDataInterfaceWIB3 Tool looking for subdet: " << fSubDetectorString << std::endl;
+	    }
+	  
+	  if (subdetector_string == fSubDetectorString)
             {
               uint16_t crate_from_geo = 0xffff & (gid >> 16);
+	      if (fDebugLevel > 1)
+		{
+	           std::cout << "crate from geo: " << crate_from_geo << std::endl;
+		}
               if (crate_from_geo == apano)
                 {
                   has_desired_apa = true;
+		  if (fDebugLevel > 1)
+		    {
+		      std::cout << "found desired APA" << std::endl;
+		    }
                   break;
                 }
             }
