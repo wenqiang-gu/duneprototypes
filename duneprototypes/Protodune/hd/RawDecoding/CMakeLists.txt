@@ -3,7 +3,7 @@ cet_build_plugin(PDHDTPCReader art::module
 			duneprototypes::Protodune_hd_RawDecoding_PDHDDataInterfaceWIB3_tool
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
-                        LIBHDF5
+                        HDF5::HDF5
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -37,7 +37,7 @@ cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
                         ROOT_BASIC_LIB_LIST
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
-                        LIBHDF5
+                        HDF5::HDF5
              )
 
 add_subdirectory(fcl)
