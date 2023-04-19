@@ -1,0 +1,15 @@
+# defaults for the PDHDTrigPrimReader module
+
+#include "PDHDDataInterfaceWIB3Tool.fcl"
+
+BEGIN_PROLOG
+
+PDHDTriggerReaderDefaults:
+{
+  module_type: "PDHDTriggerReader"
+  InputLabel:  "daq"
+  OutputInstance: "daq"
+  #DecoderToolParams: @local::PDHDDataInterfaceWIB3Defaults 
+}
+
+END_PROLOG

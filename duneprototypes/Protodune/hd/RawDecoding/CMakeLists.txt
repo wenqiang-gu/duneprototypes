@@ -40,6 +40,30 @@ cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
                         HDF5::HDF5
              )
 
+
+cet_build_plugin(PDHDTriggerReader art::module
+                        lardataobj::RawData
+                        duneprototypes::Protodune_hd_RawDecoding_PDHDDataInterfaceWIB3_tool
+                        dunecore::HDF5Utils_HDF5RawFile2Service_service
+                        dunecore::dunedaqhdf5utils2
+                        HDF5::HDF5
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
+                        artdaq_core::artdaq-core_Data
+                        artdaq_core::artdaq-core_Utilities
+                        ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Provenance
+                        messagefacility::MF_MessageLogger
+                        dunecore::HDF5Utils_HDF5RawFile2Service_service
+                        dunecore::dunedaqhdf5utils2
+                        ROOT_BASIC_LIB_LIST
+                        BASENAME_ONLY
+                )
+
+
 add_subdirectory(fcl)
 install_headers()
 install_fhicl()
