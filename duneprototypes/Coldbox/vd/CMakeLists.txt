@@ -10,7 +10,7 @@ cet_build_plugin(VDColdboxDataInterface   art::tool
                         artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
-                        LIBHDF5
+                        HDF5::HDF5
                         duneprototypes_Coldbox_vd_ChannelMap_VDColdboxChannelMapService_service
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
@@ -49,7 +49,7 @@ cet_build_plugin(VDColdboxPDSDecoder art::module
                  lardataobj_RawData
                  lardataobj_RecoBase
                  dunecore::HDF5Utils
-                 LIBHDF5
+                 HDF5::HDF5
                  ART_FRAMEWORK_CORE
                  ART_FRAMEWORK_PRINCIPAL
                  ART_FRAMEWORK_SERVICES_REGISTRY

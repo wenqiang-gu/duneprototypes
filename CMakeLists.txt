@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.72.00d00)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.72.01d00)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -47,7 +47,6 @@ find_ups_product( dunepdlegacy )
 find_ups_product( artdaq_core )
 find_ups_product( TRACE )
 find_ups_product( clhep )
-find_ups_product( hdf5 )
 find_ups_product( dunedaqdataformats )
 find_ups_product( dunedetdataformats )
 find_ups_product( postgresql )
@@ -58,14 +57,7 @@ find_ups_product( ifbeam )
 find_ups_geant4( )
 find_ups_product( nlohmann_json )
 find_ups_product( highfive )
-
-string(TOUPPER ${CMAKE_BUILD_TYPE} BTYPE_UC )
-if( ${BTYPE_UC} MATCHES "DEBUG" )
- find_library( LIBHDF5 NAMES hdf5_debug PATHS ENV HDF5_LIB NO_DEFAULT_PATH)
-else()
- find_library( LIBHDF5 NAMES hdf5 PATHS ENV HDF5_LIB NO_DEFAULT_PATH)
-endif()
-include_directories(${HDF5_INCLUDE_DIRS})
+find_package( HDF5 REQUIRED EXPORT )
 
 # macros for artdaq_dictionary and simple_plugin
 include(ArtDictionary)

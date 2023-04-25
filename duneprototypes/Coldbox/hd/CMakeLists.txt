@@ -10,7 +10,7 @@ cet_build_plugin(HDColdboxDataInterface   art::tool
                         artdaq_core::artdaq-core_Utilities
                         dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
-                        LIBHDF5
+                        HDF5::HDF5
                         ART_FRAMEWORK_CORE
                         ART_FRAMEWORK_PRINCIPAL
                         ART_FRAMEWORK_SERVICES_REGISTRY
@@ -44,7 +44,7 @@ cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
                         dunecore::HDF5Utils
-                        LIBHDF5
+                        HDF5::HDF5
              )
 
 cet_build_plugin(HDColdboxDAQWriter art::module
@@ -59,7 +59,7 @@ cet_build_plugin(HDColdboxDAQWriter art::module
                         messagefacility::MF_MessageLogger
                         CETLIB
                         ROOT_BASIC_LIB_LIST
-			LIBHDF5
+			HDF5::HDF5
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
                         BASENAME_ONLY
 )
