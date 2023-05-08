@@ -1,0 +1,43 @@
+# channelstatus_vdcrp4.fcl
+#
+# Channel status for CRP4 coldbox tests
+# David Adams
+# May 2023
+# 
+#
+
+# Dead channels. 
+# These channels have lower noise than their neigbours
+# most likely due to interuption somewhere on the CRP
+data.vdcrp4_may23_dead_channels: []
+
+# Very noisy channels.
+data.vdcrp4_may23_hirms_channels: []
+
+# Somewhat noisy channels.
+data.vdcrp4_may23_modrms_channels: []
+
+
+# Bad channels.
+data.vdcrp4_bad_channels: @local::data.vdcrp4_may23_dead_channels
+data.vdcrp4_noisy_channels: [
+  @sequence::data.vdcrp4_may23_hirms_channels
+]
+
+data.ChannelStatusService_vdcrp4: {
+  service_provider: "SimpleChannelStatusService"
+  BadChannels:   @local::data.vdcrp4_bad_channels
+  NoisyChannels: @local::data.vdcrp4_noisy_channels
+}
+
+tools.chanstat_vdcrp4_may2322: {
+  tool_type: ChannelStatusConfigTool
+  LogLevel: 1
+  DefaultIndex: 0
+  IndexVectors: [
+    [],
+    @local::data.vdcrp4_may23_dead_channels,
+    @local::data.vdcrp4_may23_hirms_channels,
+    @local::data.vdcrp4_may23_modrms_channels
+  ]
+}
