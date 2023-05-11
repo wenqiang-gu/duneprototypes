@@ -9,6 +9,7 @@ PDHDDataInterfaceWIB3Defaults:
    MaxChan:  10000000
    DefaultCrate: 1
    DebugLevel: 0
+   SubDetectorString: "HD_TPC"
 }
 
 END_PROLOG

@@ -1,0 +1,12 @@
+The v2 channel map for the DUNE vertical drift coldbox test
+is for runs 12065 and later.  It encodes two FEMB readout
+cable swaps.
+
+Note from Wenqiang and Roger:
+The v4 channel map is meant to decode data with CRP4 & 5.
+It is the same as CRP 2&3 but this time all the electronics
+are "bottom drift" electronics.
+
+The v4 channel map is in a different format -- compatible with the HD
+channel map input.  But the earlier VD BDE channel maps have nine
+columns

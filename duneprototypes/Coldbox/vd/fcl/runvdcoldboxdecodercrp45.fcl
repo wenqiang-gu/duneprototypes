@@ -1,0 +1,10 @@
+#include "PDHDTriggerReader.fcl"
+#include "runpdhdtpcdecodermodule.fcl"
+
+services.PD2HDChannelMapService.FileName: "vdcbce_chanmap_v4.txt"
+physics.producers.tpcrawdecoder.APAList: [ 6 ]
+physics.producers.tpcrawdecoder.DecoderToolParams.DebugLevel: 0
+physics.producers.tpcrawdecoder.DecoderToolParams.SubDetectorString: "VD_Bottom_TPC"
+physics.producers.pdhdtriggerreader: @local::PDHDTriggerReaderDefaults
+
+physics.produce: [ "tpcrawdecoder", "pdhdtriggerreader" ]

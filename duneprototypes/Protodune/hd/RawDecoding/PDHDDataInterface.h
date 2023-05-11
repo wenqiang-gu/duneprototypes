@@ -59,7 +59,8 @@ class PDHDDataInterface : public PDSPTPCDataInterfaceParent {
   unsigned int fMaxChan = 1000000;  // no maximum for now
   unsigned int fDefaultCrate = 1;
   int fDebugLevel = 0;   // switch to turn on debugging printout
-
+  std::string fSubDetectorString;  // two values seen in the data:  HD_TPC and VD_Bottom_TPC
+  
 };
 
 #endif

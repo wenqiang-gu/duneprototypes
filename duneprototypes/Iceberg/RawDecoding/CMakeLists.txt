@@ -111,7 +111,7 @@ cet_build_plugin(IcebergHDF5DataInterface   art::tool
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
 			dunecore::HDF5Utils
-                        LIBHDF5
+                        HDF5::HDF5
              )
 
 
