@@ -71,22 +71,20 @@ PDDPTPCRawDecoderTest::PDDPTPCRawDecoderTest(fhicl::ParameterSet const& p)
 
 void PDDPTPCRawDecoderTest::analyze(art::Event const& e)
 {
-  auto Raw = e.getHandle< std::vector<raw::RawDigit> >(__RawDigitLabel);
-  std::vector< art::Ptr<raw::RawDigit> >  Digits;
-  art::fill_ptr_vector(Digits, Raw);
+  auto const& Digits = e.getProduct< std::vector<raw::RawDigit> >(__RawDigitLabel);
 
   //loop through all RawDigits (over entire channels)
   mf::LogInfo("") << "Total number of channels "<<Digits.size();
   
-  for(auto &digit : Digits)
+  for(raw::RawDigit const &digit : Digits)
     {
-      auto chan    = digit->Channel();
-      auto samples = digit->Samples();
+      auto chan    = digit.Channel();
+      auto samples = digit.Samples();
       //mf::LogInfo("") << "vector size " << chan <<" "<< samples;
 
       raw::RawDigit::ADCvector_t data(samples);
       // note: only works with uncompressed data for now
-      raw::Uncompress(digit->ADCs(), data, digit->Compression());
+      raw::Uncompress(digit.ADCs(), data, digit.Compression());
       
       if( chan >= __Chans ) break; //continue;
       unsigned tick = 0;

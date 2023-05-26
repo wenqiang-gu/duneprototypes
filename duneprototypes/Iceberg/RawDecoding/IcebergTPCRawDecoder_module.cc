@@ -369,7 +369,7 @@ bool IcebergTPCRawDecoder::_processRCE(art::Event &evt, RawDigits& raw_digits, R
                   MF_LOG_WARNING("_process_RCE:") << " Small RCE fragment size: " << cont.sizeBytes() << " Discarding Event on request.";
                   _discard_data = true; 
                   _DiscardedCorruptData = true;
-                  evt.removeCachedProduct(cont_frags);
+                  cont_frags.removeProduct();
                   return false;
                 }
               if ( _drop_small_rce_frags )
@@ -389,7 +389,7 @@ bool IcebergTPCRawDecoder::_processRCE(art::Event &evt, RawDigits& raw_digits, R
                 }
             }
         }
-      evt.removeCachedProduct(cont_frags);
+      cont_frags.removeProduct();
     }
 
   //noncontainer frags
@@ -422,7 +422,7 @@ bool IcebergTPCRawDecoder::_processRCE(art::Event &evt, RawDigits& raw_digits, R
                   MF_LOG_WARNING("_process_RCE:") << " Small RCE fragment size: " << frag.sizeBytes() << " Discarding Event on request.";
                   _discard_data = true; 
                   _DiscardedCorruptData = true;
-                  evt.removeCachedProduct(frags);
+                  frags.removeProduct();
                   return false;
                 }
               if ( _drop_small_rce_frags )
@@ -439,7 +439,7 @@ bool IcebergTPCRawDecoder::_processRCE(art::Event &evt, RawDigits& raw_digits, R
               if (_process_RCE_AUX(frag, raw_digits, timestamps,tsassocs, rdpm, tspm, runNumber)) ++n_rce_frags;
             }
         }
-      evt.removeCachedProduct(frags);
+      frags.removeProduct();
     }
 
   //MF_LOG_INFO("_processRCE")
@@ -902,7 +902,7 @@ bool IcebergTPCRawDecoder::_processFELIX(art::Event &evt, RawDigits& raw_digits,
                   MF_LOG_WARNING("_process_FELIX:") << " Small FELIX fragment size: " << cont.sizeBytes() << " Discarding Event on request.";
                   _discard_data = true; 
                   _DiscardedCorruptData = true;
-                  evt.removeCachedProduct(cont_frags);
+                  cont_frags.removeProduct();
                   return false;
                 }
               if ( _drop_small_felix_frags )
@@ -922,7 +922,7 @@ bool IcebergTPCRawDecoder::_processFELIX(art::Event &evt, RawDigits& raw_digits,
                 }
             }
         }
-      evt.removeCachedProduct(cont_frags);
+      cont_frags.removeProduct();
     }
 
   // noncontainer frags
@@ -953,7 +953,7 @@ bool IcebergTPCRawDecoder::_processFELIX(art::Event &evt, RawDigits& raw_digits,
                   MF_LOG_WARNING("_process_FELIX:") << " Small FELIX fragment size: " << frag.sizeBytes() << " Discarding Event on request.";
                   _discard_data = true; 
                   _DiscardedCorruptData = true;
-                  evt.removeCachedProduct(frags);
+                  frags.removeProduct();
                   return false;
                 }
               if ( _drop_small_felix_frags )
@@ -969,7 +969,7 @@ bool IcebergTPCRawDecoder::_processFELIX(art::Event &evt, RawDigits& raw_digits,
               if (_process_FELIX_AUX(frag, raw_digits,timestamps, tsassocs, rdpm, tspm, runNumber)) ++n_felix_frags;
             }
         }
-      evt.removeCachedProduct(frags);
+      frags.removeProduct();
     }
 
 

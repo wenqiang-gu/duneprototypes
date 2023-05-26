@@ -324,7 +324,7 @@ bool PDSPTPCDataInterface::_rceProcContNCFrags(art::Handle<artdaq::Fragments> fr
 	    }
 	}
     }
-  evt.removeCachedProduct(frags);  // do this always, even if we need to re-read a TBranch
+  frags.removeProduct();  // do this always, even if we need to re-read a TBranch
   return true;
 }
 
@@ -666,7 +666,7 @@ bool PDSPTPCDataInterface::_felixProcContNCFrags(art::Handle<artdaq::Fragments> 
 	    }
 	}
     }
-  evt.removeCachedProduct(frags);
+  frags.removeProduct();
   return true;
 }
 

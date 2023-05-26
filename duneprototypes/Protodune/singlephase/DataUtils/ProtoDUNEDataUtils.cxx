@@ -55,20 +55,11 @@ int protoana::ProtoDUNEDataUtils::GetNActiveFembsForAPA(art::Event const & evt, 
   // set only saves unique elements
   std::set<int> apaset;
 
-  // Get raw digits time stamps
-  std::vector<art::Ptr<raw::RDTimeStamp> > digitTSlist;
-  
-
   // Get raw digits
-  std::vector<art::Ptr<raw::RawDigit> > digitlist;
 
   auto RawdigitListHandle = evt.getHandle< std::vector<raw::RawDigit> >(fRawDigitTag);
   if (RawdigitListHandle){
-  	
-    art::fill_ptr_vector(digitlist, RawdigitListHandle);  
-
-    for(auto const & dptr : digitlist) {
-      const raw::RawDigit& digit = *dptr;
+    for(raw::RawDigit const& digit : *RawdigitListHandle) {
       // Get the channel number for this digit
       uint32_t chan = digit.Channel();
     
@@ -86,12 +77,9 @@ int protoana::ProtoDUNEDataUtils::GetNActiveFembsForAPA(art::Event const & evt, 
 
   else{ // if raw digits have been dropped use RDTimeStamps instead
 
-    auto RawdigitTSListHandle = evt.getHandle< std::vector<raw::RDTimeStamp> >(fRawDigitTimeStampTag);
-    art::fill_ptr_vector(digitTSlist, RawdigitTSListHandle);  
-	
-    for(auto const & dptr : digitTSlist) {
+    auto const& digits = evt.getProduct< std::vector<raw::RDTimeStamp> >(fRawDigitTimeStampTag);
   	
-      const raw::RDTimeStamp & digit = *dptr;
+    for(raw::RDTimeStamp const & digit : digits) {
     
       // Get the channel number for this digit
       uint16_t chan = digit.GetFlags();
@@ -122,18 +110,15 @@ bool protoana::ProtoDUNEDataUtils::CheckTimeStampConsistencyForAPAs(art::Event c
 								    int &apainconsist) const
 {
   art::ServiceHandle<dune::PdspChannelMapService> channelMap;
-  std::vector<art::Ptr<raw::RDTimeStamp> > TSlist;
-  auto RawTSListHandle = evt.getHandle< std::vector<raw::RDTimeStamp> >(fRawDigitTimeStampTag);
-  art::fill_ptr_vector(TSlist, RawTSListHandle);
+  auto const& TSlist = evt.getProduct< std::vector<raw::RDTimeStamp> >(fRawDigitTimeStampTag);
 
   timestamp = 0;
   timestamp2 = 0;
   apainconsist = 0;
   bool tsi = false;
 
-  for(auto const & tsptr : TSlist) 
+  for(raw::RDTimeStamp const & rdts : TSlist)
     {
-      const raw::RDTimeStamp & rdts = *tsptr;
       uint16_t chan = rdts.GetFlags();
       int iapa = channelMap->APAFromOfflineChannel(chan);
       if (apas.find(iapa) != apas.end())

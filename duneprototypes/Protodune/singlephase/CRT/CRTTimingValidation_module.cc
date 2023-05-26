@@ -54,9 +54,11 @@
 #include "TString.h"
 
 //c++ includes
+#include <bitset>
 #include <numeric> //std::accumulate was moved from <algorithm> to <numeric> in c++14
 #include <iostream>
 #include <cmath>
+
 using namespace std;   // Namespaces established to make life easier
 using namespace ROOT::Math;
 namespace CRT {
