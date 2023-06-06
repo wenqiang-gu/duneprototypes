@@ -13,10 +13,10 @@
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
 #include "TH1F.h"
-#include "crpChannelRangeTests.h"
 
 #undef NDEBUG
 #include <cassert>
+#include "crpChannelRangeTests.h"
 
 using std::string;
 using std::cout;
@@ -40,7 +40,7 @@ int test_CrpChannelGroups(bool useExistingFcl, string sdet) {
 #endif
   string line = "-----------------------------";
 
-  string fclfile = "test_CrpChannelRanges_" + sdet + ".fcl";
+  string fclfile = "test_CrpChannelGroups_" + sdet + ".fcl";
   if ( ! useExistingFcl ) {
     cout << myname << line << endl;
     if ( true ) {

@@ -50,7 +50,16 @@ Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp =99999, In
 
 // ****** Check FEMB ranges ******
 
-void check_femb_ranges(const IndexRangeTool& rt) {
+IndexRange get_only_range(const IndexRange& ran) {
+  return ran;
+}
+
+IndexRange get_only_range(const IndexRangeGroup& grp) {
+  return grp.range(0);
+}
+
+template<class T>
+void check_femb_ranges(const T& rt) {
   const string myname = "check_femb_ranges: ";
   Index nran = 0;
   for ( string stpc : {"A", "B"} ) {
@@ -60,7 +69,7 @@ void check_femb_ranges(const IndexRangeTool& rt) {
       while ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
       for ( string svie : {"u", "v", "z"} ) {
         string sran = "fmb" + stpc + sfmb + svie;
-        IndexRange ran = rt.get(sran);
+        IndexRange ran = get_only_range(rt.get(sran));
         if ( ran.isValid() ) {
           cout << myname << "  " << ran << endl;
           Index nch_view = ran.size();
@@ -82,9 +91,11 @@ void check_femb_ranges(const IndexRangeTool& rt) {
   cout << myname << "Good range FEMB count is " << nran << endl;
 }
 
-void check_femb_ranges(const IndexRangeGroupTool& rt) {
-  assert(false); //for now
-}
+//void check_femb_ranges(const IndexRangeGroupTool& rt) {
+//  const string myname = "check_femb_ranges: ";
+//  cout << myname << "Test is disabled for IndexRangeGroupTool." << endl;
+//  assert(false); //for now
+//}
 
 // ****** Check all ranges ******
 
@@ -93,7 +104,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
   string myname = callname + "checkChannelRanges: ";
   std::vector<string> svals = StringManipulator(sdet).split(":");
   assert( svals.size() > 0 );
-  assert( svals.size() < 2 );
+  assert( svals.size() < 3 );
   string detname = svals[0];
   bool check_fembs = detname == "pdvd";
   bool check_adas = detname == "pdvd";
@@ -108,7 +119,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
     }
   }
   cout << myname << line << endl;
-  cout << myname << "Check detector." << endl;
+  cout << myname << "Check detector " << sdet << " (" << detname << ")." << endl;
   if ( detname == "cb2022" ) {
     checkran(rt, "crdet",    0, 3072);
     checkran(rt,  "cruC",    0, 3072);
