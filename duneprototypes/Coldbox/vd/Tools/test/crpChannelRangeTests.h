@@ -9,6 +9,7 @@
 #include <string>
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
+#include "dunecore/DuneCommon/Utility/StringManipulator.h"
 
 using std::string;
 using std::cout;
@@ -30,15 +31,15 @@ Index checkran(const IndexRange& ran, string sran, Index bexp, Index nexp =0, bo
   return ran.size();
 }
 
-// Check a range in a rnage tool.
-Index checkran(const IndexRangeTool& rt, string sran, Index bexp, Index nexp =0, bool chkvalid =true) {
+// Check a range in a range tool.
+Index checkran(const IndexRangeTool& rt, string sran, Index bexp =99999, Index nexp =0, bool chkvalid =true) {
   const string myname = "checkran: ";
   IndexRange ran = rt.get(sran);
   return checkran(ran, sran, bexp, nexp, chkvalid);
 }
 
 // Check a range in a range group tool.
-Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp, Index nexp =0, bool chkvalid =true) {
+Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp =99999, Index nexp =0, bool chkvalid =true) {
   const string myname = "checkran: ";
   IndexRangeGroup grp = gt.get(sran);
   assert( grp.isValid() );
@@ -47,18 +48,87 @@ Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp, Index nex
   return checkran(ran, sran, bexp, nexp, chkvalid);
 }
 
+// ****** Check FEMB ranges ******
+
+void check_femb_ranges(const IndexRangeTool& rt) {
+  const string myname = "check_femb_ranges: ";
+  Index nran = 0;
+  for ( string stpc : {"A", "B"} ) {
+    for ( Index ifmb=1; ifmb<=16; ++ifmb ) {
+      Index nch_femb = 0;
+      string sfmb = std::to_string(ifmb);
+      while ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
+      for ( string svie : {"u", "v", "z"} ) {
+        string sran = "fmb" + stpc + sfmb + svie;
+        IndexRange ran = rt.get(sran);
+        if ( ran.isValid() ) {
+          cout << myname << "  " << ran << endl;
+          Index nch_view = ran.size();
+          nch_femb += nch_view;
+          ++nran;
+        } else {
+          cout << myname << "  Range " << sran << " not found." << endl;
+        }
+      }
+      cout << myname << "FEMB " << stpc << sfmb << " has " << nch_femb << " channels.";
+      if ( nch_femb == 128 ) {
+        cout << " Good." << endl;
+      } else {
+        cout << " ERROR: This should be 128 channels." << endl;
+        assert(false);
+      }
+    }
+  }
+  cout << myname << "Good range FEMB count is " << nran << endl;
+}
+
+void check_femb_ranges(const IndexRangeGroupTool& rt) {
+  assert(false); //for now
+}
+
+// ****** Check all ranges ******
+
 template<class T>
-int checkChannelRanges(string callname, string det, const T& rt, string line) {
+int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
   string myname = callname + "checkChannelRanges: ";
+  std::vector<string> svals = StringManipulator(sdet).split(":");
+  assert( svals.size() > 0 );
+  assert( svals.size() < 2 );
+  string detname = svals[0];
+  bool check_fembs = detname == "pdvd";
+  bool check_adas = detname == "pdvd";
+  string qual = "";
+  for ( Index ival =1; ival<svals.size(); ++ival ) {
+    string qual = svals[ival];
+    if        ( qual == "fembs" ) check_fembs = true;
+    else if ( qual == "nofembs" ) check_fembs = false;
+    else {
+      cout << myname << "Unexpected detectpr qualifier " << qual << " in " << sdet << endl;
+      assert(false);
+    }
+  }
   cout << myname << line << endl;
   cout << myname << "Check detector." << endl;
-  if ( det == "cb2022" ) {
+  if ( detname == "cb2022" ) {
     checkran(rt, "crdet",    0, 3072);
     checkran(rt,  "cruC",    0, 3072);
     checkran(rt, "cruCu",    0,  952);
     checkran(rt, "cruCv",  952,  952);
     checkran(rt, "cruCz", 1904, 1168);
-  } else if ( det == "pdvd2022" ) {
+    if ( check_fembs ) {
+      cout << myname << "Checking FEMB ranges. Sorta." << endl;
+      for ( Index ifmb=0; ifmb<=16; ++ifmb ) {
+        string sfmb = std::to_string(ifmb);
+        if ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
+        for ( string sori : {"u", "v", "z"} ) {
+          string sran = "fmbC" + sfmb + sori;
+          // IndexRange or IndexRangeGroup
+          auto ran = rt.get(sran);
+          cout << "  " << sran << ": " << ran << endl;
+        }
+      }
+    }
+  } else if ( detname == "pdvd" ) {
     checkran(rt, "crdet",    0, 2*6144);
     checkran(rt,   "crb",    0,   6144);
     checkran(rt,   "crt", 6144,   6144);
@@ -75,12 +145,20 @@ int checkChannelRanges(string callname, string det, const T& rt, string line) {
       checkran(rt,  nam+"v",  beg+952,    952);
       checkran(rt,  nam+"z", beg+1904,   1168);
     }
-    cout << myname << line << endl;
-    cout << myname << "Check adapters. Not." << endl;
-    cout << myname << line << endl;
-    cout << myname << "Check kels. Not." << endl;
+    if ( check_fembs ) {
+      cout << myname << line << endl;
+      cout << myname << "Check FEMB ranges." << endl;
+      check_femb_ranges(rt);
+    }
+    if ( check_adas ) {
+      cout << myname << line << endl;
+      cout << myname << "Check adapters. Not." << endl;
+      cout << myname << line << endl;
+      cout << myname << "Check kels. Not." << endl;
+    }
   } else {
-    cout << myname << "ERROR: Detector not known: " << det << endl;
+    cout << myname << "ERROR: Detector not known: " << detname << endl;
+    assert(false);
   }
 
   return 0;

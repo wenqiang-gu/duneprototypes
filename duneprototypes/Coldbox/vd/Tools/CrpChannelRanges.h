@@ -13,15 +13,23 @@
 //   T = TPC label: C for coldbox, {A,B} for ProtoDUNE, presumably {00, 01, ..., ??} for DUNE FD2.
 //   P = plane: u, v, z
 //
-// For now we hardwire the current (Nov 2022) DUNE layout and offline ordering:
+// For now we hardwire the CRP2+ (Nov 2022) DUNE layout and offline ordering:
 //   U -  952 strips: channel number is offset + [   0,  951]
 //   V -  952 strips: channel number is offset + [ 952, 1903]
 //   Z - 1168 strips: channel number is offset + [1904, 3071]
 // for both top and bottom.
 //
+// There are also FEMB-view ranges for the bottom:
+//   fmbTFFP with T as above, FEMB number FF=1-16, P as above
+// The FEMB numbers are found using IndexMapTool crpChannelRanges.
+//
 // Configuration:
 //   LogLevel: Message level (0, none, 1 init, ...)
 //   Detector: cb2022 or pdvd
+//             Append ":fembs" to create FEMB-view ranges (bottom only for pdvd).
+//             Append ":nofembs" to not create FEMB-view ranges.
+//             Default for cb2022 is nofembs
+//             Default for pdvd is fembs
 //   ....
 
 #include "art/Utilities/ToolMacros.h"

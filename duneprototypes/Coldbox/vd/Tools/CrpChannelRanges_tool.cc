@@ -1,5 +1,9 @@
+// CrpChannelRanges_tool.cc 
+
 #include "CrpChannelRanges.h"
 #include "dunecore/ArtSupport/DuneToolManager.h"
+#include "dunecore/DuneCommon/Utility/StringManipulator.h"
+#include "dunecore/DuneInterface/Tool/IndexMapTool.h"
 
 using std::string;
 using std::cout;
@@ -10,6 +14,8 @@ using Index = CrpChannelRanges::Index;
 using NameVector = std::vector<Name>;
 using IndexVector = std::vector<Index>;
 
+//**********************************************************************
+
 namespace {
   string toupper(std::string sin) {
     string sout = sin;
@@ -17,6 +23,8 @@ namespace {
     return sout;
   }
 }
+
+//**********************************************************************
 
 CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
 : m_LogLevel(ps.get<int>("LogLevel")),
@@ -35,19 +43,48 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
   Index npla = 3;
   NameVector plaLabs = {"u", "v", "z"};
   NameVector cruLabs;
-  if ( m_Detector == "cb2022" ) {
+  // Split detector name and options.
+  NameVector vals = StringManipulator(m_Detector).split(":");
+  string detname = vals[0];
+  // Build the labels and set default fo usefembs.
+  bool usefembs = false;
+  if ( detname == "cb2022" ) {
     ncru = 1;
     cruLabs.push_back("C");
-  } else if ( m_Detector == "pdvd2022" ) {
+  } else if ( detname == "pdvd" ) {
     ncru = 4;
     cruLabs.push_back("A");
     cruLabs.push_back("B");
     cruLabs.push_back("A");
     cruLabs.push_back("B");
+    usefembs = true;
   } else {
-    cout << myname << "ERROR: Invalid detector name: " << m_Detector << endl;
+    cout << myname << "ERROR: Invalid detector name: " << detname << endl;
   }
   Index nsdet = nsc*ncru;
+  // Override usefembs.
+  for ( Index ival=1; ival<vals.size(); ++ival ) {
+    Name val = vals[ival];
+    if      ( val == "fembs" )   usefembs = true;
+    else if ( val == "nofembs" ) usefembs = false;
+    else {
+      cout << myname << "WARNING: Ignoring invalid detector option " << val << endl;
+    }
+  }
+  // Fetch the channel-FEMB mapping tool, if needed.
+  const IndexMapTool* pcrpChannelFemb = nullptr;
+  if ( usefembs ) {
+    Name fctname = "crpChannelFemb";
+    pcrpChannelFemb = DuneToolManager::instance()->getShared<IndexMapTool>(fctname);
+    if ( pcrpChannelFemb == nullptr ) {
+      cout << myname << "WARNING: Tool " << fctname
+           << " not found. FEMB-view ranges will not be defined." << endl;
+      usefembs = false;
+    } else {
+      cout << myname << "Found FEMB-channel mapping tool " << fctname << endl;
+    }
+  }
+  // Build the channel ranges.
   insert("crdet", 0, nsdet, "CRDET");
   assert( ncru > 0 );
   if ( ncru > 1 ) assert( ncru/2 == (ncru+1)/2 );
@@ -73,27 +110,62 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
       Index nps = nPlaneStrips[ipla];
       Index jps = ips + nps;
       string plalab = plaLabs[ipla];
-      insert(scr + crulab + plalab, ips, jps, uscr + crulab + toupper(plalab));
+      string uplalab = toupper(plalab);
+      insert(scr + crulab + plalab, ips, jps, uscr + crulab + uplalab);
+      // FEMB views.
+      if ( usefembs && scr != "crt") {
+        Index icha = ips;
+        Index ifmb = pcrpChannelFemb->get(icha%nsc);
+        for ( Index jcha=icha+1; jcha<=jps; ++jcha ) {
+          Index jfmb = 999999;
+          if ( jcha < jps ) jfmb = pcrpChannelFemb->get(jcha%nsc);
+          if ( jfmb == ifmb ) continue;
+          string fmblab = std::to_string(ifmb);
+          while ( fmblab.size() < 2 ) fmblab = "0" + fmblab;
+          string rnam = "fmb" + crulab + fmblab + plalab;
+          string rlab = "FEMB" + crulab + fmblab + uplalab;
+          insert(rnam, icha, jcha, rlab);
+          ifmb = jfmb;
+          icha = jcha;
+          if ( icha >= jps ) break;
+        }
+      }
       ips = jps;
     }
     its = jts;
   }
 }
 
+//**********************************************************************
 
 IndexRange CrpChannelRanges::get(string sran) const {
   const string myname = "CrpChannelRanges::get: ";
   RangeMap::const_iterator iran = m_rans.find(sran);
   if ( iran  != m_rans.end() ) return iran->second;
-  if ( m_LogLevel >= 2 ) {
+  if ( m_LogLevel >= 3 ) {
     cout << myname << "Invalid channel range name: " << sran << endl;
   }
   return IndexRange(0, 0);
 }
 
+//**********************************************************************
+
 void CrpChannelRanges::insert(Name sran, Index ich1, Index ich2, Name slab1) {
+  const string myname = "CrpChannelRanges::insert: ";
   if ( sran.size() == 0 ) return;
-  m_rans[sran] = IndexRange(sran, ich1, ich2, slab1);
+  if ( m_rans.count(sran) ) {
+    cout << myname << "ERROR: Ignaoring duplicate range " << sran
+         << " at " << IndexRange(ich1, ich2)
+         << " is already mapped to " << get(sran) << endl;
+  } else {
+    if ( m_LogLevel >= 2 ) {
+      cout << myname << "Adding range " << sran << ": [" << ich1 << ", "
+           << ich2 << "), " << ich2 - ich1 << " channels" << endl;
+    }
+    m_rans[sran] = IndexRange(sran, ich1, ich2, slab1);
+  }
 }
+
+//**********************************************************************
 
 DEFINE_ART_CLASS_TOOL(CrpChannelRanges)

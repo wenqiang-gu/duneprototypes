@@ -49,6 +49,7 @@ cet_test(test_VDColdboxOnlineChannel SOURCES test_VDColdboxOnlineChannel.cxx
 cet_test(test_CrpChannelRanges SOURCES test_CrpChannelRanges.cxx
   LIBRARIES
     dunecore_ArtSupport
+    dunecore_DuneCommon_Utility
     art::Utilities
     canvas::canvas
     fhiclcpp
@@ -62,6 +63,7 @@ cet_test(test_CrpChannelRanges SOURCES test_CrpChannelRanges.cxx
 cet_test(test_CrpChannelGroups SOURCES test_CrpChannelGroups.cxx
   LIBRARIES
     dunecore_ArtSupport
+    dunecore_DuneCommon_Utility
     art::Utilities
     canvas::canvas
     fhiclcpp
