@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <stdlib.h>
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include "TH1F.h"
@@ -25,13 +26,14 @@ using std::ofstream;
 using std::istringstream;
 using std::ostringstream;
 using std::setw;
+using std::vector;
 using fhicl::ParameterSet;
 using Index = IndexRange::Index;
 using IndexVector = std::vector<Index>;
 
 //**********************************************************************
 
-int test_CrpChannelRanges(bool useExistingFcl, string det) {
+int test_CrpChannelRanges(bool useExistingFcl, string sdet) {
   const string myname = "test_CrpChannelRanges: ";
 #ifdef NDEBUG
   cout << myname << "NDEBUG must be off." << endl;
@@ -40,41 +42,40 @@ int test_CrpChannelRanges(bool useExistingFcl, string det) {
   string line = "-----------------------------";
 
   cout << myname << line << endl;
-  string fclfile = "test_CrpChannelRanges.fcl";
-  if (useExistingFcl) {
+  cout << myname << "Testing detector config " << sdet << endl;
+  cout << myname << line << endl;
+  string fclfile = "test_CrpChannelRanges_" + sdet + ".fcl";
+  if ( useExistingFcl ) {
     cout << myname << "Using existing top-level FCL." << endl;
   } else {
     cout << myname << "Creating top-level FCL." << endl;
     ofstream fout(fclfile.c_str());
+    fout << "#include \"vdcb2_tools.fcl\"" << endl;
+    fout << "save: @local::tools.crpChannelFemb" << endl;
+    fout << "tools: @erase" << endl;
     fout << "tools: {" << endl;
-    fout << "  cb2022: {" << endl;
+    fout << "  crpChannelFemb: @local::save" << endl;
+    fout << "  channelRanges: {" << endl;
     fout << "    tool_type: CrpChannelRanges" << endl;
     fout << "    LogLevel: 1" << endl;
-    fout << "    Detector: \"cb2022\"" << endl;
-    fout << "  }" << endl;
-    fout << "  pdvd2022: {" << endl;
-    fout << "    tool_type: CrpChannelRanges" << endl;
-    fout << "    LogLevel: 1" << endl;
-    fout << "    Detector: \"pdvd2022\"" << endl;
+    fout << "    Detector: \"" << sdet << "\"" << endl;
     fout << "  }" << endl;
     fout << "}" << endl;
     fout.close();
   }
 
   cout << myname << line << endl;
-  cout << myname << "Fetching tool manager." << endl;
+  cout << myname << "Fetching tool manager for fcl file " << fclfile << "." << endl;
   DuneToolManager* ptm = DuneToolManager::instance(fclfile);
-  assert ( ptm != nullptr );
-  DuneToolManager& tm = *ptm;
-  tm.print();
-  assert( tm.toolNames().size() == 2 );
+  ptm->print();
+  assert( ptm->toolNames().size() == 2 );
 
   cout << myname << line << endl;
-  cout << myname << "Fetching tool " << det << "." << endl;
-  auto cma = tm.getPrivate<IndexRangeTool>(det);
+  cout << myname << "Fetching tool." << endl;
+  auto cma = ptm->getPrivate<IndexRangeTool>("channelRanges");
   assert( cma != nullptr );
 
-  checkChannelRanges(myname, det, *cma, line);
+  checkChannelRanges(myname, sdet, *cma, line);
 
   cout << myname << line << endl;
   cout << myname << "Done." << endl;
@@ -86,17 +87,41 @@ int test_CrpChannelRanges(bool useExistingFcl, string det) {
 
 int main(int argc, char* argv[]) {
   bool useExistingFcl = false;
+  string ssdet = "cb2022:nofembs,pdvd:nofembs,cb2022,pdvd";
   if ( argc > 1 ) {
     string sarg(argv[1]);
     if ( sarg == "-h" ) {
-      cout << "Usage: " << argv[0] << " [keepFCL] [NSHOW]" << endl;
-      cout << "  keepFCL [false]: If true, existing FCL file is used." << endl;
-      cout << "  NSHOW [64]: Every nshow'th channels will be displayed in log." << endl;
+      cout << "Usage: " << argv[0] << " [keepFCL] [DET]" << endl;
+      cout << "  keepFCL [false]: If \"true\" or 1, existing FCL file is used." << endl;
+      cout << "  DETS: Comma-separate list of detectors. [" << ssdet << "]" << endl;
+      cout << "  If FEMBs are used, then pdvd2_tools.fcl is included." << endl;
       return 0;
     }
     useExistingFcl = sarg == "true" || sarg == "1";
+    if ( argc > 2 ) {
+      ssdet = argv[2];
+    }
   }
-  return test_CrpChannelRanges(useExistingFcl, "cb2022") + test_CrpChannelRanges(useExistingFcl, "pdvd2022");
+  vector<string> sdets = StringManipulator(ssdet).split(",");
+  if ( sdets.size() == 0 ) {
+    cout << "Empty detector string." << endl;
+    return 1;
+  }
+  if ( sdets.size() == 1 ) {
+    return test_CrpChannelRanges(useExistingFcl, ssdet);
+  }
+  string line = "=======================================================";
+  cout << line << endl;
+  Index rc = 99;
+  for ( string sdet : sdets ) {
+    cout << "Testing detector " << sdet << endl;
+    string com = string(argv[0]) + " " + std::to_string(useExistingFcl) + " " + sdet;
+    cout << "Command: " << com << endl;
+    rc = system(com.c_str());
+    if ( rc ) return rc;
+    cout << line << endl;
+  }
+  return rc;
 }
 
 //**********************************************************************

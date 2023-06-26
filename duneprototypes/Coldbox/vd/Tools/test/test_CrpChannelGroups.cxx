@@ -13,10 +13,10 @@
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
 #include "TH1F.h"
-#include "crpChannelRangeTests.h"
 
 #undef NDEBUG
 #include <cassert>
+#include "crpChannelRangeTests.h"
 
 using std::string;
 using std::cout;
@@ -32,7 +32,7 @@ using IndexVector = std::vector<Index>;
 
 //**********************************************************************
 
-int test_CrpChannelGroups(string det) {
+int test_CrpChannelGroups(bool useExistingFcl, string sdet) {
   const string myname = "test_CrpChannelGroups: ";
 #ifdef NDEBUG
   cout << myname << "NDEBUG must be off." << endl;
@@ -40,23 +40,28 @@ int test_CrpChannelGroups(string det) {
 #endif
   string line = "-----------------------------";
 
-  cout << myname << line << endl;
-  string fclfile = "test_CrpChannelGroups.fcl";
-  if ( true ) {
-    cout << myname << "Creating top-level FCL." << endl;
-    ofstream fout(fclfile.c_str());
-    fout << "tools: {" << endl;
-    fout << "  channelRanges: {" << endl;
-    fout << "    tool_type: CrpChannelRanges" << endl;
-    fout << "    LogLevel: 1" << endl;
-    fout << "    Detector: \"" << det << "\"" << endl;
-    fout << "  }" << endl;
-    fout << "  mytool: {" << endl;
-    fout << "    tool_type: CrpChannelGroups" << endl;
-    fout << "    LogLevel: 1" << endl;
-    fout << "  }" << endl;
-    fout << "}" << endl;
-    fout.close();
+  string fclfile = "test_CrpChannelGroups_" + sdet + ".fcl";
+  if ( ! useExistingFcl ) {
+    cout << myname << line << endl;
+    if ( true ) {
+      cout << myname << "Creating top-level FCL." << endl;
+      ofstream fout(fclfile.c_str());
+      fout << "#include \"vdcb2_tools.fcl\"" << endl;
+      fout << "save: @local::tools.crpChannelFemb" << endl;
+      fout << "tools: {" << endl;
+      fout << "  crpChannelFemb: @local::save" << endl;
+      fout << "  channelRanges: {" << endl;
+      fout << "    tool_type: CrpChannelRanges" << endl;
+      fout << "    LogLevel: 1" << endl;
+      fout << "    Detector: \"" << sdet << "\"" << endl;
+      fout << "  }" << endl;
+      fout << "  mytool: {" << endl;
+      fout << "    tool_type: CrpChannelGroups" << endl;
+      fout << "    LogLevel: 1" << endl;
+      fout << "  }" << endl;
+      fout << "}" << endl;
+      fout.close();
+    }
   }
 
   cout << myname << line << endl;
@@ -65,14 +70,14 @@ int test_CrpChannelGroups(string det) {
   assert ( ptm != nullptr );
   DuneToolManager& tm = *ptm;
   tm.print();
-  assert( tm.toolNames().size() == 2 );
+  assert( tm.toolNames().size() == 3 );
 
   cout << myname << line << endl;
   cout << myname << "Fetching tool." << endl;
   auto cma = tm.getPrivate<IndexRangeGroupTool>("mytool");
   assert( cma != nullptr );
 
-  checkChannelRanges(myname, det, *cma, line);
+  checkChannelRanges(myname, sdet, *cma, line);
 
   cout << myname << line << endl;
   cout << myname << "Done." << endl;
@@ -82,16 +87,40 @@ int test_CrpChannelGroups(string det) {
 //**********************************************************************
 
 int main(int argc, char* argv[]) {
-  string det = "pdvd2022";
+  string ssdet = "cb2022:nofembs,pdvd:nofembs,cb2022,pdvd";
+  bool useExistingFcl = false;
   if ( argc > 1 ) {
     string sarg(argv[1]);
     if ( sarg == "-h" ) {
-      cout << "Usage: " << argv[0] << "[cb2022 | pdvd2022 | -h]" << endl;
+      cout << "Usage: " << argv[0] << "[cb2022 | pdvd | -h]" << endl;
       return 0;
     }
-    det = sarg;
+    ssdet = sarg;
+    useExistingFcl = sarg == "true" || sarg == "1";
+    if ( argc > 2 ) {
+      ssdet = argv[2];
+    }
   }
-  return test_CrpChannelGroups(det);
+  vector<string> sdets = StringManipulator(ssdet).split(",");
+  if ( sdets.size() == 0 ) {
+    cout << "Empty detector string." << endl;
+    return 1;
+  }
+  if ( sdets.size() == 1 ) {
+    return test_CrpChannelGroups(useExistingFcl, ssdet);
+  }
+  string line = "=======================================================";
+  cout << line << endl;
+  Index rc = 99;
+  for ( string sdet : sdets ) {
+    cout << "Testing detector " << sdet << endl;
+    string com = string(argv[0]) + " " + std::to_string(useExistingFcl) + " " + sdet;
+    cout << "Command: " << com << endl;
+    rc = system(com.c_str());
+    if ( rc ) return rc;
+    cout << line << endl;
+  }
+  return rc;
 }
 
 //**********************************************************************

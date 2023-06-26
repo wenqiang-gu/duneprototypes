@@ -24,6 +24,7 @@ cet_build_plugin(VDColdboxOnlineChannel  art::tool
 
 cet_build_plugin(CrpChannelRanges  art::tool
                 dunecore_ArtSupport
+                dunecore_DuneCommon_Utility
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST
