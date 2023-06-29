@@ -1,10 +1,9 @@
-# dunetpc/dune/Coldbox/hd/fcl/CMakeLists.txt
+# duneprototypes/Coldbox/hd/fcl/CMakeLists.txt
 
-
-# Barnali Chowdhury
-
-# Dec.07, 2021
+# David Adams
+# June 2023
 
 install_fhicl()
 
 add_subdirectory(fcldirs)
+add_subdirectory(test)
