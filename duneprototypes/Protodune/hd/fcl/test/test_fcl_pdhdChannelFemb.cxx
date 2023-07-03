@@ -85,6 +85,7 @@ int test_fcl_pdhdChannelFemb() {
     assert( ncha == nchaPerFemb );
   }
 
+  cout << myname << line << endl;
   cout << myname << "Done." << endl;
   return 0;
 }
