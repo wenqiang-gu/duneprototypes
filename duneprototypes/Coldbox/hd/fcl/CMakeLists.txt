@@ -6,4 +6,3 @@
 install_fhicl()
 
 add_subdirectory(fcldirs)
-add_subdirectory(test)
