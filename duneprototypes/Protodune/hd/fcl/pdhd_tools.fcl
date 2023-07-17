@@ -20,5 +20,13 @@ tools.pdhdChannelFemb: {
   DefaultValue: 999999
 }
 
+tools.pdhdChannelRanges: {
+  tool_type: PdhdChannelRanges
+  LogLevel: 1
+  ExtraRanges: ""
+}
+
+tools.channelRanges: @local::tools.pdhdChannelRanges
+
 # Remove the tmp block.
 tmp: @erase
