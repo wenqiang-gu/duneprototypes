@@ -22,8 +22,7 @@
 //    V is a wire orientation: u, v or x (collection)
 //
 // Where relevant, the ranges are assigned a second label location as one of:
-//   US-RaS, US-DaS, MS-RaS, MS-DaS, DS-RaS, DS-DaS
-// and a third label indication the APA, e.g. APA3.
+//   P01SU, P02SU, P01NL, P02NL
 //
 // Note there is the option to append another index range tool which can
 // override or extend the above set of ranges.
