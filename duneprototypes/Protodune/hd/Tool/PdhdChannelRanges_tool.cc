@@ -34,6 +34,7 @@ PdhdChannelRanges::PdhdChannelRanges(fhicl::ParameterSet const& ps)
   Index nchax = 2*nchaz;
   Index nchai = nchau + nchav;
   Index apaIdx[ntps] = {1, 3, 2, 4};  // Installation order.
+  Index apaIsUpper[ntps] = {1, 0, 1, 0};
   string slocs[ntps] = {"P02SU", "P02NL", "P01SU", "P01NL"};
   insertLen("all", 0, ntps*nchaApa, "All", "", "");
   for ( Index itps=0; itps<ntps; ++itps ) {
@@ -68,37 +69,79 @@ PdhdChannelRanges::PdhdChannelRanges(fhicl::ParameterSet const& ps)
     insertLen(sapa + "i", chu0, nchai, "APA plane " + siapa + "i", sloc + "-I");
     insertLen(stpp + "x", chx0, nchax, "TPC plane " + sitps + "x", sloc + "-X", labApa + "x");
     insertLen(sapa + "x", chx0, nchax, "APA plane " + siapa + "x", sloc + "-X");
-    Index fchu0 = chu0;
-    Index fchv0 = chv0;
-    Index fchx0 = chx10;
-    Index ifmbu = 11;
-    Index ifmbv = 20;
-    Index ifmbx = 20;
     // Loop over FEMBS in offline order.
+    // See https://wiki.dunescience.org/wiki/ProtoDUNE-HD_Geometry.
+    bool isUpper = apaIsUpper[itps];
+    bool isLower = ! isUpper;
+    Index fchu0 = chu0 + 3;
+    Index fchv0 = chv0 + 3;
+    Index fchx0 = chx10;
+    Index ifmbu = 10;
+    Index ifmbv =  1;
+    Index ifmbx =  1;
+    Index fchaumax = chu0 + nchau;
+    Index fchavmax = chv0 + nchav;
+    if ( isLower ) {
+      fchu0 = chu0 + 745;
+      fchv0 = chv0 + 745;
+      ifmbu = 11;
+      ifmbv = 20;
+      ifmbx = 20;
+    }
     for ( Index ifmbOff=0; ifmbOff<20; ++ifmbOff ) {
-      ostringstream ssnamu;
-      ssnamu << siapa << setfill('0') << setw(2) << ifmbu << "u";
-      string namu = ssnamu.str();
-      insertLen("femb" + namu, fchu0, nfchau, "FEMB block " + namu, sloc);
-      ostringstream ssnamv;
-      ssnamv << siapa << setfill('0') << setw(2) << ifmbv << "v";
-      string namv = ssnamv.str();
-      insertLen("femb" + namv, fchv0, nfchav, "FEMB block " + namv, sloc);
+      // One FEMB in each of u and v has twu channel ranges.
+      bool splitu = fchu0 + nfchau > fchaumax;
+      bool splitv = fchv0 + nfchav > fchavmax;
+      string flab = "FEMB-view ";
+      if ( splitu ) {
+        fchu0 += nfchau;
+        fchu0 -= nchau;
+      } else {
+        ostringstream ssnamu;
+        ssnamu << siapa << setfill('0') << setw(2) << ifmbu << "u";
+        string namu = ssnamu.str();
+        ostringstream ssnamu2;
+        ssnamu2 << ifmbu << "u";
+        string namu2 = ssnamu2.str();
+        insertLen("femb" + namu, fchu0, nfchau, flab + namu, sloc + " " + flab + namu2);
+        fchu0 += nfchau;
+      }
+      if ( splitv ) {
+        fchv0 += nfchav;
+        fchv0 -= nchav;
+      } else {
+        ostringstream ssnamv;
+        ssnamv << siapa << setfill('0') << setw(2) << ifmbv << "v";
+        string namv = ssnamv.str();
+        ostringstream ssnamv2;
+        ssnamv2 << ifmbu << "v";
+        string namv2 = ssnamv2.str();
+        insertLen("femb" + namv, fchv0, nfchav, flab + namv, sloc + " " + flab + namv2);
+        fchv0 += nfchav;
+      }
       ostringstream ssnamx;
       ssnamx << siapa << setfill('0') << setw(2) << ifmbx << "x";
       string namx = ssnamx.str();
-      insertLen("femb" + namx, fchx0, nfchax, "FEMB block " + namx, sloc);
-      fchu0 += nfchau;
-      fchv0 += nfchav;
+      ostringstream ssnamx2;
+      ssnamx2 << ifmbu << "x";
+      string namx2 = ssnamx2.str();
+      insertLen("femb" + namx, fchx0, nfchax, flab + namx, sloc + " " + flab + namx2);
       fchx0 += nfchax;
-      ifmbu += 1; 
-      if ( ifmbu > 20 ) ifmbu = 1;
-      ifmbv -= 1;
-      if ( ifmbv == 0 ) ifmbv = 20;
-      if ( ifmbOff < 9 )       ifmbx -= 1;
-      else if ( ifmbOff == 9 ) ifmbx = 1;
-      else                     ifmbx += 1;
-      
+      if ( isUpper ) {
+        ifmbu -= 1; 
+        if ( ifmbu == 0 ) ifmbu = 20;
+        ifmbv += 1;
+        if ( ifmbOff < 9 )       ifmbx += 1;
+        else if ( ifmbOff == 9 ) ifmbx = 20;
+        else                     ifmbx -= 1;
+      } else {
+        ifmbu += 1; 
+        if ( ifmbu > 20 ) ifmbu = 1;
+        ifmbv -= 1;
+        if ( ifmbOff < 9 )       ifmbx -= 1;
+        else if ( ifmbOff == 9 ) ifmbx = 1;
+        else                     ifmbx += 1;
+      }
     }
   }
   if ( m_ExtraRanges.size() ) {
@@ -122,50 +165,6 @@ IndexRange PdhdChannelRanges::get(Name nam) const {
     IndexRange rout = m_pExtraRanges->get(nam);
     if ( rout.isValid() ) return rout;
   }
-  // Special handling for online wire specifier fembAFFVCC
-  // We look up FEMB block fembAFFV and pick the channel corresponding to CC,
-  if ( nam.size() == 10 && nam.substr(0,4) == "femb" ) {
-    IndexRange fbran = get(nam.substr(0,8));
-    Index ifchmax = 0;
-    if ( fbran.isValid() ) {
-      char cpla = nam[7];
-      bool dirSame = true;   // Is channel numbering dir same in FEMB and offline?
-      if ( cpla == 'u' ) {
-        ifchmax = 40;
-        dirSame = false;
-      } else if ( cpla == 'v' ) {
-        ifchmax = 40;
-      } else if ( cpla == 'x' || cpla == 'w') {
-        ifchmax = 48;
-        istringstream ssapa(nam.substr(4,1));
-        int iapa = 0;
-        ssapa >> iapa;
-        istringstream ssfmb(nam.substr(5,2));
-        int ifmb = 0;
-        ssfmb >> ifmb;
-        bool beamL = ifmb >=  1 && ifmb <= 10;
-        bool beamR = ifmb >= 11 && ifmb <= 20;
-        if ( beamL )      dirSame = false;
-        else if ( beamR ) dirSame = true;
-        else              ifchmax = 0;
-      }
-      if ( ifchmax != fbran.size() ) {
-        cout << myname << "WARNING: FEMB block has unexpected size: "
-             << ifchmax << " != " << fbran.size() << endl;
-        ifchmax = 0;
-      }
-      string sch = nam.substr(8,2);
-      istringstream ssfch(sch);
-      Index ifch;
-      ssfch >> ifch;
-      if ( ifch > 0 && ifch <= ifchmax ) {
-        if ( dirSame ) --ifch;
-        else ifch = ifchmax - ifch;
-        Index ich = fbran.begin + ifch;
-        return IndexRange(nam, ich, ich+1, fbran.label(0) + sch, fbran.label(1));
-      } 
-    }
-  }
   IndexRangeMap::const_iterator iran = m_Ranges.find(nam);
   if ( iran == m_Ranges.end() ) return IndexRange();
   return iran->second;
@@ -175,7 +174,9 @@ IndexRange PdhdChannelRanges::get(Name nam) const {
 
 void PdhdChannelRanges::
 insertLen(Name nam, Index begin, Index len, Name lab, Name lab1, Name lab2) {
+  string myname = "PdhdChannelRanges::insertLen: ";
   m_Ranges[nam] = IndexRange(nam, begin, begin+len, lab, lab1, lab2);
+  if ( m_LogLevel >= 2 ) cout << myname << m_Ranges[nam] << endl;
 }
 
 //**********************************************************************

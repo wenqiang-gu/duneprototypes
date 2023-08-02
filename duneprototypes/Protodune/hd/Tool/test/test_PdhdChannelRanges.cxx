@@ -12,6 +12,7 @@
 #include <iomanip>
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
+#include "dunecore/DuneInterface/Tool/IndexMapTool.h"
 #include "TH1F.h"
 
 #undef NDEBUG
@@ -52,6 +53,8 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
     fout << "    ExtraRanges: \"\"" << endl;
     fout << "  }" << endl;
     fout << "}" << endl;
+    fout << endl;
+    fout << "#include \"pdhd_chanmap_tools.fcl\"" << endl;
     fout.close();
   } else {
     cout << myname << "Using existing top-level FCL." << endl;
@@ -68,7 +71,7 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
   assert( tm.toolNames().size() >= 1 );
 
   cout << myname << line << endl;
-  cout << myname << "Fetching tool." << endl;
+  cout << myname << "Fetching channel range tool." << endl;
   auto irt = tm.getPrivate<IndexRangeTool>("mytool");
   assert( irt != nullptr );
 
@@ -162,10 +165,17 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
 
   bool showFembBlocks = show > 1;
   if ( showFembBlocks ) {
+
+    cout << myname << line << endl;
+    cout << myname << "Fetching channel-FEMB map tool." << endl;
+    auto pcfmap = tm.getPrivate<IndexMapTool>("pdhdChannelFemb");
+    assert( pcfmap != nullptr );
+
     cout << myname << line << endl;
     cout << myname << "Fetching FEMB block ranges." << endl;
-    nbad = 0;
     IndexVector chk(15360, 0);
+    Index nbadRange = 0;
+    Index nwrongFemb = 0;
     for ( Index iapa=1; iapa<=napa; ++iapa ) {
       for ( string view : {"u", "v", "x"} ) {
         for ( Index ifmb=1; ifmb<=20; ++ifmb ) {
@@ -175,22 +185,36 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
           IndexRange ir = irt->get(nam);
           if ( ! ir.isValid() ) {
             cout << myname << "Invalid range: " << nam << endl;
-            ++nbad;
+            ++nbadRange;
           } else {
             cout << myname << setw(10) << ir.name << setw(20) << ir.rangeString()
                  << " " << ir.label();
             for ( Index ilab=1; ilab<ir.labels.size(); ++ilab ) cout << ", " << ir.label(ilab);
-            for ( Index icha=ir.begin; icha<ir.end; ++icha ) chk[icha] += 1;
             cout << endl;
+            for ( Index icha=ir.begin; icha<ir.end; ++icha ) {
+              chk[icha] += 1;
+              Index imapfmb = pcfmap->get(icha);
+              if ( imapfmb != ifmb ) {
+                cout << myname << "ERROR: FEMB mismatch for channel " << icha << ": " << ifmb << " != " << imapfmb << endl;
+                ++nwrongFemb;
+                assert( nwrongFemb < 500 );
+              }
+            }
           }
         }
       }
     }
+    Index nerr = 0;
     for ( Index icha=0; icha<15360; ++icha ) {
-      assert( chk[icha] == 1 );
+      if ( chk[icha] != 1 ) {
+        cout << myname << "ERROR: Check count for channel " << icha << " is " << chk[icha] << endl;
+        ++nerr;
+      }
+      assert( nerr < 200 );
     }
+    assert( nwrongFemb == 0 );
+    assert( nerr == 0 );
   }
-  assert( nbad == 0 );
 
   cout << myname << line << endl;
   cout << "Fetch bad range" << endl;

@@ -40,7 +40,10 @@
 // both viewed from above.
 //
 // Parameters:
-//   LogLevel - Message logging level (0=none, 1=ctor, 2=each call, ...)
+//   LogLevel - Message logging level
+//              0 = none
+//              1 = display config
+//              2 = Display each channel range
 //   ExtraRanges - Name of tool with additional ranges. Blank for none.
 
 #ifndef PdhdChannelRanges_H
