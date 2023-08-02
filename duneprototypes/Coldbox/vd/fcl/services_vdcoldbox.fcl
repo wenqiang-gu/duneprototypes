@@ -102,6 +102,7 @@ vdcb_sim_base_services: {
     LArG4Parameters:              @local::dunefd_largeantparameters
 }
 vdcb_sim_base_services.OpDetResponseInterface.QuantumEfficiency: 0.03 # (tkosc) otherwise larsoft complains, manually changed, but should be investigated
+vdcb_sim_base_services.LArG4Parameters.UseModLarqlRecomb: true
 
 vdcb_tde_larg4:    @local::standard_larg4
 vdcb_tde_ionandscint:
@@ -110,7 +111,7 @@ module_type: "IonAndScint"
 Instances: "LArG4DetectorServicevolTPCActive" # (tkosc) not sure here
 ISCalcAlg:   "Correlated"
 }
-vdcb_tde_ionandscint_external: @local::dunefd_ionandscint_larql
+vdcb_tde_ionandscint_external: @local::dunefd_ionandscint #_larql
 vdcb_tde_ionandscint_external.Instances: "LArG4DetectorServicevolExternalActive"
 vdcb_tde_elecdrift: @local::dunefd_elecdrift
 vdcb_tde_pdfastsim_par_ar_fastonly: @local::dunevd_pdfastsim_par_ar_fastonly
