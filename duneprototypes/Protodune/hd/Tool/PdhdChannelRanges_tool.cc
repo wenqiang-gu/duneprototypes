@@ -79,8 +79,8 @@ PdhdChannelRanges::PdhdChannelRanges(fhicl::ParameterSet const& ps)
     Index ifmbu = 10;
     Index ifmbv =  1;
     Index ifmbx =  1;
-    Index fchaumax = chu0 + nchau;
-    Index fchavmax = chv0 + nchav;
+    Index chumax = chu0 + nchau;
+    Index chvmax = chv0 + nchav;
     if ( isLower ) {
       fchu0 = chu0 + 745;
       fchv0 = chv0 + 745;
@@ -90,35 +90,50 @@ PdhdChannelRanges::PdhdChannelRanges(fhicl::ParameterSet const& ps)
     }
     for ( Index ifmbOff=0; ifmbOff<20; ++ifmbOff ) {
       // One FEMB in each of u and v has twu channel ranges.
-      bool splitu = fchu0 + nfchau > fchaumax;
-      bool splitv = fchv0 + nfchav > fchavmax;
+      // // U plane
+      bool splitu = fchu0 + nfchau > chumax;
+      ostringstream ssnamu;
+      ssnamu << siapa << setfill('0') << setw(2) << ifmbu << "u";
+      string namu = ssnamu.str();
+      ostringstream ssnamu2;
+      ssnamu2 << ifmbu << "u";
+      string namu2 = ssnamu2.str();
       string flab = "FEMB-view ";
+      string lab1 = flab + namu;
+      string lab2 = sloc + " " + flab + namu2;
+      string suf1 = "1";
+      string suf2 = "2";
       if ( splitu ) {
+        insertLen("femb" + namu + suf1, fchu0, chumax-fchu0, lab1 + suf1, lab2 + suf1);
         fchu0 += nfchau;
         fchu0 -= nchau;
+        insertLen("femb" + namu + suf2, chu0, fchu0-chu0,    lab1 + suf2, lab2 + suf2);
       } else {
-        ostringstream ssnamu;
-        ssnamu << siapa << setfill('0') << setw(2) << ifmbu << "u";
-        string namu = ssnamu.str();
-        ostringstream ssnamu2;
-        ssnamu2 << ifmbu << "u";
-        string namu2 = ssnamu2.str();
-        insertLen("femb" + namu, fchu0, nfchau, flab + namu, sloc + " " + flab + namu2);
+        insertLen("femb" + namu, fchu0, nfchau, lab1, lab2);
         fchu0 += nfchau;
       }
+      // V plane
+      bool splitv = fchv0 + nfchav > chvmax;
+      ostringstream ssnamv;
+      ssnamv << siapa << setfill('0') << setw(2) << ifmbv << "v";
+      string namv = ssnamv.str();
+      ostringstream ssnamv2;
+      ssnamv2 << ifmbv << "v";
+      string namv2 = ssnamv2.str();
+      lab1 = flab + namv;
+      lab2 = sloc + " " + flab + namv2;
       if ( splitv ) {
+        string suf = "1";
+        insertLen("femb" + namv + suf1, fchv0, chvmax-fchv0, lab1 + suf1, lab2 + suf1);
         fchv0 += nfchav;
         fchv0 -= nchav;
+        suf = "2";
+        insertLen("femb" + namv + suf2, chv0, fchv0-chv0,    lab1 + suf2, lab2 + suf2);
       } else {
-        ostringstream ssnamv;
-        ssnamv << siapa << setfill('0') << setw(2) << ifmbv << "v";
-        string namv = ssnamv.str();
-        ostringstream ssnamv2;
-        ssnamv2 << ifmbu << "v";
-        string namv2 = ssnamv2.str();
         insertLen("femb" + namv, fchv0, nfchav, flab + namv, sloc + " " + flab + namv2);
         fchv0 += nfchav;
       }
+      // X plane
       ostringstream ssnamx;
       ssnamx << siapa << setfill('0') << setw(2) << ifmbx << "x";
       string namx = ssnamx.str();

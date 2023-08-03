@@ -181,23 +181,32 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
         for ( Index ifmb=1; ifmb<=20; ++ifmb ) {
           ostringstream ssnam;
           ssnam << "femb" << iapa << setfill('0') << setw(2) << ifmb << view;
-          string nam = ssnam.str();
-          IndexRange ir = irt->get(nam);
-          if ( ! ir.isValid() ) {
-            cout << myname << "Invalid range: " << nam << endl;
-            ++nbadRange;
+          string basenam = ssnam.str();
+          vector<string> nams;
+          if ( irt->get(basenam).isValid() ) {
+            nams.push_back(basenam);
           } else {
-            cout << myname << setw(10) << ir.name << setw(20) << ir.rangeString()
-                 << " " << ir.label();
-            for ( Index ilab=1; ilab<ir.labels.size(); ++ilab ) cout << ", " << ir.label(ilab);
-            cout << endl;
-            for ( Index icha=ir.begin; icha<ir.end; ++icha ) {
-              chk[icha] += 1;
-              Index imapfmb = pcfmap->get(icha);
-              if ( imapfmb != ifmb ) {
-                cout << myname << "ERROR: FEMB mismatch for channel " << icha << ": " << ifmb << " != " << imapfmb << endl;
-                ++nwrongFemb;
-                assert( nwrongFemb < 500 );
+            nams.push_back(basenam + "1");
+            nams.push_back(basenam + "2");
+          }
+          for ( string nam : nams ) {
+            IndexRange ir = irt->get(nam);
+            if ( ! ir.isValid() ) {
+              cout << myname << "Invalid range: " << nam << endl;
+              ++nbadRange;
+            } else {
+              cout << myname << setw(10) << ir.name << setw(20) << ir.rangeString()
+                   << " " << ir.label();
+              for ( Index ilab=1; ilab<ir.labels.size(); ++ilab ) cout << ", " << ir.label(ilab);
+              cout << endl;
+              for ( Index icha=ir.begin; icha<ir.end; ++icha ) {
+                chk[icha] += 1;
+                Index imapfmb = pcfmap->get(icha);
+                if ( imapfmb != ifmb ) {
+                  cout << myname << "ERROR: FEMB mismatch for channel " << icha << ": " << ifmb << " != " << imapfmb << endl;
+                  ++nwrongFemb;
+                  assert( nwrongFemb < 500 );
+                }
               }
             }
           }
@@ -205,7 +214,7 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
       }
     }
     Index nerr = 0;
-    for ( Index icha=0; icha<15360; ++icha ) {
+    for ( Index icha=0; icha<10240; ++icha ) {
       if ( chk[icha] != 1 ) {
         cout << myname << "ERROR: Check count for channel " << icha << " is " << chk[icha] << endl;
         ++nerr;
@@ -231,7 +240,7 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
 
 int main(int argc, char* argv[]) {
   bool useExistingFcl = false;
-  int show = 1;
+  int show = 2;
   if ( argc > 1 ) {
     string sarg(argv[1]);
     if ( sarg == "-h" ) {
