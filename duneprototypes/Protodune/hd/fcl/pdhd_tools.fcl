@@ -14,3 +14,4 @@ tools.pdhdChannelRanges: {
   ExtraRanges: ""
 }
 tools.channelRanges: @local::tools.pdhdChannelRanges
+tools.channelRanges.LogLevel: 0
