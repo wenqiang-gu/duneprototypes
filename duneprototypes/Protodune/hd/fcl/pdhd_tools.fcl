@@ -5,20 +5,12 @@
 #
 # Tools for recoinstruction of 2023 ProtoDUNE horizontal-drift data.
 
-# Temporary definitions.
-tmp.chanmap: "PD2HDChannelMap_v5.txt"
+#include "pdhd_chanmap_tools.fcl"
 
-# Return the FEMB index (1-20) for an bottom offline channel (0-10239).
-# # Note that tab is included in FieldSeparators as required by chanmap.
-tools.pdhdChannelFemb: {
-  tool_type: TextIndexMapTool
+# Channel ranges.
+tools.pdhdChannelRanges: {
+  tool_type: PdhdChannelRanges
   LogLevel: 1
-  FileName: @local::tmp.chanmap
-  FieldSeparators: " 	"
-  IndexIndex: 0
-  ValueIndex: 9
-  DefaultValue: 999999
+  ExtraRanges: ""
 }
-
-# Remove the tmp block.
-tmp: @erase
+tools.channelRanges: @local::tools.pdhdChannelRanges

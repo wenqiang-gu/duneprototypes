@@ -57,6 +57,9 @@ int test_fcl_pdhdChannelFemb() {
   cout << myname << line << endl;
   cout << myname << "Check channels." << endl;
   Index ncha = 10240;
+  Index nchaPerApa = 2560;
+  Index napa = 4;
+  assert( napa*nchaPerApa == ncha );
   Index nfemb = 20;
   cout << myname << "FEMB count: " << nfemb << endl;
   Index nchaPerFemb = ncha/nfemb;
@@ -64,13 +67,16 @@ int test_fcl_pdhdChannelFemb() {
   Index fmin = 999;
   Index fmax = 0;
   IndexVector fembChanCounts(nfemb+1, 0);
+  std::vector<IndexVector> apaFembChanCounts(napa, fembChanCounts);
   for ( Index icha=0; icha<ncha; ++icha ) {
+     Index kapa = icha/nchaPerApa;
      Index ifmb = ptoo->get(icha);
      assert( ifmb > 0 );
      assert( ifmb <= nfemb );
      if ( ifmb < fmin ) fmin = ifmb;
      if ( ifmb > fmax ) fmax = ifmb;
      ++fembChanCounts[ifmb];
+     ++apaFembChanCounts[kapa][ifmb];
   }
   cout << myname << "FEMB range: [" << fmin << ", " << fmax << "]" << endl;
   assert( fmin == 1 );
@@ -78,10 +84,15 @@ int test_fcl_pdhdChannelFemb() {
 
   cout << myname << line << endl;
   cout << myname << "Check FEMB channel counts." << endl;
-  cout << myname << setw(4) << "FEMB" << setw(10) << "# chan" << endl;
+  cout << myname << setw(4) << "    -------------- # Channels/APA/FEMB ---------------" << endl;
+  cout << myname << "FEMB       all     APA 1     APA 3     APA 2     APA 4" << endl;
   for ( Index ifmb=1; ifmb<=nfemb; ++ifmb ) {
     Index ncha = fembChanCounts[ifmb];
-    cout << myname << setw(4) << ifmb << setw(10) << ncha << endl;
+    cout << myname << setw(4) << ifmb << setw(10) << ncha;
+    for ( Index kapa=0; kapa<napa; ++kapa ) {
+      cout << setw(10) << apaFembChanCounts[kapa][ifmb];
+    }
+    cout << endl;
     assert( ncha == nchaPerFemb );
   }
 
