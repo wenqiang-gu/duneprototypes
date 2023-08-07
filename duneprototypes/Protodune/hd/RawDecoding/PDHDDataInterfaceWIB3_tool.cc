@@ -92,7 +92,7 @@ int PDHDDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
 // This is designed to get data from one APA. 
 void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile::record_id_t &rid, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
 {
-  using dunedaq::detdataformats::wib2::WIB2Frame;
+  using dunedaq::fddetdataformats::WIB2Frame;
   art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
   art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
   auto rf = rawFileService->GetPtr();

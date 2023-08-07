@@ -245,8 +245,8 @@ void VDColdboxDataInterface::getFragmentsForEvent(
     int apano, int maxchan) {
 
   using namespace dune::HDF5Utils;
-  using dunedaq::detdataformats::wib::WIBFrame;
-  using dunedaq::detdataformats::wib::WIBHeader;
+  using dunedaq::fddetdataformats::WIBFrame;
+  using dunedaq::fddetdataformats::WIBHeader;
 
   art::ServiceHandle<dune::VDColdboxChannelMapService> channelMap;
   
