@@ -166,6 +166,7 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
 
           std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
           unsigned int slot = 0, link = 0, crate = 0;
+	  uint64_t firstframetimestamp = 0;
           
           for (size_t i = 0; i < n_frames; ++i)
             {
@@ -195,6 +196,7 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
                   crate = frame->header.crate;
                   slot = frame->header.slot;
                   link = frame->header.link;
+		  firstframetimestamp = frame->get_timestamp();
                 }
             }
           if (fDebugLevel > 0)
@@ -215,7 +217,7 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
               if (offline_chan > fMaxChan) continue;
 
               raw::RDTimeStamp rd_ts(frag->get_trigger_timestamp(), offline_chan);
-              timestamps.push_back(rd_ts);
+              timestamps.push_back(firstframetimestamp);
 
               float median = 0., sigma = 0.;
               getMedianSigma(v_adc, median, sigma);
