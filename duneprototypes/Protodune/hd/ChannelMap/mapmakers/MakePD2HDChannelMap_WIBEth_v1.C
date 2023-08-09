@@ -8,11 +8,9 @@
     > Author: Tom Junk
 ************************************************************************/
 
-// v1 has a scrambled ASIC map due to the WIB firmware not being updated
-// for the monolithic FEMBs.  This map reverts to the original spec.
-// Updade July 20 to invert the channel ordering within the FEMB, so that
-// the channels now increase in the same direction as the FEMB numbering.
-// From an e-mail discussion with Roger Huang
+// This makes the "electronics debugging" channel map (not rotated by 3 channels)
+// for physics use.  Based on MakePD2HDChannelMap_v4.C, it is the first guess at WIBEth
+// channel mapping
 
 using namespace std;
 
@@ -81,7 +79,8 @@ int calc_wibeth_wibframechan(int femb_on_link, int asic, int asicchan);
 
 // start ASIC numbering at 0
 // the following map is the identity -- no unscrambling for v4
-int pd2asic[8] = {0,1,2,3,4,5,6,7};
+//int pd2asic[8] = {0,1,2,3,4,5,6,7};
+int pd2asic[8] = {3,0,2,1,4,7,5,6};
 
 // work in offline order:  upstream first, then downstream.  Within upstream, do
 // beam-right side first, low z to high z, then beam left low z to high z.  Then do
