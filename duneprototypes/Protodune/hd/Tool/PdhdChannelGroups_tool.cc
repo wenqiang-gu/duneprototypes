@@ -73,19 +73,25 @@ PdhdChannelGroups::PdhdChannelGroups(fhicl::ParameterSet const& ps)
         if ( ran.isValid() ) {
           m_groups[sgrp].push_back(sran);
         } else {
+          // This must be a split FEMB: sran -> {sra1, sran2}
           NameVector sranxs({sran + "1", sran + "2"});
+          NameVector split_labs;
+          Index nerr = 0;
           for ( Name sranx : sranxs ) {
             IndexRange ranx = m_pIndexRangeTool->get(sranx);
-            Index nerr = 0;
             if ( ! ranx.isValid() ) {
-              cout << myname << "ERROR: Unable to find range " << sranx << "." << endl;
+              cout << myname << "ERROR: Unable to find split range " << sranx << "." << endl;
               ++nerr;
             }
-            // Add group for this split FEMB-view.
-            if ( nerr ) continue;
-            m_groups[sran] = sranxs;
-            m_labels[sran].push_back("FEMB-view " + std::to_string(ifmb) + sori);
+            if ( split_labs.size() == 0 ) {
+              for ( Name slab : ranx.labels ) {
+                split_labs.push_back(slab.substr(0, slab.size()-1));
+              }
+            }
           }
+          if ( nerr ) continue;
+          m_groups[sran] = sranxs;
+	  m_labels[sran] = split_labs;
           m_groups[sgrp].insert(m_groups[sgrp].end(), sranxs.begin(), sranxs.end());
         }
       }
