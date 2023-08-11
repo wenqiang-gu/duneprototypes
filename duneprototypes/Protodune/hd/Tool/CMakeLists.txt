@@ -13,4 +13,12 @@ cet_build_plugin(PdhdChannelRanges   art::tool
                  ROOT_BASIC_LIB_LIST
                 )
 
+cet_build_plugin(PdhdChannelGroups   art::tool
+                 dunecore_ArtSupport
+                 art::Utilities canvas
+                 cetlib::cetlib cetlib_except
+                 ART_FRAMEWORK_SERVICES_REGISTRY
+                 ROOT_BASIC_LIB_LIST
+                )
+
 add_subdirectory(test)

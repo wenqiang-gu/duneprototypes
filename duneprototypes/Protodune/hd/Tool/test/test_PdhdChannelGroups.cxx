@@ -1,9 +1,9 @@
-// test_PdhdChannelRanges.cxx
+// test_PdhdChannelGroups.cxx
 //
 // David Adams
-// July 2023
+// August 2023
 //
-// Test PdhdChannelRanges.
+// Test PdhdChannelGroups.
 
 #include <string>
 #include <iostream>
@@ -33,8 +33,8 @@ using IndexVector = std::vector<Index>;
 
 //**********************************************************************
 
-int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
-  const string myname = "test_PdhdChannelRanges: ";
+int test_PdhdChannelGroups(bool useExistingFcl =false, int show =1) {
+  const string myname = "test_PdhdChannelGroups: ";
 #ifdef NDEBUG
   cout << myname << "NDEBUG must be off." << endl;
   abort();
@@ -42,15 +42,20 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
   string line = "-----------------------------";
 
   cout << myname << line << endl;
-  string fclfile = "test_PdhdChannelRanges.fcl";
+  string fclfile = "test_PdhdChannelGroups.fcl";
   if ( ! useExistingFcl ) {
     cout << myname << "Creating top-level FCL." << endl;
     ofstream fout(fclfile.c_str());
     fout << "tools: {" << endl;
-    fout << "  mytool: {" << endl;
+    fout << "  channelRanges: {" << endl;
     fout << "    tool_type: PdhdChannelRanges" << endl;
-    fout << "    LogLevel: 2" << endl;
+    fout << "    LogLevel: 1" << endl;
     fout << "    ExtraRanges: \"\"" << endl;
+    fout << "  }" << endl;
+    fout << "  channelGroups: {" << endl;
+    fout << "    tool_type: PdhdChannelGroups" << endl;
+    fout << "    LogLevel: 2" << endl;
+    fout << "    IndexRangeTool: channelRanges" << endl;
     fout << "  }" << endl;
     fout << "}" << endl;
     fout << endl;
@@ -59,8 +64,6 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
   } else {
     cout << myname << "Using existing top-level FCL." << endl;
   }
-
-  Index napa = 4;
 
   cout << myname << line << endl;
   cout << myname << "Fetching tool manager." << endl;
@@ -71,9 +74,12 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
   assert( tm.toolNames().size() >= 1 );
 
   cout << myname << line << endl;
-  cout << myname << "Fetching channel range tool." << endl;
-  auto irt = tm.getPrivate<IndexRangeTool>("mytool");
+  cout << myname << "Fetching channel group tool." << endl;
+  auto irt = tm.getPrivate<IndexRangeTool>("channelGroups");
   assert( irt != nullptr );
+
+/*
+  Index napa = 4;
 
   cout << myname << line << endl;
   cout << myname << "Set TPS-APA mappings." << endl;
@@ -231,6 +237,7 @@ int test_PdhdChannelRanges(bool useExistingFcl =false, int show =1) {
   cout << irb.rangeString() << endl;
   assert( ! irb.isValid() );
 
+*/
   cout << myname << line << endl;
   cout << myname << "Done." << endl;
   return 0;
@@ -255,7 +262,7 @@ int main(int argc, char* argv[]) {
     string sarg(argv[2]);
     show = std::stoi(sarg);
   }
-  return test_PdhdChannelRanges(useExistingFcl, show);
+  return test_PdhdChannelGroups(useExistingFcl, show);
 }
 
 //**********************************************************************
