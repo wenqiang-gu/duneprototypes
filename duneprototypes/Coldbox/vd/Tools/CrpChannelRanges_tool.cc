@@ -85,8 +85,9 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
     }
   }
   // Build the channel ranges.
-  insert("crdet", 0, nsdet, "CRDET");
   assert( ncru > 0 );
+  insert("all", 0, nsdet, "CRDET");
+  insert("crdet", 0, nsdet, "CRDET");
   if ( ncru > 1 ) assert( ncru/2 == (ncru+1)/2 );
   assert ( cruLabs.size() == ncru );
   // Loop over CRUs

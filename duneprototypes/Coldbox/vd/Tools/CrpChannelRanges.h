@@ -2,9 +2,12 @@
 #define CrpChannelRanges_H
 
 // Define channel ranges for the vertical-drift CRUs used for late 2022
-// coldbox testing (CRP2+) and expected for ProtoDUNE-2V.
+// coldbox testing (CRP2+) and expected for pdvd (ProtoDUNE-2 vertical drift).
+// The pdvd offline geometry and offline channel numbering is described here:
+// https://indico.fnal.gov/event/59544/contributions/265210/attachments/166203/221265/Module0_geometry_v2_210423.pdf
 // Also may be used for DUNE FD2?
 //
+//   all = all channels
 // crdet = all channels
 //   crE = bottom and top all TPCs
 //  crET = bottom or top of each TPC
