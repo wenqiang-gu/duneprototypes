@@ -12,7 +12,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
-#include "detdataformats/wib2/WIB2Frame.hpp"
+#include "detdataformats/wibeth/WIBEthFrame.hpp"
 #include "duneprototypes/Protodune/hd/ChannelMap/PD2HDChannelMapService.h"
 
 PDHDDataInterface::PDHDDataInterface(fhicl::ParameterSet const& p)
@@ -63,7 +63,7 @@ int PDHDDataInterface::retrieveDataForSpecifiedAPAs(art::Event &evt,
       int apano = i;
       if (fDebugLevel > 0)
         {
-          std::cout << "PDHDDataInterface :" << "apano: " << i << std::endl;
+          std::cout << "PDHDDataInterfaceWIBEth Tool called with requested APA:" << "apano: " << i << std::endl;
         }
 
       getFragmentsForEvent(rid, raw_digits, rd_timestamps, apano);
@@ -92,7 +92,7 @@ int PDHDDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
 // This is designed to get data from one APA. 
 void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile::record_id_t &rid, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
 {
-  using dunedaq::fddetdataformats::WIB2Frame;
+  using dunedaq::fddetdataformats::WIBEthFrame;
   art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
   art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
   auto rf = rawFileService->GetPtr();
@@ -109,15 +109,15 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
         {
           if (fDebugLevel > 1)
             {
-              std::cout << "PDHDDataInterfaceWIB3 Tool Geoid: " << std::hex << gid << std::dec << std::endl;
+              std::cout << "PDHDDataInterfaceWIBEth Tool Geoid: " << std::hex << gid << std::dec << std::endl;
             }
           uint16_t detid = 0xffff & gid;
           dunedaq::detdataformats::DetID::Subdetector detidenum = static_cast<dunedaq::detdataformats::DetID::Subdetector>(detid);
           auto subdetector_string = dunedaq::detdataformats::DetID::subdetector_to_string(detidenum);
 	  if (fDebugLevel > 1)
 	    {
-	      std::cout << "PDHDDataInterfaceWIB3 Tool subdetector string: " << subdetector_string << std::endl;
-	      std::cout << "PDHDDataInterfaceWIB3 Tool looking for subdet: " << fSubDetectorString << std::endl;
+	      std::cout << "PDHDDataInterfaceWIBEth Tool subdetector string: " << subdetector_string << std::endl;
+	      std::cout << "PDHDDataInterfaceWIBEth Tool looking for subdet: " << fSubDetectorString << std::endl;
 	    }
 	  
 	  if (subdetector_string == fSubDetectorString)
@@ -158,15 +158,14 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
           auto frag_size = frag->get_size();
           size_t fhs = sizeof(dunedaq::daqdataformats::FragmentHeader);
           if (frag_size <= fhs) continue; // Too small to even have a header
-          size_t n_frames = (frag_size - fhs)/sizeof(WIB2Frame);
+          size_t n_frames = (frag_size - fhs)/sizeof(WIBEthFrame);
           if (fDebugLevel > 0)
             {
-              std::cout << "n_frames calc.: " << frag_size << " " << fhs << " " << sizeof(WIB2Frame) << " " << n_frames << std::endl;
+              std::cout << "n_frames calc.: " << frag_size << " " << fhs << " " << sizeof(WIBEthFrame) << " " << n_frames << std::endl;
             }
 
-          std::vector<raw::RawDigit::ADCvector_t> adc_vectors(256);
-          unsigned int slot = 0, link = 0, crate = 0;
-	  uint64_t firstframetimestamp = 0;
+          std::vector<raw::RawDigit::ADCvector_t> adc_vectors(64);   // 64 channels per WIBEth frame
+          unsigned int slot = 0, link = 0, crate = 0, stream = 0, locstream = 0;
           
           for (size_t i = 0; i < n_frames; ++i)
             {
@@ -174,8 +173,8 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
                 {
                   // dump WIB frames in hex
                   std::cout << "Frame number: " << i << std::endl;
-                  //size_t wfs32 = sizeof(WIB2Frame)/4;
-                  uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIB2Frame));
+                  //size_t wfs32 = sizeof(WIBEthFrame)/4;
+                  uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIBEthFrame));
                   std::cout << std::dec;
                   for (size_t iwdt = 0; iwdt < 1; iwdt++)  // dumps just the first 32 bits.  use wfs32 if you want them all
                     {
@@ -185,39 +184,53 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
                   std::cout << std::dec;
                 }
 
-              auto frame = reinterpret_cast<WIB2Frame*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIB2Frame));
-              for (size_t j = 0; j < adc_vectors.size(); ++j)
+              auto frame = reinterpret_cast<WIBEthFrame*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIBEthFrame));
+	      int adcvs = adc_vectors.size();  // convert to int
+              for (int jChan = 0; jChan < adcvs; ++jChan)   // these are ints because get_adc wants ints.
                 {
-                  adc_vectors[j].push_back(frame->get_adc(j));
+		  for (int kSample=0; kSample<64; ++kSample)
+		    {
+		      adc_vectors[jChan].push_back(frame->get_adc(jChan,kSample));
+		    }
                 }
               
               if (i == 0)
                 {
-                  crate = frame->header.crate;
-                  slot = frame->header.slot;
-                  link = frame->header.link;
-		  firstframetimestamp = frame->get_timestamp();
+                  crate = frame->daq_header.crate_id;
+                  slot = frame->daq_header.slot_id;
+		  stream = frame->daq_header.stream_id;
+
+		  // local copy of the stream number -- change 0:3 & 64:67 to a single 0:3 number locstream
+		  // and set the link number
+		  // to be zero for stream from 0:3 and 1 for streams 64:67
+		  // n.b. locstream goes from 0 to 3 twice
+		  
+		  locstream = stream & 0x3;
+		  link = (stream >> 6) & 1;
+
                 }
             }
           if (fDebugLevel > 0)
             {
-              std::cout << "PDHDDataInterfaceToolWIB3: crate, slot, link: "  << crate << ", " << slot << ", " << link << std::endl;
+              std::cout << "PDHDDataInterfaceToolWIBEth: crate, slot, link: "  << crate << ", " << slot << ", " << link << std::endl;
             }
 
-          for (size_t iChan = 0; iChan < 256; ++iChan)
+          for (size_t iChan = 0; iChan < 64; ++iChan)
             {
               const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
 
               uint32_t slotloc = slot;
               slotloc &= 0x7;
 
-              auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, iChan); 
+	      size_t wibframechan = iChan + 64*locstream; 
+
+              auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, wibframechan); 
               unsigned int offline_chan = hdchaninfo.offlchan;
 
               if (offline_chan > fMaxChan) continue;
 
               raw::RDTimeStamp rd_ts(frag->get_trigger_timestamp(), offline_chan);
-              timestamps.push_back(firstframetimestamp);
+              timestamps.push_back(rd_ts);
 
               float median = 0., sigma = 0.;
               getMedianSigma(v_adc, median, sigma);

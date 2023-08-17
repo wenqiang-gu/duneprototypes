@@ -116,7 +116,7 @@ int HDColdboxDataInterface::retrieveDataAPAListWithLabels( art::Event &evt,
 void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
 {
   using namespace dune::HDF5Utils;
-  using dunedaq::detdataformats::wib2::WIB2Frame;
+  using dunedaq::fddetdataformats::WIB2Frame;
 
   // art::ServiceHandle<dune::PdspChannelMapService> channelMap;
   art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;

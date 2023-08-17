@@ -126,7 +126,7 @@ void IcebergHDF5DataInterface::getIcebergHDF5Data(
                                                   hid_t the_group, RawDigits& raw_digits, RDTimeStamps &timestamps,
                                                   int ) {
   using namespace dune::HDF5Utils;
-  using dunedaq::detdataformats::wib2::WIB2Frame;
+  using dunedaq::fddetdataformats::WIB2Frame;
   //using dunedaq::detdataformats::wib2::Header;
 
   art::ServiceHandle<dune::IcebergChannelMapService> channelMap;
