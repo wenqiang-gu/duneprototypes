@@ -4,6 +4,7 @@
 services:
 {
   TimeTracker:  {}
+  HDF5RawFile2Service:  {}
   #TFileService: {
   #  fileName: "pdhdtpcdecodermoduleTFile.root"
   #} 
@@ -13,7 +14,7 @@ physics:
 {
   producers:
   {
-    pdhddaphne: @local::DAPHNEReaderPDHDH
+    pdhddaphne: @local::DAPHNEReaderPDHD
   }
 
   produce: [ pdhddaphne ] 
@@ -21,3 +22,16 @@ physics:
   trigger_paths : [ produce ]
   end_paths: [ output ]
 }
+
+outputs:
+{
+  out1:
+  {
+    compressionLevel: 1
+    module_type: RootOutput
+    fileName: "%ifb_daphne.root"
+  }
+}
+
+source: @local::hdf5rawinput2
+process_name: pdhddaphnedecoderjob
