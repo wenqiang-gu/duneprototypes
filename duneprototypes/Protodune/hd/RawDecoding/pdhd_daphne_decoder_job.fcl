@@ -1,0 +1,23 @@
+#include "DAPHNEReaderPDHD.fcl"
+#include "HDF5RawInput2.fcl"
+
+services:
+{
+  TimeTracker:  {}
+  #TFileService: {
+  #  fileName: "pdhdtpcdecodermoduleTFile.root"
+  #} 
+}
+
+physics:
+{
+  producers:
+  {
+    pdhddaphne: @local::DAPHNEReaderPDHDH
+  }
+
+  produce: [ pdhddaphne ] 
+  output: [ out1 ]
+  trigger_paths : [ produce ]
+  end_paths: [ output ]
+}

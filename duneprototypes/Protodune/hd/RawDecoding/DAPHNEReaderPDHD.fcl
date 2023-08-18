@@ -1,0 +1,7 @@
+BEGIN_PROLOG
+DAPHNEReaderPDHD: {
+  module_type: "DAPHNEReaderPDHD"
+  InputLabel: "daq"
+  OutputLabel: "daq"
+}
+END_PROLOG
