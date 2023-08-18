@@ -19,6 +19,7 @@
 
 
 
+#include "detdataformats/daphne/DAPHNEFrame.hpp"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
 
@@ -75,8 +76,10 @@ bool pdhd::DAPHNEReaderPDHD::CheckSourceIsDetector(const SourceID & id) {
   return (id.subsystem == SourceID::Subsystem::kDetectorReadout);
 }
 
-void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt)
-{
+void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
+  using dunedaq::fddetdataformats::DAPHNEFrame;
+  using dunedaq::daqdataformats::FragmentHeader;
+
   std::vector<raw::OpDetWaveform> opdet_waveforms;
   std::vector<recob::OpHit> optical_hits;
 
@@ -99,15 +102,44 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt)
   for (const auto & source_id : source_ids)  {
     // only want detector readout data (i.e. not trigger info)
     if (!CheckSourceIsDetector(source_id)) continue;
-
+    std::cout << "Source: " << source_id << std::endl;
     auto geo_ids = raw_file->get_geo_ids_for_source_id(record_id, source_id);
     for (const auto &geo_id : geo_ids) {
-      //uint16_t det_id = 0xffff & geo_id;
-      dunedaq::detdataformats::DetID::Subdetector det_idenum = static_cast<dunedaq::detdataformats::DetID::Subdetector>(0xffff & geo_id);
-      auto subdetector_string = dunedaq::detdataformats::DetID::subdetector_to_string(det_idenum);
+      //TODO -- Wrap This
+      dunedaq::detdataformats::DetID::Subdetector det_idenum
+          = static_cast<dunedaq::detdataformats::DetID::Subdetector>(
+              0xffff & geo_id);
+      auto subdetector_string
+          = dunedaq::detdataformats::DetID::subdetector_to_string(det_idenum);
       if (subdetector_string != fSubDetString) continue;
 
-      std::cout << subdetector_string << std::endl;
+      uint16_t crate_from_geo = 0xffff & (geo_id >> 16);
+      std::cout << subdetector_string << " " << crate_from_geo << std::endl;
+
+      std::cout << "Getting fragment" << std::endl;
+      auto frag = raw_file->get_frag_ptr(record_id, source_id);
+      auto frag_size = frag->get_size();
+      size_t frag_header_size = sizeof(FragmentHeader);
+
+      // Too small to even have a header
+      if (frag_size <= frag_header_size) continue;
+
+      size_t n_frames = (frag_size - frag_header_size)/sizeof(DAPHNEFrame);
+      std::cout << "NFrames: " << n_frames << std::endl;
+      for (size_t i = 0; i < n_frames; ++i) {
+        auto frame = reinterpret_cast<DAPHNEFrame*>(
+            static_cast<uint8_t*>(frag->get_data()) + i*sizeof(DAPHNEFrame));
+
+        std::cout << i << " " << frame->get_channel() << " " <<
+                     frame->get_timestamp() << " " << frame->s_num_adcs <<
+                     std::endl;
+        raw::OpDetWaveform waveform(frame->get_timestamp(), i, frame->s_num_adcs);
+        for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
+          //std::cout << "\t" << frame->get_adc(j) << std::endl;
+          waveform.push_back(frame->get_adc(j));
+        }
+        opdet_waveforms.emplace_back(waveform);
+      }
     }
   }
 
