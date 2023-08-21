@@ -1,4 +1,3 @@
-#include "services_dune.fcl"
 #include "services_vdcoldbox.fcl"
 #include "workflow_reco_vdcb.fcl"
 

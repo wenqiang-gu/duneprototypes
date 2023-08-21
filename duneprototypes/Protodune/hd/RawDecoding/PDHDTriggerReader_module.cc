@@ -58,9 +58,9 @@ PDHDTriggerReader::PDHDTriggerReader(fhicl::ParameterSet const& p)
   fOutputInstance(p.get<std::string>("OutputInstance","daq")),
   fDebugLevel(p.get<int>("DebugLevel",0))
 {
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerPrimitive>>>(fOutputInstance);
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerActivityData>>>(fOutputInstance);
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerCandidateData>>>(fOutputInstance);
+  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerPrimitive>>>(fOutputInstance);
+  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerActivityData>>>(fOutputInstance);
+  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerCandidateData>>>(fOutputInstance);
   consumes<raw::DUNEHDF5FileInfo2>(fInputLabel);  // the tool actually does the consuming of this product
 }
 
@@ -70,9 +70,9 @@ void PDHDTriggerReader::produce(art::Event& e)
 {
 
   // As a user of TP data, I can imagine wanting an std::map given to my art module that has the TP SourceIDs as the map keys, and vectors of TriggerPrimitives as the map values.
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerPrimitive>> source_trig_map;
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerActivityData>> source_trigact_map;  
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::detdataformats::trigger::TriggerCandidateData>> source_trigcan_map;  
+  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerPrimitive>> source_trig_map;
+  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerActivityData>> source_trigact_map;  
+  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerCandidateData>> source_trigcan_map;  
 
   auto infoHandle = e.getHandle<raw::DUNEHDF5FileInfo2>(fInputLabel);
   const std::string & file_name = infoHandle->GetFileName();
@@ -117,7 +117,7 @@ void PDHDTriggerReader::produce(art::Event& e)
       
       if (frag_size <= fhs) continue; // Too small to even have a header
       
-      size_t tps = sizeof(dunedaq::detdataformats::trigger::TriggerPrimitive);
+      size_t tps = sizeof(dunedaq::trgdataformats::TriggerPrimitive);
       size_t no_of_tps = (frag_size - fhs) / tps; 
       void* frag_payload_ptr = frag_ptr->get_data();
 
@@ -151,7 +151,7 @@ void PDHDTriggerReader::produce(art::Event& e)
 
       if (frag_size <= fhs) continue;
 
-      size_t tas = sizeof(dunedaq::detdataformats::trigger::TriggerActivityData);
+      size_t tas = sizeof(dunedaq::trgdataformats::TriggerActivityData);
       size_t no_of_tas = (frag_size - fhs) / tas;
       void* frag_payload_ptr = frag_ptr->get_data();
 
@@ -172,7 +172,7 @@ void PDHDTriggerReader::produce(art::Event& e)
 
       if (frag_size <= fhs) continue;
 
-      size_t tcs = sizeof(dunedaq::detdataformats::trigger::TriggerCandidateData);
+      size_t tcs = sizeof(dunedaq::trgdataformats::TriggerCandidateData);
       size_t no_of_tcs = (frag_size - fhs) / tcs;
       void* frag_payload_ptr = frag_ptr->get_data();
 

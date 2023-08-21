@@ -14,3 +14,14 @@ tools.pdhdChannelRanges: {
   ExtraRanges: ""
 }
 tools.channelRanges: @local::tools.pdhdChannelRanges
+tools.channelRanges.LogLevel: 0
+
+# Channel groups.
+tools.pdhdChannelGroups: {
+  tool_type: PdhdChannelGroups
+  LogLevel: 1
+  IndexRangeTool: pdhdChannelRanges 
+}
+tools.channelGroups: @local::tools.pdhdChannelGroups
+tools.channelGroups.LogLevel: 0
+tools.channelGroups.IndexRangeTool: channelRanges

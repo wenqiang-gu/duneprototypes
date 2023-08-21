@@ -116,8 +116,8 @@ void HDColdboxDataInterface::getFragmentsForEvent(hid_t the_group, RawDigits& ra
 						  int apano, unsigned int maxchan) 
 {
   using namespace dune::HDF5Utils;
-  using dunedaq::detdataformats::wib::WIBFrame;
-  using dunedaq::detdataformats::wib::WIBHeader;
+  using dunedaq::fddetdataformats::WIBFrame;
+  using dunedaq::fddetdataformats::WIBHeader;
   
   art::ServiceHandle<dune::PdspChannelMapService> channelMap;
 

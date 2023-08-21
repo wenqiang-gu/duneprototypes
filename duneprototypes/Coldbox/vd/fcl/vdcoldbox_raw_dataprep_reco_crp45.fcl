@@ -1,0 +1,44 @@
+# FCL configuration for VD coldbox using the Nov 2022 HDF5 file format
+# and CRP 4+5 channel map
+# this configuration re-uses the PDHD TPC decoder and Trigger decoder
+
+# prolog fcl includes:
+
+#include "HDF5RawInput2.fcl"
+#include "PDHDTPCReader.fcl"
+#include "PDHDTriggerReader.fcl"
+
+# starting-point executable fcl
+
+#include "vdcoldbox_raw_dataprep_reco.fcl"
+
+process_name: vdcoldboxrecocrp45
+
+services.HDF5RawFile2Service:  {}
+services.PD2HDChannelMapService:
+  {
+    FileName: "vdcbce_chanmap_v4.txt"
+  }
+
+tools.vdtool: @local::PDHDDataInterfaceWIB3Defaults
+tools.vdtool.DebugLevel: 0
+tools.vdtool.SubDetectorString: "VD_Bottom_TPC"
+
+physics.producers.pdhdtriggerreader: @local::PDHDTriggerReaderDefaults
+source: @local::hdf5rawinput2
+
+physics.produce: [
+      "pdhdtriggerreader",
+      "caldata",
+      "rns",
+      "wclsdatanfsp",
+      "gaushit",
+      "pandora",
+      "pandoraTrack",
+      "pandoraShower",
+      "pandoraStdCalo",
+      "pandoraGnoCalo",
+      "pandorapid"
+   ]
+
+physics.producers.caldata.ChannelRanges: [ "all" ]
