@@ -68,7 +68,7 @@ void check_femb_ranges(const T& rt) {
       string sfmb = std::to_string(ifmb);
       while ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
       for ( string svie : {"u", "v", "z"} ) {
-        string sran = "fmb" + stpc + sfmb + svie;
+        string sran = "femb" + stpc + sfmb + svie;
         IndexRange ran = get_only_range(rt.get(sran));
         if ( ran.isValid() ) {
           cout << myname << "  " << ran << endl;
@@ -132,7 +132,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
         string sfmb = std::to_string(ifmb);
         if ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
         for ( string sori : {"u", "v", "z"} ) {
-          string sran = "fmbC" + sfmb + sori;
+          string sran = "fembC" + sfmb + sori;
           // IndexRange or IndexRangeGroup
           auto ran = rt.get(sran);
           cout << "  " << sran << ": " << ran << endl;

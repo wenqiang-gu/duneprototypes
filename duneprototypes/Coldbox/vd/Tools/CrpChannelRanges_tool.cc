@@ -123,7 +123,7 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
           if ( jfmb == ifmb ) continue;
           string fmblab = std::to_string(ifmb);
           while ( fmblab.size() < 2 ) fmblab = "0" + fmblab;
-          string rnam = "fmb" + crulab + fmblab + plalab;
+          string rnam = "femb" + crulab + fmblab + plalab;
           string rlab = "FEMB" + crulab + fmblab + uplalab;
           insert(rnam, icha, jcha, rlab);
           ifmb = jfmb;
