@@ -24,7 +24,7 @@ CrpChannelGroups::CrpChannelGroups(fhicl::ParameterSet const& ps)
       if ( m_LogLevel >= 1 ) cout << myname << "ERROR: Channel range tool not found: " << crtName << endl;
     }
   }
-  cout << myname << "    LogLevel: " << m_LogLevel << endl;
+  if ( m_LogLevel ) cout << myname << "    LogLevel: " << m_LogLevel << endl;
 }
 
 //**********************************************************************

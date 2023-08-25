@@ -81,7 +81,7 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
            << " not found. FEMB-view ranges will not be defined." << endl;
       usefembs = false;
     } else {
-      cout << myname << "Found FEMB-channel mapping tool " << fctname << endl;
+      if ( m_LogLevel ) cout << myname << "Found FEMB-channel mapping tool " << fctname << endl;
     }
   }
   // Build the channel ranges.
