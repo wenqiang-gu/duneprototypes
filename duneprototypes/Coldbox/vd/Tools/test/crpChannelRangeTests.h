@@ -121,6 +121,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
   cout << myname << line << endl;
   cout << myname << "Check detector " << sdet << " (" << detname << ")." << endl;
   if ( detname == "cb2022" ) {
+    checkran(rt, "all",     0, 3072);
     checkran(rt, "crdet",    0, 3072);
     checkran(rt,  "cruC",    0, 3072);
     checkran(rt, "cruCu",    0,  952);
