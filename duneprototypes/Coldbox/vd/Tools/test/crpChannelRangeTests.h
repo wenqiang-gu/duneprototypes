@@ -14,6 +14,7 @@
 using std::string;
 using std::cout;
 using std::endl;
+using std::to_string;
 using Index = IndexRange::Index;
 
 // Check a range.
@@ -42,8 +43,13 @@ Index checkran(const IndexRangeTool& rt, string sran, Index bexp =99999, Index n
 Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp =99999, Index nexp =0, bool chkvalid =true) {
   const string myname = "checkran: ";
   IndexRangeGroup grp = gt.get(sran);
-  assert( grp.isValid() );
-  assert( grp.size() == 1 );
+  string emsg;
+  if ( ! grp.isValid() ) emsg = "Invalid range group: " + sran;
+  else if ( grp.size() != 1 ) emsg = "Range group " + sran + " has size " + to_string(grp.size()) + " != 1";
+  if ( emsg.size() ) {
+    cout << myname << "ERROR: " << emsg << endl;
+    assert(false);
+  }
   IndexRange ran = grp.ranges[0];
   return checkran(ran, sran, bexp, nexp, chkvalid);
 }

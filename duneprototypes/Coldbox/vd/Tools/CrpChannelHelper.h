@@ -116,10 +116,11 @@ inline CrpChannelHelper::CrpChannelHelper(Name sdet) {
     nvol = 1;
     volumeNames.push_back("C");
   } else if ( detname == "pdvd" ) {
+    usefembs = true;
     ncru = 4;
     nvol = 2;
+    volumeNames.push_back("A");
     volumeNames.push_back("B");
-    volumeNames.push_back("T");
   } else {
     std::cout << myname << "ERROR: Invalid detector name: " << detname << std::endl;
   }
