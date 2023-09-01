@@ -14,10 +14,10 @@
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include "TH1F.h"
-#include "crpChannelRangeTests.h"
 
 #undef NDEBUG
 #include <cassert>
+#include "crpChannelRangeTests.h"
 
 using std::string;
 using std::cout;
@@ -33,7 +33,7 @@ using IndexVector = std::vector<Index>;
 
 //**********************************************************************
 
-int test_CrpChannelRanges(bool useExistingFcl, string sdet) {
+int test_CrpChannelRanges(bool useExistingFcl, string sdet, Index loglev=1) {
   const string myname = "test_CrpChannelRanges: ";
 #ifdef NDEBUG
   cout << myname << "NDEBUG must be off." << endl;
@@ -57,7 +57,7 @@ int test_CrpChannelRanges(bool useExistingFcl, string sdet) {
     fout << "  crpChannelFemb: @local::save" << endl;
     fout << "  channelRanges: {" << endl;
     fout << "    tool_type: CrpChannelRanges" << endl;
-    fout << "    LogLevel: 1" << endl;
+    fout << "    LogLevel: " << loglev << endl;
     fout << "    Detector: \"" << sdet << "\"" << endl;
     fout << "  }" << endl;
     fout << "}" << endl;
@@ -88,6 +88,7 @@ int test_CrpChannelRanges(bool useExistingFcl, string sdet) {
 int main(int argc, char* argv[]) {
   bool useExistingFcl = false;
   string ssdet = "cb2022:nofembs,pdvd:nofembs,cb2022,pdvd";
+  Index loglev = 1;
   if ( argc > 1 ) {
     string sarg(argv[1]);
     if ( sarg == "-h" ) {
@@ -100,6 +101,9 @@ int main(int argc, char* argv[]) {
     useExistingFcl = sarg == "true" || sarg == "1";
     if ( argc > 2 ) {
       ssdet = argv[2];
+      if ( argc > 3 ) {
+        loglev = std::stoi(argv[3]);
+      }
     }
   }
   vector<string> sdets = StringManipulator(ssdet).split(",");
@@ -108,7 +112,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   if ( sdets.size() == 1 ) {
-    return test_CrpChannelRanges(useExistingFcl, ssdet);
+    return test_CrpChannelRanges(useExistingFcl, ssdet, loglev);
   }
   string line = "=======================================================";
   cout << line << endl;

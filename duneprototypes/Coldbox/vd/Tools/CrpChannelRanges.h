@@ -23,7 +23,7 @@
 // for both top and bottom.
 //
 // There are also FEMB-view ranges for the bottom:
-//   fmbTFFP with T as above, FEMB number FF=1-16, P as above
+//   fembTFFP with T as above, FEMB number FF=1-16, P as above
 // The FEMB numbers are found using IndexMapTool crpChannelRanges.
 //
 // Configuration:
