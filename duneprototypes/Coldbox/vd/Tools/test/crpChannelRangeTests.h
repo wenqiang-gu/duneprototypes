@@ -14,6 +14,7 @@
 using std::string;
 using std::cout;
 using std::endl;
+using std::to_string;
 using Index = IndexRange::Index;
 
 // Check a range.
@@ -42,8 +43,13 @@ Index checkran(const IndexRangeTool& rt, string sran, Index bexp =99999, Index n
 Index checkran(const IndexRangeGroupTool& gt, string sran, Index bexp =99999, Index nexp =0, bool chkvalid =true) {
   const string myname = "checkran: ";
   IndexRangeGroup grp = gt.get(sran);
-  assert( grp.isValid() );
-  assert( grp.size() == 1 );
+  string emsg;
+  if ( ! grp.isValid() ) emsg = "Invalid range group: " + sran;
+  else if ( grp.size() != 1 ) emsg = "Range group " + sran + " has size " + to_string(grp.size()) + " != 1";
+  if ( emsg.size() ) {
+    cout << myname << "ERROR: " << emsg << endl;
+    assert(false);
+  }
   IndexRange ran = grp.ranges[0];
   return checkran(ran, sran, bexp, nexp, chkvalid);
 }
@@ -68,7 +74,7 @@ void check_femb_ranges(const T& rt) {
       string sfmb = std::to_string(ifmb);
       while ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
       for ( string svie : {"u", "v", "z"} ) {
-        string sran = "fmb" + stpc + sfmb + svie;
+        string sran = "femb" + stpc + sfmb + svie;
         IndexRange ran = get_only_range(rt.get(sran));
         if ( ran.isValid() ) {
           cout << myname << "  " << ran << endl;
@@ -121,6 +127,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
   cout << myname << line << endl;
   cout << myname << "Check detector " << sdet << " (" << detname << ")." << endl;
   if ( detname == "cb2022" ) {
+    checkran(rt, "all",     0, 3072);
     checkran(rt, "crdet",    0, 3072);
     checkran(rt,  "cruC",    0, 3072);
     checkran(rt, "cruCu",    0,  952);
@@ -132,7 +139,7 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
         string sfmb = std::to_string(ifmb);
         if ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
         for ( string sori : {"u", "v", "z"} ) {
-          string sran = "fmbC" + sfmb + sori;
+          string sran = "fembC" + sfmb + sori;
           // IndexRange or IndexRangeGroup
           auto ran = rt.get(sran);
           cout << "  " << sran << ": " << ran << endl;

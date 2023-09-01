@@ -32,6 +32,7 @@ cet_build_plugin(CrpChannelRanges  art::tool
 
 cet_build_plugin(CrpChannelGroups  art::tool
                 dunecore_ArtSupport
+                dunecore_DuneCommon_Utility
                 art::Utilities canvas
                 cetlib::cetlib cetlib_except
                 ROOT_BASIC_LIB_LIST

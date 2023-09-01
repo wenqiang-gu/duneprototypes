@@ -1,4 +1,5 @@
 #include "CrpChannelGroups.h"
+#include "CrpChannelHelper.h"
 #include "dunecore/ArtSupport/DuneToolManager.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include <string>
@@ -13,6 +14,7 @@ using std::endl;
 CrpChannelGroups::CrpChannelGroups(fhicl::ParameterSet const& ps)
 : m_LogLevel(ps.get<int>("LogLevel")) {
   const string myname = "CrpChannelGroups::ctor: ";
+  if ( m_LogLevel ) cout << myname << "    LogLevel: " << m_LogLevel << endl;
   // Fetch the IndexRange tool.
   DuneToolManager* ptm = DuneToolManager::instance();
   if ( ptm == nullptr ) {
@@ -23,8 +25,22 @@ CrpChannelGroups::CrpChannelGroups(fhicl::ParameterSet const& ps)
     if ( m_pcrt == nullptr ) {
       if ( m_LogLevel >= 1 ) cout << myname << "ERROR: Channel range tool not found: " << crtName << endl;
     }
+    IndexRange ran = m_pcrt->get("crdet");
+    if ( ! ran.isValid() ) {
+      cout << myname << "ERROR: Channel range tool is not CRP." << endl;
+      m_pcrt = nullptr;
+      return;
+    }
+    Name sdet = ran.label();
+    if ( m_LogLevel ) cout << myname << " Range detector: " << sdet << endl;
+    CrpChannelHelper cch(sdet);
+    if ( ! cch.isValid() ) {
+      cout << myname << "ERROR: Invalid range detector name: " << sdet << endl;
+      return;
+    }
+    //for ( Index icru=0; icru<ncru; ++icru ) {:q
+
   }
-  cout << myname << "    LogLevel: " << m_LogLevel << endl;
 }
 
 //**********************************************************************
