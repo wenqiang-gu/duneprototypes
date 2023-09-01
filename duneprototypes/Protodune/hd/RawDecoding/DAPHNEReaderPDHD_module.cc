@@ -83,6 +83,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
   std::vector<raw::OpDetWaveform> opdet_waveforms;
   std::vector<recob::OpHit> optical_hits;
 
+  //Get the HDF5 file to be opened
   auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo2>(fFileInfoLabel);
   const std::string & file_name = infoHandle->GetFileName();
   uint32_t runno = infoHandle->GetRun();
@@ -95,13 +96,17 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
   std::cout << file_name << " " << runno << " " << evtno << " " << seqno <<
                std::endl;
 
+  //Open the HDF5 file and get source ids
   art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
   auto raw_file = rawFileService->GetPtr();
   auto source_ids = raw_file->get_source_ids(record_id);
 
+  //Loop over source ids
   for (const auto & source_id : source_ids)  {
     // only want detector readout data (i.e. not trigger info)
     if (!CheckSourceIsDetector(source_id)) continue;
+
+    //Loop over geo ids
     std::cout << "Source: " << source_id << std::endl;
     auto geo_ids = raw_file->get_geo_ids_for_source_id(record_id, source_id);
     for (const auto &geo_id : geo_ids) {
@@ -109,6 +114,8 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       dunedaq::detdataformats::DetID::Subdetector det_idenum
           = static_cast<dunedaq::detdataformats::DetID::Subdetector>(
               0xffff & geo_id);
+
+      //Check that it's photon detectors
       auto subdetector_string
           = dunedaq::detdataformats::DetID::subdetector_to_string(det_idenum);
       if (subdetector_string != fSubDetString) continue;
@@ -125,7 +132,8 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       if (frag_size <= frag_header_size) continue;
 
       size_t n_frames = (frag_size - frag_header_size)/sizeof(DAPHNEFrame);
-      std::cout << "NFrames: " << n_frames << std::endl;
+      std::cout << "NFrames: " << n_frames << " Headder TS: " <<
+                   frag->get_header().trigger_timestamp << std::endl;
       for (size_t i = 0; i < n_frames; ++i) {
         auto frame = reinterpret_cast<DAPHNEFrame*>(
             static_cast<uint8_t*>(frag->get_data()) + i*sizeof(DAPHNEFrame));
