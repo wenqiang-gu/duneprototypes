@@ -92,9 +92,9 @@ int main(int argc, char* argv[]) {
   if ( argc > 1 ) {
     string sarg(argv[1]);
     if ( sarg == "-h" ) {
-      cout << "Usage: " << argv[0] << " [keepFCL] [DET]" << endl;
+      cout << "Usage: " << argv[0] << " [keepFCL] [DETS] [LOGLEV]" << endl;
       cout << "  keepFCL [false]: If \"true\" or 1, existing FCL file is used." << endl;
-      cout << "  DETS: Comma-separate list of detectors. [" << ssdet << "]" << endl;
+      cout << "  DETS: Comma-separated list of detectors. [" << ssdet << "]" << endl;
       cout << "  If FEMBs are used, then pdvd2_tools.fcl is included." << endl;
       return 0;
     }
