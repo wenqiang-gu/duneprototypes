@@ -18,22 +18,42 @@ public:
   using Name = std::string;
   using NameVector = std::vector<Name>;
 
+  // Number of strips in each plane
   const Index nsu = 952;
   const Index nsv = 952;
   const Index nsz = 1168;
   IndexVector nPlaneStrips = {nsu, nsv, nsz};
+
+  // Number of strips in a CRU.
   const Index nsc = nsu + nsv + nsz;
+
+  // Number of FEMBs in a CRU.
+  const Index nfc = 24;
+
+  // Number of strips in the detector.
+  Index nsdet = 0;
+
+  // Number of CRUs.
   Index ncru = 0;
+
+  // Number of TPC volumes.
+  // For DUNE and ProtoDUNE, each has both top and bottom readout.
   Index nvol = 0;
+
+  // Number of planes in CRU.
   Index npla = 3;
+
+  // Names and labels.
+  Name detname;
   NameVector plaLabs = {"u", "v", "z"};
   NameVector volumeNames;
   NameVector cruLabs;
 
-  Name detname;
+  // Flag indicating if FEMB ranges are defined.
   bool usefembs =false;
+
+  // Flag indicating if FEMB adapters are defined.
   bool useadaps =false;
-  Index nsdet = 0;
 
 
   // Ctor from detector name.
@@ -50,7 +70,7 @@ public:
     return scr;
   }
 
-  // Name of the volume for a CRU.
+  // Name of the volume for a CRU: C, A, B, 01, 02, ...
   Name cruVolumeName(Index icru) const {
     if ( icru >= ncru ) return "";
     return volumeNames[icru%nvol];
@@ -76,6 +96,14 @@ public:
   // Label for a CRU plane.
   Name cruPlaneLabel(Index icru, Index ipla) const {
     return cruLabel(icru) + plaLabs[ipla];
+  }
+
+  // Return if a CRU has FEMBs.
+  // For two-ended detectors, this is the first half of the range.
+  bool cruHasFembs(Index icru) const {
+    if ( ! usefembs ) return false;
+    if ( ncru == 1 ) return true;
+    return icru < ncru/2;
   }
 
   // Name of a CRU FEMB.
