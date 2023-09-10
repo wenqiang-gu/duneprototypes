@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <vector>
 #include <limits>
+#include <cstddef>
 
 namespace CRT
 {
