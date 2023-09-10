@@ -333,6 +333,8 @@ void dune::SSPRawDecoder::getFragments(art::Event &evt, std::vector<artdaq::Frag
 
   if (have_data)
     {
+      // e26: the return type is ignored
+      // Please review the code
       try { containerFragments->size(); }
       catch(std::exception const&)  {
 	MF_LOG_ERROR("SSPRawDecoder") << "Run: " << evt.run()
