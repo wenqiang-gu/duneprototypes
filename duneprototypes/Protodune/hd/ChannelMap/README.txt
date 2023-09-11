@@ -70,6 +70,13 @@ for understanding channel numbering plots for debugging.  v4 lists
 channels by their anchor points, v5 where they emerge from under the
 head boards.
 
+
+PD2HDChannelMap_WIBEth_electronics_v1.txt  is a "non-rotated" channel map like v4, but with 
+the channel ordering expected for the WIBEth frames.  The new WIBEth frames have eight streams
+per WIB with 64 channels each, insead of two links with 256 channels each.  The wibframechan field
+has been kept from 0:255 for this map, so that the ProtoDUNE-HD channel map service and decoder will
+work.  See the math in PDHDDataInterfaceWIBEth_tool.cc that computes wibframechan.
+
 See the directory "mapmakers" for ROOT macros that create the channel
 map txt files.  They are not compiled or installed with the release
 of this product, but can be run interactively once the source has

@@ -7,6 +7,7 @@
 // CRP channel ranges are present and cover the expected ranges.
 
 #include <string>
+#include <set>
 #include "dunecore/DuneInterface/Tool/IndexRangeTool.h"
 #include "dunecore/DuneInterface/Tool/IndexRangeGroupTool.h"
 #include "dunecore/DuneCommon/Utility/StringManipulator.h"
@@ -15,6 +16,8 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::to_string;
+using NameVector = std::vector<string>;
+using NameSet = std::set<string>;
 using Index = IndexRange::Index;
 
 // Check a range.
@@ -64,28 +67,58 @@ IndexRange get_only_range(const IndexRangeGroup& grp) {
   return grp.range(0);
 }
 
+IndexRangeGroup get_group(const IndexRangeTool& rt, string) {
+  assert(false);
+  return IndexRangeGroup();
+}
+
+IndexRangeGroup get_group(const IndexRangeGroupTool& rt, string gnam) {
+  return rt.get(gnam);
+}
+
 template<class T>
-void check_femb_ranges(const T& rt) {
+void check_femb_ranges(const T& rt, const NameVector& svols, bool doGroups) {
   const string myname = "check_femb_ranges: ";
   Index nran = 0;
-  for ( string stpc : {"A", "B"} ) {
-    for ( Index ifmb=1; ifmb<=16; ++ifmb ) {
-      Index nch_femb = 0;
+  for ( string svol : svols ) {
+    for ( Index ifmb=1; ifmb<=24; ++ifmb ) {
       string sfmb = std::to_string(ifmb);
       while ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
+      cout << myname << " ================== FEMB " << svol << sfmb << " ===================" << endl;
+      Index nch_femb = 0;
+      Index nfran = 0;
+      NameSet rrnams;
       for ( string svie : {"u", "v", "z"} ) {
-        string sran = "femb" + stpc + sfmb + svie;
+        string sran = "femb" + svol + sfmb + svie;
         IndexRange ran = get_only_range(rt.get(sran));
         if ( ran.isValid() ) {
           cout << myname << "  " << ran << endl;
           Index nch_view = ran.size();
           nch_femb += nch_view;
           ++nran;
+          ++nfran;
+          rrnams.insert(ran.name);
         } else {
-          cout << myname << "  Range " << sran << " not found." << endl;
+          cout << myname << "  " << sran << ": *** Not found ***" << endl;
         }
       }
-      cout << myname << "FEMB " << stpc << sfmb << " has " << nch_femb << " channels.";
+      if ( doGroups ) {
+        string gnam = "femb" + svol + sfmb;
+        IndexRangeGroup grp = get_group(rt, gnam);
+        if ( ! grp.isValid() ) {
+          cout << myname << "Group " << gnam << " not found." << endl;
+          assert(false);
+        } else {
+          cout << myname << "  " << grp << endl;
+          assert( grp.size() == nfran );
+          NameSet grnams;
+          for ( Index iran=0; iran<grp.size(); ++iran ) {
+            grnams.insert(grp.range(iran).name);
+          }
+          assert( grnams == rrnams );
+        }
+      }
+      cout << myname << "FEMB " << svol << sfmb << " has " << nch_femb << " channels.";
       if ( nch_femb == 128 ) {
         cout << " Good." << endl;
       } else {
@@ -94,19 +127,14 @@ void check_femb_ranges(const T& rt) {
       }
     }
   }
+  cout << myname << " ===============================================" << endl;
   cout << myname << "Good range FEMB count is " << nran << endl;
 }
-
-//void check_femb_ranges(const IndexRangeGroupTool& rt) {
-//  const string myname = "check_femb_ranges: ";
-//  cout << myname << "Test is disabled for IndexRangeGroupTool." << endl;
-//  assert(false); //for now
-//}
 
 // ****** Check all ranges ******
 
 template<class T>
-int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
+int checkChannelRanges(string callname, string sdet, const T& rt, string line, bool doGroups =false) {
   string myname = callname + "checkChannelRanges: ";
   std::vector<string> svals = StringManipulator(sdet).split(":");
   assert( svals.size() > 0 );
@@ -134,17 +162,8 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
     checkran(rt, "cruCv",  952,  952);
     checkran(rt, "cruCz", 1904, 1168);
     if ( check_fembs ) {
-      cout << myname << "Checking FEMB ranges. Sorta." << endl;
-      for ( Index ifmb=0; ifmb<=16; ++ifmb ) {
-        string sfmb = std::to_string(ifmb);
-        if ( sfmb.size() < 2 ) sfmb = "0" + sfmb;
-        for ( string sori : {"u", "v", "z"} ) {
-          string sran = "fembC" + sfmb + sori;
-          // IndexRange or IndexRangeGroup
-          auto ran = rt.get(sran);
-          cout << "  " << sran << ": " << ran << endl;
-        }
-      }
+      NameVector svols = {"C"};
+      check_femb_ranges(rt, svols, doGroups);
     }
   } else if ( detname == "pdvd" ) {
     checkran(rt, "crdet",    0, 2*6144);
@@ -166,7 +185,8 @@ int checkChannelRanges(string callname, string sdet, const T& rt, string line) {
     if ( check_fembs ) {
       cout << myname << line << endl;
       cout << myname << "Check FEMB ranges." << endl;
-      check_femb_ranges(rt);
+      NameVector svols = {"A", "B"};
+      check_femb_ranges(rt, svols, doGroups);
     }
     if ( check_adas ) {
       cout << myname << line << endl;
