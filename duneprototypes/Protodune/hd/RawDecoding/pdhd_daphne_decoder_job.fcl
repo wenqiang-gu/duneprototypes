@@ -5,9 +5,12 @@ services:
 {
   TimeTracker:  {}
   HDF5RawFile2Service:  {}
-  #TFileService: {
-  #  fileName: "pdhdtpcdecodermoduleTFile.root"
-  #} 
+  TFileService: {
+    fileName: "pdhd_daphne_decodermodule.root"
+  } 
+  DAPHNEChannelMapService: {
+    FileName: "DAPHNE_test_ChannelMap_v0.txt"
+  }
 }
 
 physics:

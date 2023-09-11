@@ -4,6 +4,7 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
                  lardataobj::RawData
 		 dunecore::HDF5Utils_HDF5RawFile2Service_service
 		 dunecore::dunedaqhdf5utils2
+                 duneprototypes_Protodune_hd_ChannelMap_DAPHNEChannelMapService_service
                  HDF5::HDF5
                  art::Framework_Core
                  art::Framework_Principal
