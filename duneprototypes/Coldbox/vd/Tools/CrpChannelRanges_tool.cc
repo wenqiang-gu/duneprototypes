@@ -81,7 +81,7 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
       Index jps = ips + nps;
       insert(cch.cruPlaneName(icru, ipla), ips, jps, cch.cruPlaneLabel(icru, ipla));
       // FEMB views.
-      if ( cch.usefembs ) {
+      if ( cch.cruHasFembs(icru) ) {
         Index icha = ips;
         Index ifmb = pcrpChannelFemb->get(icha%cch.nsc);
         for ( Index jcha=icha+1; jcha<=jps; ++jcha ) {
