@@ -1,0 +1,19 @@
+#File: CRTVD.fcl
+#Brief: Defines default parameters for CRTVD-related modules
+#Author: Thomas Kosc kosc.thomas@gmail.com
+
+BEGIN_PROLOG
+
+CRTVD_simrefac:
+{
+   module_type:  "CRTVDSimRefac"
+   SimLabel:     "SimLabel"
+   GeVToADC:     "5e5"
+   IntegrationTime:   20 #ns
+   ReadoutWindowSize: 4 #IntegrationTimes
+   Deadtime:          5 #Discriminator dead time in IntegrationTimes
+   DACThreshold:      100 #TODO: Set DAC threshold to 2 PE for commissioning.  In ADC countss for now.
+}
+
+
+END_PROLOG
