@@ -225,8 +225,9 @@ void PDHDDataInterface::getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile:
 	      size_t wibframechan = iChan + 64*locstream; 
 
               auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, wibframechan); 
-              unsigned int offline_chan = hdchaninfo.offlchan;
+              if (!hdchaninfo.valid) continue;
 
+              unsigned int offline_chan = hdchaninfo.offlchan;
               if (offline_chan > fMaxChan) continue;
 
               raw::RDTimeStamp rd_ts(frag->get_trigger_timestamp(), offline_chan);
