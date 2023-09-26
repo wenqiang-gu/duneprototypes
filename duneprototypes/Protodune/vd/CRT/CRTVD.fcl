@@ -6,13 +6,17 @@ BEGIN_PROLOG
 
 CRTVD_simrefac:
 {
-   module_type:  "CRTVDSimRefac"
-   SimLabel:     "SimLabel"
-   GeVToADC:     "5e5"
-   IntegrationTime:   20 #ns
-   ReadoutWindowSize: 4 #IntegrationTimes
-   Deadtime:          5 #Discriminator dead time in IntegrationTimes
-   DACThreshold:      100 #TODO: Set DAC threshold to 2 PE for commissioning.  In ADC countss for now.
+   module_type:		"CRTVDSimRefac"
+   SimLabel:		"SimLabel"
+#   GeVToADC:		"5e5"
+   IntegrationWindow:	100 #ns
+   SamplingTime:	4 #ns
+   DownwardWindow:	20 #ns
+   UpwardWindow:	128 #ns
+#   ReadoutWindowSize:   240 #IntegrationTimes
+   DeadTime:		4 #Discriminator dead time in IntegrationTimes (ns)
+#   DACThreshold:	100 #TODO: Set DAC threshold to 2 PE for commissioning.  In ADC countss for now.
+   EnergyThreshold:	0.100 # MeV integrated Energy deposited.that can trigger a single crt channel
 }
 
 

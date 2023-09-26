@@ -6,7 +6,10 @@
 
 <lcgdict>
   <!-- The data product added in this directory -->
-  <class name="CRTVD::Hit" ClassVersion="11">
+  <class name="CRTVD::Hit" ClassVersion="14">
+   <version ClassVersion="14" checksum="678134203"/>
+   <version ClassVersion="13" checksum="2034402614"/>
+   <version ClassVersion="12" checksum="370505871"/>
    <version ClassVersion="11" checksum="2091418630"/>
   </class>
   <class name="CRTVD::Trigger" ClassVersion="11">

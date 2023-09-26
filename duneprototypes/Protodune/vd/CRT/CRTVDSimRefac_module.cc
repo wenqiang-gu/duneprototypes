@@ -76,18 +76,21 @@ private:
 
   // Member data
   art::InputTag fSimLabel; 
-
-
-  double fGeVToADC; //Conversion from GeV in detector to ADC counts output by MAROC2.   
+//  double fGeVToADC; //Conversion from GeV in detector to ADC counts output by MAROC2.   
 
   //Parameterization for algorithm that takes voltage entering MAROC2 and converts it to ADC hits.  If I ultimately decide I want to 
   //study impact of more detailed simulation, factor this out into an algorithm for simulating MAROC2 that probably takes continuous 
   //voltage signal as input anyway.  
-  time fIntegrationTime; //The time in ns over which charge is integrated in the CRT electronics before being sent to the DAC comparator
-  size_t fReadoutWindowSize; //The time in fIntegrationTimes during which activity in a CRT channel is sent to an ADC if the board has 
-                             //already decided to trigger
-  size_t fDeadtime; //The dead time in fIntegrationTimes after readout during which no energy deposits are processed by CRT boards.
-  adc_t fDACThreshold; //DAC threshold for triggering readout for any CRT strip.  
+  time fIntegrationWindow; //The time in ns over which charge is integrated in the CRT electronics before being sent to the DAC comparator
+
+  time fSamplingTime; // sampling time of CRT channels in ns
+                             
+  // coincidence time window between top and bottom CRT modules is defined with respect to bottom CRT.
+  time fDownwardWindow; // time window pointing to the future w.r.t bottom CRT module time (ns)
+  time fUpwardWindow; // time window pointing to the past w.r.t bottom CRT module time (ns)
+  time fDeadTime; //The dead time after readout during which no energy deposits are processed by CRT boards. (ns)
+  double fEnergyThreshold; //  MeV integrated Energy deposited.that can trigger a single crt channel
+//  adc_t fDACThreshold; //DAC threshold for triggering readout for any CRT strip.  
                        //In GeV for now, but needs to become ADC counts one day.  
                        //Should be replaced by either a lookup in a hardware database or 
                        //some constant value one day.  
@@ -100,30 +103,34 @@ CRT::CRTVDSimRefac::CRTVDSimRefac(fhicl::ParameterSet const & p): EDProducer{p},
                                                               /*fScintillationYield(p.get<double>("ScintillationYield")), 
                                                               fQuantumEff(p.get<double>("QuantumEff")), 
                                                               fDummyGain(p.get<double>("DummyGain")),*/
-                                                              fGeVToADC(p.get<double>("GeVToADC")),
-                                                              fIntegrationTime(p.get<time>("IntegrationTime")), 
-                                                              fReadoutWindowSize(p.get<size_t>("ReadoutWindowSize")), 
-                                                              fDeadtime(p.get<size_t>("Deadtime")),
-                                                              fDACThreshold(p.get<adc_t>("DACThreshold"))
+                                                              //fGeVToADC(p.get<double>("GeVToADC")),
+                                                              fIntegrationWindow(p.get<time>("IntegrationWindow")), 
+                                                              fSamplingTime(p.get<time>("SamplingTime")), 
+                                                              fDownwardWindow(p.get<time>("DownwardWindow")), 
+                                                              fUpwardWindow(p.get<time>("UpwardWindow")), 
+                                                              //fReadoutWindowSize(p.get<size_t>("ReadoutWindowSize")), 
+                                                              fDeadTime(p.get<size_t>("DeadTime")),
+                                                              fEnergyThreshold(p.get<double>("EnergyThreshold"))
+                                                              //fDACThreshold(p.get<adc_t>("DACThreshold"))
 {
   produces<std::vector<CRTVD::Trigger>>();
-  produces<art::Assns<simb::MCParticle,CRTVD::Trigger>>(); 
+//  produces<art::Assns<simb::MCParticle,CRTVD::Trigger>>(); 
 
 }
 
 
 void CRT::CRTVDSimRefac::produce(art::Event & e)
 {
-
+  // Get all AuxDetHits contained in the event
   auto const allSims = e.getMany<sim::AuxDetHitCollection>();
-
 std::cout << "aux det hit size : " << allSims.size() << std::endl;
 
   // -- Get all MCParticles to do assns later
   const auto & mcp_handle = e.getValidHandle<std::vector<simb::MCParticle>>("largeant"); // -- TODO: make this an input tag. Tag is correct though
   art::PtrMaker<simb::MCParticle> makeMCParticlePtr{e,mcp_handle.id()};
-  art::ServiceHandle < cheat::ParticleInventoryService > partInventory;
+//  art::ServiceHandle < cheat::ParticleInventoryService > partInventory; // seems useless
   auto const & mcparticles = *(mcp_handle); //dereference the handle
+std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
 
   // -- Construct map of trackId to MCParticle handle index to do assns later
   std::unordered_map<int, int> map_trackID_to_handle_index;
@@ -132,140 +139,105 @@ std::cout << "aux det hit size : " << allSims.size() << std::endl;
     map_trackID_to_handle_index.insert(std::make_pair(tid,idx));
   }
   
+  // objects to produce
   auto trigCol = std::make_unique<std::vector<CRTVD::Trigger>>();
-  std::unique_ptr< art::Assns<simb::MCParticle, CRTVD::Trigger>> partToTrigger( new art::Assns<simb::MCParticle, CRTVD::Trigger>);
+//  std::unique_ptr< art::Assns<simb::MCParticle, CRTVD::Trigger>> partToTrigger( new art::Assns<simb::MCParticle, CRTVD::Trigger>);
   art::PtrMaker<CRTVD::Trigger> makeTrigPtr(e);
 
-
+  // Retrieve geometry service
   art::ServiceHandle<geo::Geometry> geom;
+
+  // declare hits module map that we'll work with
   std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtHitsModuleMap;
+
+
+  // start loop over AuxDetHit objects and store info into the map
   for(auto const& auxHits : allSims){
+//auxHits type is const class art::Handle<std::vector<sim::AuxDetHit> >
+// its size is equal to the number of art-root objects containing sim::AuxDetHit (depending on which geometry volumes are auxdet sensitive)
+    // loop over sim::AuxDetHit 
     for(const auto & eDep: * auxHits)
     {
-      const size_t tAvg = eDep.GetEntryT();
-
+      float tAvg_fl = eDep.GetEntryT(); // ns
+      time tAvg = static_cast<time>(tAvg_fl);
       geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()) , 0.5*(eDep.GetEntryY()+eDep.GetExitY()), 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()));
-std::cout << "Hit in volume " << geom->VolumeName(midpoint) << std::endl;
+      std::string volume = geom->VolumeName(midpoint);
+//      int i_volume = VolumeIndex(volume);
+//if (volume.find("CRTDPTOP") == volume.npos){ 
+std::cout << "\nHit in volume " << volume << std::endl;
+std::cout << "edep.GetID() = " << eDep.GetID() << std::endl;
+std::cout << "CRT volume index = " << (eDep.GetID()-1)/8 << std::endl;
+std::cout << "CRT channel = " << (eDep.GetID()-1)%8 << std::endl;
+std::cout << "edep.GetTrackID() = " << eDep.GetTrackID() << std::endl;
+std::cout << "tAvg_fl = " << tAvg_fl << "\t" << "tAvg_int = " << tAvg << std::endl;
+std::cout << "Integration window = " << fIntegrationWindow << std::endl; 
+std::cout << "energy deposited : = " << eDep.GetEnergyDeposited() << std::endl; 
+//}
 
-      crtHitsModuleMap[(eDep.GetID())/64][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID())%64, geom->VolumeName(midpoint) , eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
-      mf::LogDebug("TrueTimes") << "Assigned true hit at time " << tAvg << " to bin " << tAvg/fIntegrationTime << ".\n";
+      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fSamplingTime].emplace_back(CRTVD::Hit((eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited()), eDep.GetTrackID());
+//      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
+//      crtHitsModuleMap[i_volume][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID())%64, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
+//      mf::LogDebug("TrueTimes") << "Assigned true hit at time " << tAvg << " to bin " << tAvg/fIntegrationTime << ".\n";
     }
   }
 
+std::cout << "\n";
 
-  // -- For each CRT module
-  for(const auto & crtHitsMappedByModule : crtHitsModuleMap)
-  {
-    int crtChannel = -1;
-    int module = crtHitsMappedByModule.first;
+  // Coincidence research : using BOTTOM module as a reference
+
+  // This set stores time bins where signal above threshold is seen by bottom CRT module
+  std::set<uint32_t> botModuleActiveRegion; //A std::set contains only unique elements.  
+  // Objetcs to keep track of 
+  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> hitsIntegrationWindow;
+
+  // retrieve bottom CRT hits (mapped by time) 
+  const auto botCRThitsMappedByTime = crtHitsModuleMap[1]; // 0 = top module, 1 = bottom module
+
+  time prevWindow = -999999999; // dumb init of current time window. Must be small enough.
+  // Loop over hits in bottom crt module and look for regions with activity
+  // hits are ascendingly sorted w.r.t time
+  for (const auto& [bintime, hitPairs] : botCRThitsMappedByTime){
+
+    std::cout << "Investigating hit at t = " << bintime*fSamplingTime << std::endl;
+
+    time prevWindowUpLimit  = prevWindow+(fIntegrationWindow+fDeadTime)/fSamplingTime;
+    if ( bintime < prevWindow || bintime > prevWindowUpLimit ) continue; // reject hits not in current integration window
+
+    // integrate energy deposited in time window
+    float sigIntegrationWindow = 0;
+    for (auto p : hitPairs) sigIntegrationWindow += p.first.Edep();
+//    for (time t=bintime; t<bintime+fIntegrationWindow; t++) for (auto p : hitPairs) sigIntegrationWindow += p.first.Edep();
  
-    std::string modStrng="U"+std::to_string(module+1);
-    if (module>15) modStrng="D"+std::to_string(module+1-16);
-    if ((module+1)==17) crtChannel=22; 
-    if ((module+1)==1) crtChannel=24; 
-    for (int i=0; i<32; ++i){
-      if (crtChannel==22 || crtChannel==24) break;
-      const auto& det = geom->AuxDet(i);
-      if(det.Name().find(modStrng) != std::string::npos){
-        crtChannel=i; break;
+      // if signal is above threshold, keep track of time bin index
+      if (sigIntegrationWindow > fEnergyThreshold){
+std::cout << "Found signal at time bin : " << bintime << " with Edep = " << sigIntegrationWindow << std::endl;
+        if(botModuleActiveRegion.insert(bintime).second){ 
+          prevWindow = bintime;
+          for (const auto& hitsInReadoutWindow : botCRThitsMappedByTime) 
+            {
+            if (hitsInReadoutWindow.first == bintime) continue;
+            //for (auto v : hp) hitsIntegrationWindow[bintime].emplace_back(v);
+            }
+         }
       }
     }
-    const auto crtHitsMappedByTime = crtHitsMappedByModule.second;
-
-    mf::LogDebug("channels") << "Processing channel " << module << "\n";
-    
-    std::stringstream ss;
-
-    mf::LogDebug("timeToHitTrackIds") << "Constructed readout windows for module " << crtChannel << ":\n"
-                            << ss.str() << "\n";
 
 
 
-     auto lastTimeStamp=time(0);
-    int i=0;
-  for(auto window : crtHitsMappedByTime) 
-    {
-	if (i!=0 && (time(fDeadtime)+lastTimeStamp)>window.first && lastTimeStamp<window.first) continue;
-	i++;
-
-// const auto hit = window.first;
-//hit.dump(std::cout);
-
-      const auto& hitsInWindow = window.second;
-      const auto aboveThresh = std::find_if(hitsInWindow.begin(), hitsInWindow.end(), 
-                                            [this](const auto& hitPair) { return hitPair.first.ADC() > fDACThreshold; });
 
 
-if(aboveThresh != hitsInWindow.end()){
-
-       std::vector<CRTVD::Hit> hits;
-	std::set<int> trkIDCheck;
-        const time timestamp = window.first; //Set timestamp before window is changed.
-        const time end = (timestamp+fReadoutWindowSize);
-        std::set<uint32_t> channelBusy; //A std::set contains only unique elements.  This set stores channels that have already been read out in 
-                                        //this readout window and so are "busy" and cannot contribute any more hits. 
-    for(auto busyCheckWindow : crtHitsMappedByTime ){
-	if (time(busyCheckWindow.first)<timestamp || time(busyCheckWindow.first)>end) continue;
-          for(const auto& hitPair: window.second){
-            const auto channel = hitPair.first.Channel(); //TODO: Get channel number back without needing art::Ptr here.  
-                                                                    //      Maybe store crt::Hits.
-            if(channelBusy.insert(channel).second){ 
-              hits.push_back(hitPair.first);
-
-
-	      if (hitPair.first.ADC()>fDACThreshold){
-
-              int tid = hitPair.second;
-
-
-
-	      trkIDCheck.insert(tid);
-
-	  
-	    }
-            }
-          }
-       }
-
-	for (int tid : trkIDCheck){
-	      // -- safe index retrieval
-	      int index = 0;
-              auto search = map_trackID_to_handle_index.find(tid);
-              if (search != map_trackID_to_handle_index.end()){
-                index = search->second;
-                mf::LogDebug("GetAssns") << "Found index : " << index;
-              } else {                                                                                        
-                mf::LogDebug("GetAssns") << "No matching index... strange";
-                continue;
-              }
-              
-              // -- Sanity check, not needed
-              simb::MCParticle particle = mcparticles[index];
-              mf::LogDebug("GetAssns") << "TrackId from particle obtained with index " << index
-                << " is : " << particle.TrackId() << " , expected: " << tid;
-              mf::LogDebug("GetMCParticle") << particle;
-              
-              auto const mcptr = makeMCParticlePtr(index);
-              partToTrigger->addSingle(mcptr, makeTrigPtr(trigCol->size()-1));
-
-	}
-	//std::cout<<"Hits Generated:"<<hits.size()<<std::endl;
-        lastTimeStamp=window.first;
-
-        MF_LOG_DEBUG("CreateTrigger") << "Creating CRT::Trigger...\n";
-        trigCol->emplace_back(crtChannel, timestamp*fIntegrationTime, std::move(hits)); 
-	} // For each readout with a triggerable hit
-    }  // For each time window
-
-  } //For each CRT module
-
+//int crtChannel = 0;              
+//time timestamp = 12;
+//  auto const mcptr = makeMCParticlePtr(index);
+//  partToTrigger->addSingle(mcptr, makeTrigPtr(trigCol->size()-1));
+//  trigCol->emplace_back(crtChannel, timestamp*fIntegrationTime, std::move(hits)); 
   // -- Put Triggers and Assns into the event
   mf::LogDebug("CreateTrigger") << "Putting " << trigCol->size() << " CRT::Triggers into the event at the end of analyze().\n";
   e.put(std::move(trigCol));
-  e.put(std::move(partToTrigger));
+//  e.put(std::move(partToTrigger));
+
 
 }
-
 
 
 DEFINE_ART_MODULE(CRT::CRTVDSimRefac)
