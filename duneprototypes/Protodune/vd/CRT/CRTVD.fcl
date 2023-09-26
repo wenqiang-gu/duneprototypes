@@ -4,9 +4,9 @@
 
 BEGIN_PROLOG
 
-CRTVD_simrefac:
+CRTVD_sim:
 {
-   module_type:		"CRTVDSimRefac"
+   module_type:		"CRTVDSim"
    SimLabel:		"SimLabel"
 #   GeVToADC:		"5e5"
    IntegrationWindow:	100 #ns
