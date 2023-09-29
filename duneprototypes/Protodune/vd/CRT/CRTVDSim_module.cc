@@ -151,6 +151,7 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
   std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtHitsModuleMap;
 
 
+
   // start loop over AuxDetHit objects and store info into the map
   for(auto const& auxHits : allSims){
 //auxHits type is const class art::Handle<std::vector<sim::AuxDetHit> >
@@ -186,14 +187,20 @@ std::cout << "\n";
   // Coincidence research : using BOTTOM module as a reference
 
   // This set stores time bins where signal above threshold is seen by bottom CRT module
-  std::set<uint32_t> botModuleActiveRegion; //A std::set contains only unique elements.  
-  // Objetcs to keep track of 
-  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> botHitsActiveRegions; // internal integer corresponds to trackID
+  std::map<int, std::set<uint32_t>> timeActiveRegions; //A std::set contains only unique elements.  
+  // first integer convention : 0 = bottom only, 1 = top only, 2 = coincidence
+  // declare hits module map that we will keep track for triggering
+  std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtTrackedHitsModuleMap;
+  // first integer convention : 0 = bottom only, 1 = top only, 2 = coincidence
 
   // retrieve bottom CRT hits (mapped by time) 
   const auto botCRThitsMappedByTime = crtHitsModuleMap[1]; // 0 = top module, 1 = bottom module
 
-  time prevWindow = -999999999; // dumb init of current time window. Must be small enough.
+  // Objetcs to keep track of 
+  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> bottomHitsInActiveRegions; // internal integer corresponds to trackID
+
+  time dummy = -999999999;
+  time prevWindow = dummy; // dumb init of current time window. Must be small enough.
   // Loop over hits in bottom crt module and look for regions with activity
   // hits are ascendingly sorted w.r.t time
   int count = -1;
@@ -203,9 +210,9 @@ std::cout << "\n";
 
     time prevWindowUpLimit  = prevWindow+(fIntegrationWindow+fDeadTime)/fSamplingTime;
 
-std::cout << "prev time window = [ " << prevWindow << " ; " << prevWindowUpLimit << std::endl;
+std::cout << "prev time window = [ " << prevWindow*fSamplingTime << " ; " << prevWindowUpLimit*fSamplingTime << std::endl;
 
-    if ( /*count!=0 &&*/ (bintime < prevWindow || bintime > prevWindowUpLimit) ) continue; // reject hits not in current integration window
+    if ( prevWindow!=dummy && (bintime >= prevWindow && bintime <= prevWindowUpLimit) ) continue; // reject hits not in current integration window
 
 std::cout << "\t---> not in previous time integration window, let's continue !" << std::endl;
 
@@ -214,20 +221,20 @@ std::cout << "\t---> not in previous time integration window, let's continue !" 
     for (auto p : hitPairs) sigIntegrationWindow += p.first.Edep();
 //    for (time t=bintime; t<bintime+fIntegrationWindow; t++) for (auto p : hitPairs) sigIntegrationWindow += p.first.Edep();
 
-std::cout << "Total signal at time bin : " << bintime << " is Edep = " << sigIntegrationWindow << std::endl;
+std::cout << "Total signal at time bin : " << bintime*fSamplingTime << " is Edep = " << sigIntegrationWindow << std::endl;
       // skip current bin time if associated energy deposited is below threshold
       if (sigIntegrationWindow < fEnergyThreshold) continue;
 std::cout << "\t---> passed threshold detection !! " << std::endl;
 
         // if signal is above threshold, keep track of time bin index
-        botModuleActiveRegion.insert(bintime); // keep it in a std::set for later purposes
+        timeActiveRegions[0].insert(bintime); // keep it in a std::set for later purposes
           prevWindow = bintime; // keep it in varaible for newt iteration loop
           // also keep track of all the hits which are in integration window (not only the ones in current bin time)
           for (const auto& pairHitsInReadoutWindow : botCRThitsMappedByTime) 
             {
             time t = pairHitsInReadoutWindow.first;
             if ( t < prevWindow && t > prevWindowUpLimit) continue;
-            for (auto v : pairHitsInReadoutWindow.second) botHitsActiveRegions[bintime].emplace_back(v);
+            for (auto v : pairHitsInReadoutWindow.second) bottomHitsInActiveRegions[bintime].emplace_back(v);
             } // end loop over secondary bottom hits
          //} // end if
     } // end primary loop over bottom module hits
@@ -235,30 +242,81 @@ std::cout << "\t---> passed threshold detection !! " << std::endl;
 std::cout << "\n------- END Bottom hit search -------" << std::endl;
 // CHECK
 std::cout << "\n--- Check ---" << std::endl;
-for (auto pairHits : botHitsActiveRegions){
+for (auto pairHits : bottomHitsInActiveRegions){
 std::cout << "\nFound active region at bin time " << pairHits.first*fSamplingTime << std::endl;
-bool haselement = (botModuleActiveRegion.find(pairHits.first) == botModuleActiveRegion.end());
+bool haselement = (timeActiveRegions[0].find(pairHits.first) == timeActiveRegions[0].end());
 std::cout << "Is this time stored in std::set object ? --> " << haselement << std::endl;
+}
 
 
+
+
+  std::set<uint32_t> topModuleActiveRegion; //A std::set contains only unique elements.  
   std::set<uint32_t> coincTimes; //A std::set contains only unique elements.  
   // Retrieve hits in top crt module
   const auto topCRThitsMappedByTime = crtHitsModuleMap[0]; // 0 = top module, 1 = bottom module
 
-  // Loop over top module hits and look for coincidences in time
-  for (const auto& [bintime, hitPairs] : botCRThitsMappedByTime){
+  // Loop over top module hits 
+  for (const auto& [topbintime, tophitPairs] : topCRThitsMappedByTime){
+
+    // get total energy deposited in current time window
+    float sig = 0.;
+    for (auto p : tophitPairs) sig += p.first.Edep();
+    if (sig<fEnergyThreshold) continue;
+
+    int keeptrkidx = 1;
+    int keeptracktime = topbintime;
+    // First look for coincidences with bottom crt module
+    // loop over active time regions of bottom CRT module
+    for (const auto botbintime : timeActiveRegions[0]){
+
+      // check if current time bin of top hit is any coincidence window w.r.t bottom module
+      if ( topbintime>(botbintime-fUpwardWindow) && topbintime<(botbintime+fDownwardWindow) ){
+        // if coincidence is found, check that signal in top module is above threshold
+           timeActiveRegions[2].insert(botbintime); // add the time coinc into coinc set
+           timeActiveRegions[0].erase(timeActiveRegions[0].find(botbintime)); // remove the time coinc from bottom crt module only trigger
+           keeptrkidx = 2;
+           keeptracktime = botbintime;
+           break;
+        } // end if is in coinc time window
+    } // end for
+
+    // keep track of time to trigger top crt module only (if no trigger) 
+    if (keeptrkidx == 1) timeActiveRegions[1].insert(topbintime);
+
+    // loop again over all top crct hits and keep track of the ones within integration window
+    for (const auto& topHitsInReadoutWindow : topCRThitsMappedByTime){
+        time t = topHitsInReadoutWindow.first;
+        if ( t<topbintime && t>(topbintime+fIntegrationWindow/fSamplingTime)) continue;
+        for (auto v : topHitsInReadoutWindow.second) crtTrackedHitsModuleMap[keeptrkidx][keeptracktime].emplace_back(v);
+       } // end loop over secondary bottom hits
+
+  } // end loop over top crt hits
 
 
+std::cout << "\n--- Check coincidences ---\n";
+for (time t : timeActiveRegions[2]){
+  std::cout << "Found coinc time at bottom time = " << t << std::endl;
 }
+std::cout << "\n--- END Check coincidences ---\n\n";
 
+  // store bottom crt module triggers
+  for (time t : timeActiveRegions[0]){
+  std::vector<CRTVD::Hit> hits;
+    for (auto hp : bottomHitsInActiveRegions[t]) hits.push_back(hp.first);
+    trigCol->emplace_back(0, t*fSamplingTime, std::move(hits)); // probably wrong and work to do here 
+  }
 
-//int crtChannel = 0;              
+//  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> hitsInActiveRegions; // internal integer corresponds to trackID
+
+// int crtChannel = 0;              
 //time timestamp = 12;
 //  auto const mcptr = makeMCParticlePtr(index);
 //  partToTrigger->addSingle(mcptr, makeTrigPtr(trigCol->size()-1));
 //  trigCol->emplace_back(crtChannel, timestamp*fIntegrationTime, std::move(hits)); 
   // -- Put Triggers and Assns into the event
-  mf::LogDebug("CreateTrigger") << "Putting " << trigCol->size() << " CRT::Triggers into the event at the end of analyze().\n";
+  std::cout << "CreateTrigger : putting " << trigCol->size() << " CRTVD::Triggers into the event at the end of analyze().\n";
+//  mf::LogDebug("CreateTrigger") << "Putting " << trigCol->size() << " CRT::Triggers into the event at the end of analyze().\n";
   e.put(std::move(trigCol));
 //  e.put(std::move(partToTrigger));
 
