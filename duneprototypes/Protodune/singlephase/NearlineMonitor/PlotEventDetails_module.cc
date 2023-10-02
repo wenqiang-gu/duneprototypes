@@ -125,7 +125,7 @@ void nlana::PlotEventDetails::analyze(art::Event const & evt)
 
   fNTracksHist->Fill(trackHandle->size());
   unsigned int nLongTracks = 0;
-  for(auto const track : (*trackHandle)){
+  for(auto const &track : (*trackHandle)){
     if(track.Length() > fLongTrackCut) ++nLongTracks; 
   }
   fNLongTracksHist->Fill(nLongTracks);

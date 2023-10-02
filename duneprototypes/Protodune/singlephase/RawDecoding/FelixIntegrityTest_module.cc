@@ -222,7 +222,7 @@ void dune::FelixIntegrityTest::endJob() {
   std::cout << "Error rates\n";
   std::cout << "Crate:Slot:Fiber | Metadata error | Timestamp error | Convert count error | Error fields set\n"
             << "--------------------------------------------------------------------------------------------\n";
-  for(const std::pair<Location, Errors>& p : errMap) {
+  for(const std::pair<Location, Errors> p : errMap) {
     std::cout << std::left << std::setw(16) << std::to_string(p.first.crate_no) + ":" + std::to_string(p.first.slot_no) + ":" + std::to_string(p.first.fiber_no) << " | ";
     if(p.second.meta_err) std::cout << std::setw(14) << (double)p.second.meta_err/n_frags << " | ";
     else std::cout << std::setw(14) << " " << " | ";
