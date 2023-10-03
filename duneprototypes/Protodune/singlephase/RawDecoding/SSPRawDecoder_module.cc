@@ -333,7 +333,7 @@ void dune::SSPRawDecoder::getFragments(art::Event &evt, std::vector<artdaq::Frag
 
   if (have_data)
     {
-      try { containerFragments->size(); }
+      try { have_data &= (containerFragments->size() > 0); }
       catch(std::exception const&)  {
 	MF_LOG_ERROR("SSPRawDecoder") << "Run: " << evt.run()
 				      << ", SubRun: " << evt.subRun()

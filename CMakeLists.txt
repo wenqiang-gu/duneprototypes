@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.78.03d01)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.78.06d00)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -21,6 +21,7 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
   WERROR
   NO_UNDEFINED
   EXTRA_FLAGS -pedantic -Wno-unused-local-typedefs
+              -Wno-unused-result
 )
 
 cet_report_compiler_flags()

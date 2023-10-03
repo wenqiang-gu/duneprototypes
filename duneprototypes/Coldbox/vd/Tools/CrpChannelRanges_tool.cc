@@ -57,7 +57,8 @@ CrpChannelRanges::CrpChannelRanges(fhicl::ParameterSet const& ps)
   insert("all", 0, cch.nsdet, m_Detector);
   insert("crdet", 0, cch.nsdet, m_Detector);
   if ( cch.ncru > 1 ) assert( cch.ncru/2 == (cch.ncru+1)/2 );
-  assert ( cch.cruLabs.size() == cch.ncru );
+  // remove unused cruLabs
+  //assert ( cch.cruLabs.size() == cch.ncru );
   // Add each end.
   Index nend = cch.ncru == 1 ? cch.nsdet : cch.nsdet/2;
   Name enam = cch.cruEndName(0);

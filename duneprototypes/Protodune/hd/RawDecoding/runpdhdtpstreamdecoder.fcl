@@ -1,4 +1,4 @@
-#include "HDF5RawInput2.fcl"
+#include "HDF5TPStreamInput2.fcl"
 #include "PDHDTriggerReader.fcl"
 
 services:
@@ -6,7 +6,7 @@ services:
   TimeTracker:  {}
   TFileService: 
   {
-    fileName: "pdhdTriggerReaderTFile.root"
+    fileName: "TPStreamReaderTFile.root"
   } 
   HDF5RawFile2Service:  {}
 }
@@ -34,7 +34,7 @@ outputs:
   }
 }
 
-source: @local::hdf5rawinput2
+source: @local::hdf5tpstreaminput2
 
-process_name: pdhdtriggerreader
+process_name: tpstreamreader
 
