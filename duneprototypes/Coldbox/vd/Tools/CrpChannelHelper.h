@@ -47,7 +47,7 @@ public:
   Name detname;
   NameVector plaLabs = {"u", "v", "z"};
   NameVector volumeNames;
-  NameVector cruLabs;
+  //NameVector cruLabs;
 
   // Flag indicating if FEMB ranges are defined.
   bool usefembs =false;

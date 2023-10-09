@@ -22,7 +22,6 @@
 #include "detdataformats/trigger/TriggerActivityData.hpp"
 #include "detdataformats/trigger/TriggerCandidateData.hpp"
 #include "duneprototypes/Protodune/hd/RawDecoding/PDHDDataInterface.h"
-#include "duneprototypes/Protodune/hd/ChannelMap/PD2HDChannelMapService.h"
 
 #include <memory>
 #include <iostream>
@@ -90,7 +89,6 @@ void PDHDTriggerReader::produce(art::Event& e)
 
 
   // Fetches SourceIDs for the set of Fragments that have TriggerPrimitive data in them.
-  art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
   art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
   auto rf = rawFileService->GetPtr();
  

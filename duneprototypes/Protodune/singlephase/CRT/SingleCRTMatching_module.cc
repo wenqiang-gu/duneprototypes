@@ -600,9 +600,9 @@ void CRT::SingleCRTMatching::analyze(art::Event
 	}
       }
       double  maxe = -1;
-      double tote = 0;
+      //double tote = 0; // unused
 	      for(std::map<int,double>::iterator ii = trkide.begin(); ii!=trkide.end(); ++ii){
-	tote += ii->second;
+	// tote += ii->second; // unused
 	if((ii->second)>maxe){
 	  maxe = ii->second;
 	  trackid = ii->first;
@@ -883,9 +883,9 @@ if (fMCCSwitch){
 	}
       }
       double  maxe = -1;
-      double tote = 0;
+      // double tote = 0; // unused
 	      for(std::map<int,double>::iterator ii = trkide.begin(); ii!=trkide.end(); ++ii){
-	tote += ii->second;
+	// tote += ii->second; // unused
 	if((ii->second)>maxe){
 	  maxe = ii->second;
 	  trackid = ii->first;

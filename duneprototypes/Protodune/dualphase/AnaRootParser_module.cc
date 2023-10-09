@@ -6557,7 +6557,7 @@ if (fSaveTrackInfo) {
         // Find number of sim energy deposits for each particle in this event and sort all SEDs by Particle ID.
         std::vector<int> it_sortedbyparticleID;
 
-        int totalsed = 0;
+        // int totalsed = 0; // unused
         for(int psedavit = 0; psedavit < nParticlesWithSimEnergyDepositsTPCActive; psedavit++)
         {
           int NSEDForThisParticle = 0;
@@ -6571,7 +6571,7 @@ if (fSaveTrackInfo) {
           }
 
           fData->NSimEnergyDepositsTPCActivePerParticle[psedavit] = NSEDForThisParticle;
-          totalsed += NSEDForThisParticle;
+          // totalsed += NSEDForThisParticle; // not used anywhere
         }
 
 /*
