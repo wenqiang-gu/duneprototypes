@@ -29,14 +29,16 @@
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/Simulation/AuxDetHit.h"
 #include "lardataobj/RecoBase/TrackingTypes.h"
-#include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
+//#include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h"
 #include "larsim/MCCheater/ParticleInventoryService.h"
 #include "nusimdata/SimulationBase/MCParticle.h"
 #include "nug4/ParticleNavigation/ParticleList.h"
 
 //local includes
-#include "CRTVDTrigger.h"
-//#include "duneprototypes/Protodune/singlephase/CRT/data/CRTTrigger.h"
+#include "data/CRTVDTrigger.h"
+
+// temp
+#include "larcorealg/Geometry/AuxDetGeo.h"
 
 //c++ includes
 #include <memory>
@@ -146,10 +148,13 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
 
   // Retrieve geometry service
   art::ServiceHandle<geo::Geometry> geom;
+  bool isDriftY = false;
+  std::string gdml = geom->GDMLFile();
+  if ( gdml.find("driftY")!=gdml.npos || gdml.find("drifty")!=gdml.npos ) isDriftY = true;
+  if (!isDriftY) std::cout <<   "hug" << std::endl;
 
   // declare hits module map that we'll work with
   std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtHitsModuleMap;
-
 
 
   // start loop over AuxDetHit objects and store info into the map
@@ -161,9 +166,8 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
     {
       float tAvg_fl = eDep.GetEntryT(); // ns
       time tAvg = static_cast<time>(tAvg_fl);
-      geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()) , 0.5*(eDep.GetEntryY()+eDep.GetExitY()), 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()));
+      geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()) / CLHEP::cm, 0.5*(eDep.GetEntryY()+eDep.GetExitY()) / CLHEP::cm, 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()) / CLHEP::cm);
       std::string volume = geom->VolumeName(midpoint);
-//      int i_volume = VolumeIndex(volume);
 //if (volume.find("CRTDPTOP") == volume.npos){ 
 std::cout << "\nHit in volume " << volume << std::endl;
 std::cout << "edep.GetID() = " << eDep.GetID() << std::endl;
@@ -175,7 +179,13 @@ std::cout << "Integration window = " << fIntegrationWindow << std::endl;
 std::cout << "energy deposited : = " << eDep.GetEnergyDeposited() << std::endl; 
 //}
 
-      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fSamplingTime].emplace_back(CRTVD::Hit((eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited()), eDep.GetTrackID());
+      // Smear hit position from true position
+//geo::AuxDetGeo const& adg = geom->AuxDet(eDep.GetID());
+//std::cout << "\tTEST NAME : " << adg.Name() << std::endl; 
+
+//      float y = 
+
+      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fSamplingTime].emplace_back(CRTVD::Hit( (eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited(), midpoint), eDep.GetTrackID() );
 //      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
 //      crtHitsModuleMap[i_volume][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID())%64, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
 //      mf::LogDebug("TrueTimes") << "Assigned true hit at time " << tAvg << " to bin " << tAvg/fIntegrationTime << ".\n";
@@ -328,12 +338,12 @@ std::cout << "--- END bottom module only ---\n\n";
 //  std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtTrackedHitsModuleMap;
 //  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> bottomHitsInActiveRegions; // internal integer corresponds to trackID
 
+  // transfer bottom hits into correct hit storage place
   for (auto [t, bottomHits] : bottomHitsInActiveRegions){
     if (timeActiveRegions[0].find(t) == timeActiveRegions[0].end()) continue; // check that current time bin is in flagged active regions of bottom crt module
     // if not, transfer hits
     std::vector<CRTVD::Hit> hits;
     for (auto pair : bottomHits) crtTrackedHitsModuleMap[0][t].emplace_back(pair);
-
   }
 
 
@@ -342,7 +352,6 @@ std::cout << "--- END bottom module only ---\n\n";
      for (time t : timeActiveRegions[k]){
      std::vector<CRTVD::Hit> hits;
        for (auto hp : crtTrackedHitsModuleMap[k][t]) hits.push_back(hp.first);
-
        std::cout << "Triggering type : " << k << " at time = " << t*fSamplingTime << " with " << hits.size() << " hits." << std::endl; 
        trigCol->emplace_back(k, t*fSamplingTime, std::move(hits)); // probably wrong and work to do here 
      }

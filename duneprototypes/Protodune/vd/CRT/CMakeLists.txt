@@ -1,5 +1,7 @@
 # temporary fix for an extra semicolon in the root v6_22_06a TVirtualPaveStats header
+add_subdirectory(data)
 cet_add_compiler_flags(CXX -Wno-pedantic)
+
 
 art_make( MODULE_LIBRARIES
                         lardataalg_DetectorInfo
@@ -12,6 +14,7 @@ art_make( MODULE_LIBRARIES
                         nusimdata::SimulationBase
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase
+                        larcoreobj::geo_vectors
 			larsim_MCCheater_ParticleInventoryService_service
 			larsim_MCCheater_BackTrackerService_service
 			larsim_MCCheater_PhotonBackTrackerService_service
@@ -29,6 +32,7 @@ art_make( MODULE_LIBRARIES
 			ROOT_BASIC_LIB_LIST
                         ROOT_GENVECTOR
                         ROOT_GEOM
+                        ROOT_EG  
 )
 
 install_headers()
