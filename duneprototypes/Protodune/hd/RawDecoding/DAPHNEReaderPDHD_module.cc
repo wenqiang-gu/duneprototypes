@@ -41,6 +41,8 @@ using dunedaq::daqdataformats::FragmentType;
 using DAPHNEStreamFrame = dunedaq::fddetdataformats::DAPHNEStreamFrame;
 using DAPHNEFrame = dunedaq::fddetdataformats::DAPHNEFrame;
 
+using WaveformVector = std::vector<raw::OpDetWaveform>;
+
 class DAPHNEReaderPDHD;
 
 
@@ -66,9 +68,25 @@ private:
   std::string fInputLabel, fOutputLabel, fFileInfoLabel, fSubDetString;
 
   bool CheckSourceIsDetector(const SourceID & id);
+
   template <class T> size_t GetNFrames(size_t frag_size, size_t frag_header_size);
-  void ProcessFrame(std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i, std::vector<raw::OpDetWaveform> & opdet_waveforms);
-  void ProcessStreamFrame(std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i, std::vector<raw::OpDetWaveform> & opdet_waveforms);
+
+  void ProcessFrame(
+      std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i,
+      //std::vector<raw::OpDetWaveform> & opdet_waveforms,
+      std::unordered_map<unsigned int, WaveformVector> & wf_map);
+
+  void ProcessStreamFrame(
+      std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i,
+      //std::vector<raw::OpDetWaveform> & opdet_waveforms,
+      std::unordered_map<unsigned int, WaveformVector> & wf_map);
+
+  raw::OpDetWaveform & MakeWaveform(
+      unsigned int offline_chan,
+      size_t n_adcs,
+      raw::TimeStamp_t timestamp,
+      std::unordered_map<unsigned int, WaveformVector> & wf_map,
+      bool is_stream=false);
 
   TTree * fTree;
   size_t b_slot, b_crate, b_link;
@@ -118,7 +136,8 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
     std::unique_ptr<Fragment> & frag,
     size_t frame_size,
     size_t frame_number,
-    std::vector<raw::OpDetWaveform> & opdet_waveforms) {
+    //std::vector<raw::OpDetWaveform> & opdet_waveforms,
+    std::unordered_map<unsigned int, WaveformVector> & wf_map) {
   auto frame
       = reinterpret_cast<DAPHNEFrame*>(
           static_cast<uint8_t*>(frag->get_data()) + frame_number*frame_size);
@@ -132,21 +151,62 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
 
   auto offline_channel = fChannelMap->GetOfflineChannel(
       b_slot, b_link, b_channel_0);
-  raw::OpDetWaveform waveform(
-      frame->get_timestamp(), offline_channel, frame->s_num_adcs);
+
+  auto & waveform = MakeWaveform(
+      offline_channel,
+      static_cast<size_t>(frame->s_num_adcs),
+      frame->get_timestamp(),
+      wf_map);
+
+  /*raw::OpDetWaveform waveform(
+      frame->get_timestamp(), offline_channel, frame->s_num_adcs);*/
   fTree->Fill();
   for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
     //std::cout << "\t" << frame->get_adc(j) << std::endl;
     waveform.push_back(frame->get_adc(j));
   }
-  opdet_waveforms.emplace_back(waveform);
+  //opdet_waveforms.emplace_back(waveform);
+}
+
+
+raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
+    unsigned int offline_chan,
+    size_t n_adcs,
+    raw::TimeStamp_t timestamp,
+    std::unordered_map<unsigned int, WaveformVector> & wf_map,
+    bool is_stream) {
+
+  //If needed, make a new element in the map
+  if (wf_map.find(offline_chan) == wf_map.end()) {
+    /*wf_map.emplace(
+        offline_chan,
+        raw::OpDetWaveform(
+            timestamp,
+            offline_chan));*/
+    wf_map.emplace(offline_chan, WaveformVector());
+  }
+
+  //If is_stream, we just want to change the waveform
+  //If not, or if this is the first time hitting this channel,
+  //add a new waveform to the vector
+  if (wf_map.at(offline_chan).size() == 0 || !is_stream) {
+    wf_map.at(offline_chan).emplace_back(
+        raw::OpDetWaveform(timestamp, offline_chan));
+  }
+
+  auto & waveform = wf_map.at(offline_chan).back();
+
+  //Reserve more adcs at once for efficiency
+  waveform.reserve(waveform.size() + n_adcs);
+  return waveform;
 }
 
 void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     std::unique_ptr<Fragment> & frag,
     size_t frame_size,
     size_t frame_number,
-    std::vector<raw::OpDetWaveform> & opdet_waveforms) {
+    //std::vector<raw::OpDetWaveform> & opdet_waveforms,
+    std::unordered_map<unsigned int, WaveformVector> & wf_map) {
   auto frame
       = reinterpret_cast<DAPHNEStreamFrame*>(
           static_cast<uint8_t*>(frag->get_data()) + frame_number*frame_size);
@@ -176,25 +236,50 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     frame->header.channel_2,
     frame->header.channel_3};
   // Loop over channels
+  std::cout << "Processing stream frame " << frame_number << std::endl;
   for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
     auto offline_channel = fChannelMap->GetOfflineChannel(
         b_slot, b_link, frame_channels[i]);
-    raw::OpDetWaveform waveform(
-        frame->get_timestamp(), offline_channel, frame->s_adcs_per_channel);
+    std::cout << b_slot << " " << b_link << " " << frame_channels[i] << " " <<
+                 offline_channel << std::endl;
+
+    auto & waveform = MakeWaveform(
+        offline_channel,
+        frame->s_adcs_per_channel,
+        frame->get_timestamp(),
+        wf_map,
+        true);
+    /*if (wf_map.find(offline_channel) == wf_map.end()) {//Make a new element in the map
+      wf_map.emplace(
+          offline_channel,
+          raw::OpDetWaveform(
+              frame->get_timestamp(),
+              offline_channel));
+    }
+
+    auto & waveform = wf_map.at(offline_channel);
+    //Reserve more adcs at once for efficiency
+    waveform.reserve(waveform.size() + frame->s_adcs_per_channel);*/
+
+    //  raw::OpDetWaveform waveform(
+    //      frame->get_timestamp(), offline_channel, frame->s_adcs_per_channel);
 
     // Loop over ADC values in the frame for channel i 
+    std::cout << "\tChannel " << i << std::endl;
     for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
       //std::cout << "\t" << frame->get_adc(j) << std::endl;
       waveform.push_back(frame->get_adc(j, i));
     }
-    opdet_waveforms.emplace_back(waveform);
+    //opdet_waveforms.emplace_back(waveform);
   }
+  std::cout << std::endl;
 }
 
 void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
   using dunedaq::daqdataformats::FragmentHeader;
 
   std::vector<raw::OpDetWaveform> opdet_waveforms;
+  std::unordered_map<unsigned int, WaveformVector> wf_map;
   std::vector<recob::OpHit> optical_hits;
 
   //Get the HDF5 file to be opened
@@ -256,9 +341,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
           << "Found bad fragment type " <<
              dunedaq::daqdataformats::fragment_type_to_string(frag_type);*/
       const bool use_stream_frame = (frag_type != FragmentType::kDAPHNE);
-      //const bool use_stream_frame = false;
                                            
-      //size_t n_frames = (frag_size - frag_header_size)/sizeof(DAPHNEFrame);
       size_t n_frames
           = (use_stream_frame ?
              GetNFrames<DAPHNEStreamFrame>(frag_size, frag_header_size) :
@@ -269,10 +352,10 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
                    frag->get_header().trigger_timestamp << std::endl;
       for (size_t i = 0; i < n_frames; ++i) {
         if (use_stream_frame) {
-          ProcessStreamFrame(frag, frame_size, i, opdet_waveforms);
+          ProcessStreamFrame(frag, frame_size, i, wf_map);
         }
         else {
-          ProcessFrame(frag, frame_size, i, opdet_waveforms);
+          ProcessFrame(frag, frame_size, i, wf_map);
         }
 
         //std::cout << i << " " <<
@@ -289,6 +372,13 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
         }
         opdet_waveforms.emplace_back(waveform);*/
       }
+    }
+  }
+
+  //Convert map to vector for output
+  for (auto & chan_wf_vector : wf_map) {//Loop over channels
+    for (auto & wf : chan_wf_vector.second) {//Loop over wfs from this channel
+      opdet_waveforms.push_back(std::move(wf));
     }
   }
 
