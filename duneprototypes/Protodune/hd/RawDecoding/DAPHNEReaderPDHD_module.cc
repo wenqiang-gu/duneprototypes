@@ -182,6 +182,8 @@ raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
         raw::OpDetWaveform(timestamp, offline_chan));
   }
 
+  //std::cout << offline_chan << " " << std::setprecision(20) << timestamp << std::endl;
+
   auto & waveform = wf_map.at(offline_chan).back();
 
   //Reserve more adcs at once for efficiency
@@ -193,7 +195,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     std::unique_ptr<Fragment> & frag,
     size_t frame_size,
     size_t frame_number,
-    //std::vector<raw::OpDetWaveform> & opdet_waveforms,
     std::unordered_map<unsigned int, WaveformVector> & wf_map) {
   auto frame
       = reinterpret_cast<DAPHNEStreamFrame*>(
