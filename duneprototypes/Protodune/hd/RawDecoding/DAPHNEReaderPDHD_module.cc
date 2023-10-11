@@ -25,8 +25,6 @@
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
 
-//#include "PDHDReadoutUtils.h"
-
 #include "lardataobj/RawData/OpDetWaveform.h"
 #include "lardataobj/RecoBase/OpHit.h"
 #include "TTree.h"
@@ -41,6 +39,7 @@ using dunedaq::daqdataformats::FragmentType;
 using DAPHNEStreamFrame = dunedaq::fddetdataformats::DAPHNEStreamFrame;
 using DAPHNEFrame = dunedaq::fddetdataformats::DAPHNEFrame;
 
+//For brevity 
 using WaveformVector = std::vector<raw::OpDetWaveform>;
 
 class DAPHNEReaderPDHD;
@@ -73,12 +72,10 @@ private:
 
   void ProcessFrame(
       std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i,
-      //std::vector<raw::OpDetWaveform> & opdet_waveforms,
       std::unordered_map<unsigned int, WaveformVector> & wf_map);
 
   void ProcessStreamFrame(
       std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i,
-      //std::vector<raw::OpDetWaveform> & opdet_waveforms,
       std::unordered_map<unsigned int, WaveformVector> & wf_map);
 
   raw::OpDetWaveform & MakeWaveform(
@@ -136,7 +133,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
     std::unique_ptr<Fragment> & frag,
     size_t frame_size,
     size_t frame_number,
-    //std::vector<raw::OpDetWaveform> & opdet_waveforms,
     std::unordered_map<unsigned int, WaveformVector> & wf_map) {
   auto frame
       = reinterpret_cast<DAPHNEFrame*>(
@@ -158,14 +154,11 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
       frame->get_timestamp(),
       wf_map);
 
-  /*raw::OpDetWaveform waveform(
-      frame->get_timestamp(), offline_channel, frame->s_num_adcs);*/
   fTree->Fill();
   for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
     //std::cout << "\t" << frame->get_adc(j) << std::endl;
     waveform.push_back(frame->get_adc(j));
   }
-  //opdet_waveforms.emplace_back(waveform);
 }
 
 
@@ -178,11 +171,6 @@ raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
 
   //If needed, make a new element in the map
   if (wf_map.find(offline_chan) == wf_map.end()) {
-    /*wf_map.emplace(
-        offline_chan,
-        raw::OpDetWaveform(
-            timestamp,
-            offline_chan));*/
     wf_map.emplace(offline_chan, WaveformVector());
   }
 
@@ -210,17 +198,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
   auto frame
       = reinterpret_cast<DAPHNEStreamFrame*>(
           static_cast<uint8_t*>(frag->get_data()) + frame_number*frame_size);
-  //std::cout << frame->header.channel_0 << " " <<
-  //             frame->header.channel_1 << " " <<
-  //             frame->header.channel_2 << " " <<
-  //             frame->header.channel_3 << std::endl;
-  //opdet_waveforms.emplace_back(waveform);
-  //std::cout << "(Link, Slot): " << frame->daq_header.link_id << " " <<
-  //                     frame->daq_header.slot_id <<
-  //             "\t" << frame->header.channel_0 << " " <<
-  //                     frame->header.channel_1 << " " <<
-  //                     frame->header.channel_2 << " " <<
-  //                     frame->header.channel_3 << std::endl;
   b_link = frame->daq_header.link_id;
   b_slot = frame->daq_header.slot_id;
   b_channel_0 = frame->header.channel_0;
@@ -235,8 +212,8 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     frame->header.channel_1,
     frame->header.channel_2,
     frame->header.channel_3};
-  // Loop over channels
   std::cout << "Processing stream frame " << frame_number << std::endl;
+  // Loop over channels
   for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
     auto offline_channel = fChannelMap->GetOfflineChannel(
         b_slot, b_link, frame_channels[i]);
@@ -249,20 +226,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
         frame->get_timestamp(),
         wf_map,
         true);
-    /*if (wf_map.find(offline_channel) == wf_map.end()) {//Make a new element in the map
-      wf_map.emplace(
-          offline_channel,
-          raw::OpDetWaveform(
-              frame->get_timestamp(),
-              offline_channel));
-    }
-
-    auto & waveform = wf_map.at(offline_channel);
-    //Reserve more adcs at once for efficiency
-    waveform.reserve(waveform.size() + frame->s_adcs_per_channel);*/
-
-    //  raw::OpDetWaveform waveform(
-    //      frame->get_timestamp(), offline_channel, frame->s_adcs_per_channel);
 
     // Loop over ADC values in the frame for channel i 
     std::cout << "\tChannel " << i << std::endl;
@@ -270,7 +233,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
       //std::cout << "\t" << frame->get_adc(j) << std::endl;
       waveform.push_back(frame->get_adc(j, i));
     }
-    //opdet_waveforms.emplace_back(waveform);
   }
   std::cout << std::endl;
 }
@@ -357,29 +319,18 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
         else {
           ProcessFrame(frag, frame_size, i, wf_map);
         }
-
-        //std::cout << i << " " <<
-        //             frame->get_timestamp() << " " << frame->s_num_adcs <<
-        //             //" " << frame->daq_header.slot_id <<
-        //             std::endl;
-        //std::cout << frame->daq_header << std::endl;
-        //int channel = frame->get_channel();
-        //std::cout  << "\tChannel: " << channel << " done" << std::endl;
-        /*raw::OpDetWaveform waveform(frame->get_timestamp(), i, frame->s_num_adcs);
-        for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
-          //std::cout << "\t" << frame->get_adc(j) << std::endl;
-          waveform.push_back(frame->get_adc(j));
-        }
-        opdet_waveforms.emplace_back(waveform);*/
       }
     }
   }
 
   //Convert map to vector for output
   for (auto & chan_wf_vector : wf_map) {//Loop over channels
-    for (auto & wf : chan_wf_vector.second) {//Loop over wfs from this channel
-      opdet_waveforms.push_back(std::move(wf));
-    }
+    std::cout << "Inserting " << chan_wf_vector.first << " " << chan_wf_vector.second.size() << std::endl;
+    opdet_waveforms.insert(opdet_waveforms.end(),
+                           chan_wf_vector.second.begin(),
+                           chan_wf_vector.second.end());
+    //Remove elements from wf_map to save memory
+    chan_wf_vector.second.clear();
   }
 
   evt.put(
