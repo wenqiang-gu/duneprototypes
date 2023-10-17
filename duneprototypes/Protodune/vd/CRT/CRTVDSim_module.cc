@@ -35,7 +35,7 @@
 #include "nug4/ParticleNavigation/ParticleList.h"
 
 //local includes
-#include "data/CRTVDTrigger.h"
+#include "CRTVDTrigger.h"
 
 // temp
 #include "larcorealg/Geometry/AuxDetGeo.h"
@@ -176,7 +176,7 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
       time tAvg = static_cast<time>(tAvg_fl);
       geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()), 0.5*(eDep.GetEntryY()+eDep.GetExitY()), 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()));
       std::string volume = geom->VolumeName(midpoint);
-//if (volume.find("CRTDPTOP") == volume.npos){ 
+/*
 std::cout << "\nHit in volume " << volume << std::endl;
 std::cout << "edep.GetID() = " << eDep.GetID() << std::endl;
 std::cout << "CRT volume index = " << (eDep.GetID()-1)/8 << std::endl;
@@ -185,43 +185,22 @@ std::cout << "edep.GetTrackID() = " << eDep.GetTrackID() << std::endl;
 std::cout << "tAvg_fl = " << tAvg_fl << "\t" << "tAvg_int = " << tAvg << std::endl;
 std::cout << "Integration window = " << fIntegrationWindow << std::endl; 
 std::cout << "energy deposited : = " << eDep.GetEnergyDeposited() << std::endl; 
-//}
-
+*/
       // Smear hit position from true position
-//  unsigned int test = geom->FindAuxDetAtPosition(midpoint); // that one just tells me either TOP crt module or bottom crt module
-
-// Essayer les méthodes de geom : 
-// -- PositionToAuxDetSensitive
-// -- ChannelToAuxDetSensitive
-// --> doesn't work
-
       const geo::AuxDetGeo& adg = geom->AuxDet( (eDep.GetID()-1)/8 );
-// std::cout << "\tTEST NAME : " << adg.Name() << std::endl; 
-adg.PrintAuxDetInfo(std::cout, "" , 3); std::cout << "\n";
-std::cout << "width1 = " << 2*adg.HalfWidth1() << std::endl;
-std::cout << "width2 = " << 2*adg.HalfWidth2() << std::endl;
-std::cout << "height = " << 2*adg.HalfHeight() << std::endl;
-std::cout << "length = " << adg.Length() << std::endl;
-
-      geo::AuxDetSensitiveGeo const& adsg = adg.SensitiveVolume(1);
-adsg.PrintAuxDetInfo(std::cout); std::cout << "\n";
-
+// adg.PrintAuxDetInfo(std::cout, "" , 3); std::cout << "\n";
       float x = midpoint.X();
       float y = midpoint.Y();
       float z = adg.GetCenter().Z();
 
-std::cout << "\tNot smeared hit pos : " << x << " ; " << y << " ; " << z << std::endl;
 
       // smear horizontal coordinate (other than z)
       if (isDriftY){
         float smx = x + rand->Gaus(0., fSmearing);
-std::cout << "\tx pos smeared at : " << smx << std::endl;
         std::string name = geom->VolumeName(geo::Point_t(smx, y ,z));
         if ( name.find("CRTDPTOP")==name.npos && name.find("CRTDPBOTTOM")==name.npos ){
-std::cout << "\tSmearing left CRT volume !! " << std::endl;
           if (smx<(adg.GetCenter().X()-adg.Length()/2.)) smx = adg.GetCenter().X()-adg.Length()/2.;
           else if (smx>(adg.GetCenter().X()+adg.Length()/2.)) smx = adg.GetCenter().X()+adg.Length()/2.;
-std::cout << "\tCorrected smearing is at : " << smx << std::endl;
           }
       x = smx;
       } // end isDriftY
@@ -246,7 +225,6 @@ std::cout << "\tCorrected smearing is at : " << smx << std::endl;
     }
   }
 
-std::cout << "\n";
 
   // Coincidence research : using BOTTOM module as a reference
 
@@ -270,21 +248,15 @@ std::cout << "\n";
   int count = -1;
   for (const auto& [bintime, hitPairs] : botCRThitsMappedByTime){
     count++;
-    std::cout << "Investigating hit at t = " << bintime*fSamplingTime << std::endl;
-
     // integrate energy deposited in time window
     float sigIntegrationWindow = 0;
     for (auto p : hitPairs) sigIntegrationWindow += p.first.Edep();
-std::cout << "Total signal at time bin : " << bintime*fSamplingTime << " is Edep = " << sigIntegrationWindow << std::endl;
       // skip current bin time if associated energy deposited is below threshold
       if (sigIntegrationWindow < fEnergyThreshold) continue;
-std::cout << "\t---> passed threshold detection !! " << std::endl;
 
     // check that current time was not already taken into account within previous integration window
     time prevWindowUpLimit  = prevWindow+(fIntegrationWindow+fDeadTime)/fSamplingTime;
-std::cout << "prev time window = [ " << prevWindow*fSamplingTime << " ; " << prevWindowUpLimit*fSamplingTime << std::endl;
     if ( prevWindow!=dummy && (bintime >= prevWindow && bintime <= prevWindowUpLimit) ) continue; // reject hits not in current integration window
-std::cout << "\t---> not in previous time integration window, let's continue !" << std::endl;
 
         // keep track of time bin index
         timeActiveRegions[0].insert(bintime); // keep it in a std::set for later purposes
@@ -293,17 +265,14 @@ std::cout << "\t---> not in previous time integration window, let's continue !" 
           for (const auto& pairHitsInReadoutWindow : botCRThitsMappedByTime) 
             {
             time t = pairHitsInReadoutWindow.first;
-std::cout << "\tLOGIC CONDITION (t ; lowwindow ; upwindow ) : ( " << t*fSamplingTime << " ; " << bintime*fSamplingTime << " ; " << bintime*fSamplingTime+fIntegrationWindow << std::endl;
-            if ( t<bintime || t>(bintime+fIntegrationWindow/fSamplingTime)){ std::cout << "\t\t NOT PASSED ! " << std::endl; continue; }
-else {std::cout << "\t\tWill insert " << pairHitsInReadoutWindow.second.size() << " hits !!" << std::endl;
-              timeActiveRegions[0].insert(bintime);
+            if ( t<bintime || t>(bintime+fIntegrationWindow/fSamplingTime)) continue; 
+            else timeActiveRegions[0].insert(bintime);
 }
             for (auto v : pairHitsInReadoutWindow.second) bottomHitsInActiveRegions[bintime].emplace_back(v);
             } // end loop over secondary bottom hits
          //} // end if
     } // end primary loop over bottom module hits
-
-std::cout << "\n------- END Bottom hit search -------" << std::endl;
+/*
 // CHECK
 std::cout << "\n--- Check 1st bottom hit search ---" << std::endl;
 for (auto pairHits : bottomHitsInActiveRegions){
@@ -311,7 +280,7 @@ std::cout << "\nFound active region at bin time " << pairHits.first*fSamplingTim
 bool haselement = !(timeActiveRegions[0].find(pairHits.first) == timeActiveRegions[0].end());
 std::cout << "Is this time stored in std::set object ? --> " << haselement << std::endl;
 }
-
+*/
 
 
 
@@ -322,21 +291,18 @@ std::cout << "Is this time stored in std::set object ? --> " << haselement << st
   // Loop over top module hits 
   for (const auto& [topbintime, tophitPairs] : topCRThitsMappedByTime){
 
-std::cout << "Investigating TOP hits at t = " << topbintime*fSamplingTime << std::endl;
 
     // get total energy deposited in current time window
     float sig = 0.;
     for (auto p : tophitPairs) sig += p.first.Edep();
     if (sig<fEnergyThreshold) continue;
 
-std::cout << "\tPassed energy threshold ! --> continue" << std::endl;
 
     // check that current time window was not already taken into account within previous
     time prevWindowUp = prevWindow + (fIntegrationWindow + fDeadTime) / fSamplingTime;
     if ( prevWindow!=dummy && (topbintime >= prevWindow && topbintime <= prevWindowUp) ) continue; // reject timebin which was already taken into account
     prevWindow = topbintime; // update previous time window with current time window
 
-std::cout << "\tNew integration window ! --> continue" << std::endl;
 
     int keeptrkidx = 1;
     time keeptracktime = topbintime;
@@ -356,21 +322,18 @@ std::cout << "\tNew integration window ! --> continue" << std::endl;
     } // end for
 
     // keep track of time to trigger top crt module only (if no trigger) 
-    if (keeptrkidx == 1){ timeActiveRegions[1].insert(topbintime); std::cout << "\tInsert new TOP time window : " << topbintime*fSamplingTime << std::endl;}
+    if (keeptrkidx == 1) timeActiveRegions[1].insert(topbintime); 
 
     // loop again over all top crct hits and keep track of the ones within integration window
     for (const auto& topHitsInReadoutWindow : topCRThitsMappedByTime){
         time t = topHitsInReadoutWindow.first;
-std::cout << "\tLOGIC CONDITION (t ; lowwindow ; upwindow ) : ( " << t*fSamplingTime << " ; " << topbintime*fSamplingTime << " ; " << topbintime*fSamplingTime+fIntegrationWindow << std::endl;
         if ( t<topbintime || t>(topbintime+fIntegrationWindow/fSamplingTime)) continue;
-
-std::cout << "\t will insert " << topHitsInReadoutWindow.second.size() << " hits at time " << keeptracktime*fSamplingTime << std::endl;
-        for (auto v : topHitsInReadoutWindow.second){ crtTrackedHitsModuleMap[keeptrkidx][keeptracktime].emplace_back(v); std::cout << "\t\tEdep = " << v.first.Edep() << std::endl;}
+        for (auto v : topHitsInReadoutWindow.second) crtTrackedHitsModuleMap[keeptrkidx][keeptracktime].emplace_back(v);
        } // end loop over secondary bottom hits
 
   } // end loop over top crt hits
 
-
+/*
 std::cout << "\n--- Check coincidences ---\n";
 for (time t : timeActiveRegions[2]){
   std::cout << "Found coinc time at bottom time = " << t*fSamplingTime << std::endl;
@@ -386,11 +349,7 @@ for (time t : timeActiveRegions[0]){
   std::cout << "Found bottom trigger at time = " << t*fSamplingTime << std::endl;
 }
 std::cout << "--- END bottom module only ---\n\n";
-
-  // transfer bottom crt hits that are not associated to coincidences
-
-//  std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtTrackedHitsModuleMap;
-//  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> bottomHitsInActiveRegions; // internal integer corresponds to trackID
+*/
 
   // transfer bottom hits into correct hit storage place
   for (auto [t, bottomHits] : bottomHitsInActiveRegions){
@@ -406,7 +365,7 @@ std::cout << "--- END bottom module only ---\n\n";
      for (time t : timeActiveRegions[k]){
      std::vector<CRTVD::Hit> hits;
        for (auto hp : crtTrackedHitsModuleMap[k][t]) hits.push_back(hp.first);
-       std::cout << "Triggering type : " << k << " at time = " << t*fSamplingTime << " with " << hits.size() << " hits." << std::endl; 
+       // std::cout << "Triggering type : " << k << " at time = " << t*fSamplingTime << " with " << hits.size() << " hits." << std::endl; 
        trigCol->emplace_back(k, t*fSamplingTime, std::move(hits)); // probably wrong and work to do here 
      }
   }
