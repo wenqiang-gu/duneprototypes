@@ -17,6 +17,7 @@ CRTVD_sim:
    DeadTime:		4 #Discriminator dead time in IntegrationTimes (ns)
 #   DACThreshold:	100 #TODO: Set DAC threshold to 2 PE for commissioning.  In ADC countss for now.
    EnergyThreshold:	0.100 # MeV integrated Energy deposited.that can trigger a single crt channel
+   Smearing:		20. # [cm] Smearing applied to horizontal position of signal in individual pannel
 }
 
 

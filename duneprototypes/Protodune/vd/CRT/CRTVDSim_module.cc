@@ -39,6 +39,7 @@
 
 // temp
 #include "larcorealg/Geometry/AuxDetGeo.h"
+#include "larcorealg/Geometry/AuxDetSensitiveGeo.h"
 
 //c++ includes
 #include <memory>
@@ -46,6 +47,9 @@
 #include <string>
 #include <map>
 #include <unordered_map>
+
+// root includes
+#include "TRandom.h"
 
 namespace CRT {
   class CRTVDSim;
@@ -92,6 +96,7 @@ private:
   time fUpwardWindow; // time window pointing to the past w.r.t bottom CRT module time (ns)
   time fDeadTime; //The dead time after readout during which no energy deposits are processed by CRT boards. (ns)
   double fEnergyThreshold; //  MeV integrated Energy deposited.that can trigger a single crt channel
+  double fSmearing; //  MeV integrated Energy deposited.that can trigger a single crt channel
 //  adc_t fDACThreshold; //DAC threshold for triggering readout for any CRT strip.  
                        //In GeV for now, but needs to become ADC counts one day.  
                        //Should be replaced by either a lookup in a hardware database or 
@@ -112,7 +117,8 @@ CRT::CRTVDSim::CRTVDSim(fhicl::ParameterSet const & p): EDProducer{p},
                                                               fUpwardWindow(p.get<time>("UpwardWindow")), 
                                                               //fReadoutWindowSize(p.get<size_t>("ReadoutWindowSize")), 
                                                               fDeadTime(p.get<size_t>("DeadTime")),
-                                                              fEnergyThreshold(p.get<double>("EnergyThreshold"))
+                                                              fEnergyThreshold(p.get<double>("EnergyThreshold")),
+                                                              fSmearing(p.get<double>("Smearing"))
                                                               //fDACThreshold(p.get<adc_t>("DACThreshold"))
 {
   produces<std::vector<CRTVD::Trigger>>();
@@ -123,6 +129,9 @@ CRT::CRTVDSim::CRTVDSim(fhicl::ParameterSet const & p): EDProducer{p},
 
 void CRT::CRTVDSim::produce(art::Event & e)
 {
+  // TRandom oject
+  TRandom * rand= new TRandom();
+
   // Get all AuxDetHits contained in the event
   auto const allSims = e.getMany<sim::AuxDetHitCollection>();
 std::cout << "aux det hit size : " << allSims.size() << std::endl;
@@ -151,7 +160,6 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
   bool isDriftY = false;
   std::string gdml = geom->GDMLFile();
   if ( gdml.find("driftY")!=gdml.npos || gdml.find("drifty")!=gdml.npos ) isDriftY = true;
-  if (!isDriftY) std::cout <<   "hug" << std::endl;
 
   // declare hits module map that we'll work with
   std::map<int, std::map<time, std::vector<std::pair<CRTVD::Hit, int>>>> crtHitsModuleMap;
@@ -166,7 +174,7 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
     {
       float tAvg_fl = eDep.GetEntryT(); // ns
       time tAvg = static_cast<time>(tAvg_fl);
-      geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()) / CLHEP::cm, 0.5*(eDep.GetEntryY()+eDep.GetExitY()) / CLHEP::cm, 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()) / CLHEP::cm);
+      geo::Point_t const midpoint = geo::Point_t( 0.5*(eDep.GetEntryX()+eDep.GetExitX()), 0.5*(eDep.GetEntryY()+eDep.GetExitY()), 0.5*(eDep.GetEntryZ()+eDep.GetExitZ()));
       std::string volume = geom->VolumeName(midpoint);
 //if (volume.find("CRTDPTOP") == volume.npos){ 
 std::cout << "\nHit in volume " << volume << std::endl;
@@ -180,12 +188,58 @@ std::cout << "energy deposited : = " << eDep.GetEnergyDeposited() << std::endl;
 //}
 
       // Smear hit position from true position
-//geo::AuxDetGeo const& adg = geom->AuxDet(eDep.GetID());
-//std::cout << "\tTEST NAME : " << adg.Name() << std::endl; 
+//  unsigned int test = geom->FindAuxDetAtPosition(midpoint); // that one just tells me either TOP crt module or bottom crt module
 
-//      float y = 
+// Essayer les méthodes de geom : 
+// -- PositionToAuxDetSensitive
+// -- ChannelToAuxDetSensitive
+// --> doesn't work
 
-      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fSamplingTime].emplace_back(CRTVD::Hit( (eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited(), midpoint), eDep.GetTrackID() );
+      const geo::AuxDetGeo& adg = geom->AuxDet( (eDep.GetID()-1)/8 );
+// std::cout << "\tTEST NAME : " << adg.Name() << std::endl; 
+adg.PrintAuxDetInfo(std::cout, "" , 3); std::cout << "\n";
+std::cout << "width1 = " << 2*adg.HalfWidth1() << std::endl;
+std::cout << "width2 = " << 2*adg.HalfWidth2() << std::endl;
+std::cout << "height = " << 2*adg.HalfHeight() << std::endl;
+std::cout << "length = " << adg.Length() << std::endl;
+
+      geo::AuxDetSensitiveGeo const& adsg = adg.SensitiveVolume(1);
+adsg.PrintAuxDetInfo(std::cout); std::cout << "\n";
+
+      float x = midpoint.X();
+      float y = midpoint.Y();
+      float z = adg.GetCenter().Z();
+
+std::cout << "\tNot smeared hit pos : " << x << " ; " << y << " ; " << z << std::endl;
+
+      // smear horizontal coordinate (other than z)
+      if (isDriftY){
+        float smx = x + rand->Gaus(0., fSmearing);
+std::cout << "\tx pos smeared at : " << smx << std::endl;
+        std::string name = geom->VolumeName(geo::Point_t(smx, y ,z));
+        if ( name.find("CRTDPTOP")==name.npos && name.find("CRTDPBOTTOM")==name.npos ){
+std::cout << "\tSmearing left CRT volume !! " << std::endl;
+          if (smx<(adg.GetCenter().X()-adg.Length()/2.)) smx = adg.GetCenter().X()-adg.Length()/2.;
+          else if (smx>(adg.GetCenter().X()+adg.Length()/2.)) smx = adg.GetCenter().X()+adg.Length()/2.;
+std::cout << "\tCorrected smearing is at : " << smx << std::endl;
+          }
+      x = smx;
+      } // end isDriftY
+
+      else{ // if not driftY geometry, then it's driftX, in this case the smeared variable is y
+        float smy = y + rand->Gaus(fSmearing);
+        std::string name = geom->VolumeName(geo::Point_t(x, smy ,z));
+        if ( name.find("CRTDPTOP")==name.npos && name.find("CRTDPBOTTOM")==name.npos ){
+          if (smy<(adg.GetCenter().Y()-adg.Length()/2.)) smy = adg.GetCenter().Y()-adg.Length()/2.;
+          else if (smy>(adg.GetCenter().Y()+adg.Length()/2.)) smy = adg.GetCenter().Y()+adg.Length()/2.;
+          }
+      y = smy;
+      }
+      // smeared hit position
+      geo::Point_t hp(x, y ,z);
+
+
+      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fSamplingTime].emplace_back(CRTVD::Hit( (eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited(), geo::Point_t(x, y, z)), eDep.GetTrackID() );
 //      crtHitsModuleMap[(eDep.GetID()-1)/8][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID()-1)%8, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
 //      crtHitsModuleMap[i_volume][tAvg/fIntegrationTime].emplace_back(CRTVD::Hit((eDep.GetID())%64, volume, eDep.GetEnergyDeposited()*0.001f*fGeVToADC),eDep.GetTrackID());
 //      mf::LogDebug("TrueTimes") << "Assigned true hit at time " << tAvg << " to bin " << tAvg/fIntegrationTime << ".\n";
