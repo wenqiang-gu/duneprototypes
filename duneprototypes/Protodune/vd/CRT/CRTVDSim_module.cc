@@ -122,13 +122,15 @@ CRT::CRTVDSim::CRTVDSim(fhicl::ParameterSet const & p): EDProducer{p},
                                                               //fDACThreshold(p.get<adc_t>("DACThreshold"))
 {
   produces<std::vector<CRTVD::Trigger>>();
-//  produces<art::Assns<simb::MCParticle,CRTVD::Trigger>>(); 
+  produces<art::Assns<simb::MCParticle,CRTVD::Trigger>>(); 
 
 }
 
 
 void CRT::CRTVDSim::produce(art::Event & e)
 {
+  std::string out = "CRTVDSim:: ";
+
   // TRandom oject
   TRandom * rand= new TRandom();
 
@@ -152,7 +154,7 @@ std::cout << "MCParticle size = " << mcparticles.size() << std::endl;
   
   // objects to produce
   auto trigCol = std::make_unique<std::vector<CRTVD::Trigger>>();
-//  std::unique_ptr< art::Assns<simb::MCParticle, CRTVD::Trigger>> partToTrigger( new art::Assns<simb::MCParticle, CRTVD::Trigger>);
+  std::unique_ptr< art::Assns<simb::MCParticle, CRTVD::Trigger>> partToTrigger( new art::Assns<simb::MCParticle, CRTVD::Trigger>);
   art::PtrMaker<CRTVD::Trigger> makeTrigPtr(e);
 
   // Retrieve geometry service
@@ -267,7 +269,7 @@ std::cout << "energy deposited : = " << eDep.GetEnergyDeposited() << std::endl;
             time t = pairHitsInReadoutWindow.first;
             if ( t<bintime || t>(bintime+fIntegrationWindow/fSamplingTime)) continue; 
             else timeActiveRegions[0].insert(bintime);
-}
+
             for (auto v : pairHitsInReadoutWindow.second) bottomHitsInActiveRegions[bintime].emplace_back(v);
             } // end loop over secondary bottom hits
          //} // end if
@@ -359,30 +361,37 @@ std::cout << "--- END bottom module only ---\n\n";
     for (auto pair : bottomHits) crtTrackedHitsModuleMap[0][t].emplace_back(pair);
   }
 
+std::cout << "\n---CHECK---\n" << std::endl;
 
   // store CRT activity
-  for (int k=0; k<3; k++){
+  for (int k=0; k<3; k++){ // trigerring type loop. 0 = top trigger only, 1 = bottom trigger only, 2 = coincidence trigger
      for (time t : timeActiveRegions[k]){
-     std::vector<CRTVD::Hit> hits;
-       for (auto hp : crtTrackedHitsModuleMap[k][t]) hits.push_back(hp.first);
+     std::vector<CRTVD::Hit> hits; // retrieve hits of current time window
+     std::set<int> trkIDCheck; // will need to do assns
+       for (auto hp : crtTrackedHitsModuleMap[k][t]){
+          hits.push_back(hp.first);
+          trkIDCheck.insert(hp.second);
+       }
+         for (int tid : trkIDCheck){
+           auto search = map_trackID_to_handle_index.find(tid);
+           if (search == map_trackID_to_handle_index.end()) continue;
+           int index = search->second;
+
+           simb::MCParticle prtcl = mcparticles[index];
+           auto const mcptr = makeMCParticlePtr(index);
+           partToTrigger->addSingle(mcptr, makeTrigPtr(trigCol->size()-1));
+         }
        // std::cout << "Triggering type : " << k << " at time = " << t*fSamplingTime << " with " << hits.size() << " hits." << std::endl; 
        trigCol->emplace_back(k, t*fSamplingTime, std::move(hits)); // probably wrong and work to do here 
      }
   }
 
 
-//  std::map<time, std::vector<std::pair<CRTVD::Hit, int>>> hitsInActiveRegions; // internal integer corresponds to trackID
-
-// int crtChannel = 0;              
-//time timestamp = 12;
-//  auto const mcptr = makeMCParticlePtr(index);
-//  partToTrigger->addSingle(mcptr, makeTrigPtr(trigCol->size()-1));
-//  trigCol->emplace_back(crtChannel, timestamp*fIntegrationTime, std::move(hits)); 
   // -- Put Triggers and Assns into the event
-  std::cout << "CreateTrigger : putting " << trigCol->size() << " CRTVD::Triggers into the event at the end of analyze().\n";
-//  mf::LogDebug("CreateTrigger") << "Putting " << trigCol->size() << " CRT::Triggers into the event at the end of analyze().\n";
+  std::cout << out << "CreateTrigger : putting " << trigCol->size() << " CRTVD::Triggers into the event at the end of analyze().\n";
+  std::cout << out << "Putting " << partToTrigger->size() << " Assns<simb::MCParticle, CRTVD::Trigger> into the event at the end of analyze().\n";
   e.put(std::move(trigCol));
-//  e.put(std::move(partToTrigger));
+  e.put(std::move(partToTrigger));
 
 
 }
