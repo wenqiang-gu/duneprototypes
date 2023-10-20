@@ -1,0 +1,24 @@
+#File: CRTVD.fcl
+#Brief: Defines default parameters for CRTVD-related modules
+#Author: Thomas Kosc kosc.thomas@gmail.com
+
+BEGIN_PROLOG
+
+CRTVD_sim:
+{
+   module_type:		"CRTVDSim"
+   SimLabel:		"SimLabel"
+#   GeVToADC:		"5e5"
+   IntegrationWindow:	100 #ns
+   SamplingTime:	4 #ns
+   DownwardWindow:	20 #ns
+   UpwardWindow:	128 #ns
+#   ReadoutWindowSize:   240 #IntegrationTimes
+   DeadTime:		4 #Discriminator dead time in IntegrationTimes (ns)
+#   DACThreshold:	100 #TODO: Set DAC threshold to 2 PE for commissioning.  In ADC countss for now.
+   EnergyThreshold:	0.100 # MeV integrated Energy deposited.that can trigger a single crt channel
+   Smearing:		20. # [cm] Smearing applied to horizontal position of signal in individual pannel
+}
+
+
+END_PROLOG
