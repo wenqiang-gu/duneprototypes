@@ -1,6 +1,130 @@
 from argparse import ArgumentParser as ap
 import numpy as np
 
+def append_lines(lines, apa_channels, apa_slots, apa_number):
+  apa_starts = {1:80, 2:120, 3:0, 4:40}
+  link = 0
+  for pos,daphne_channels in apa_channels.items():
+    start = apa_starts[apa_number]#80
+    slot = apa_slots[pos]
+    if (apa_number in [1, 2]) and ((pos % 2) != 0): ##Beam right side 
+      daphne_channels.reverse()
+    elif (apa_number in [3, 4]) and ((pos % 2) == 0): ##Beam left side
+      daphne_channels.reverse()
+
+    a = 0
+    for dc in daphne_channels:
+      offline_number = start + 10*(a) + (pos - 1)
+      lines.append(f'{slot} {link} {dc} {offline_number}\n')
+      a += 1
+
+
+def make_v1_map(args):
+  lines = []
+
+  '''See https://docs.google.com/spreadsheets/d/1zzlUnk-Bd3HPtZjVei6dwMzZfJfmq4GauykcVqXREKw/edit?usp=sharing
+     for the mapping between 'APA position' to link, slot, and channel'''
+
+  apa1_channels = {
+    1:[7, 5, 2, 0],
+    2:[6, 4, 3, 1],
+    3:[17, 15, 12, 10],
+    4:[16, 14, 13, 11],
+    5:[7, 5, 2, 0],
+    6:[6, 4, 3, 1],
+    7:[16, 14, 13, 11],
+    8:[17, 15, 12, 10],
+    9:[6, 4, 3, 1], ##Note: this is different to the spreadsheet
+    10:[7, 5, 2, 0], ##
+  }
+  apa1_slots = {
+    1:4, 2:4, 3:4, 4:4,
+    5:5, 6:5, 7:5, 8:5,
+    9:7, 10:7,
+  }
+
+  apa2_channels = {
+    1:[27, 25, 22, 20],
+    2:[26, 24, 23, 21],
+    3:[37, 35, 42, 30],
+    4:[36, 34, 33, 31],
+    5:[7, 5, 2, 0],
+    6:[6, 4, 3, 1],
+    7:[17, 15, 12, 10],
+    8:[16, 14, 13, 11],
+    9:[47, 45, 52, 40],
+    10:[46, 44, 43, 41],
+  }
+  apa2_slots = {i:9 for i in range(1, 11)} 
+
+  apa3_channels = {
+    1:[6, 4, 3, 1],
+    2:[36, 34, 33, 31],
+    3:[7, 5, 2, 0],
+    4:[37, 35, 32, 30],
+    5:[46, 44, 43, 41],
+    6:[16, 14, 13, 11],
+    7:[17, 15, 12, 10],
+    8:[26, 24, 23, 21],
+    9:[47, 45, 42, 40],
+    10:[27, 25, 22, 20],
+  }
+  apa3_slots = {i:11 for i in range(1, 11)} 
+
+  apa4_channels = {
+    1:[7, 5, 2, 0],
+    2:[6, 4, 3, 1],
+    3:[17, 15, 12, 10],
+    4:[16, 14, 13, 11],
+    5:[7, 5, 2, 0],
+    6:[27, 25, 22, 20],
+    7:[26, 24, 23, 21],
+    8:[37, 35, 32, 30],
+    9:[36, 34, 33, 31],
+    10:[47, 45, 42, 40],
+  }
+  apa4_slots = {i:12 for i in range(1, 11)} 
+  apa4_slots[5] = 13
+
+  ## The 'Daphne' channels above are in order of the 'module channels' (1, 2, 3, 4)
+  ## So APA 1, Position 1 has module channels (1, 2, 3, 4) == daphne channels (7, 4, 2, 0)
+  ##
+  ## We need to translate the module channels to physical position. Position 1 is the highest 
+  ## module on the APA.
+  ## The next statement is relative to a view from within an APA's inner drift volume:
+  ## The odd positions (1, 3, 5, 7, 9) are in reversed order so for position 1,
+  ## the module channels are (from left-to-right) 4, 3, 2, 1 while the even positions
+  ## (i.e. position 2) are 1, 2, 3, 4.
+  ##
+  ## For the beam-right/Saleve side APAs (1 & 2) 'Left' then means 'more downstream'
+  ## while the beam-left/Jura side APAs (3 & 4)  'Left' means 'more upstream'.
+
+  ## The APAs are situated as follows in the volume looking down in Y
+  '''   | APA 4 | APA 3 |
+        |----Cathode----|  Upstream (Lower Z) -----> Downstream (Higher Z)
+        | APA 2 | APA 1 |'''
+
+  link = 0
+  append_lines(lines, apa1_channels, apa1_slots, 1)
+  append_lines(lines, apa2_channels, apa2_slots, 2)
+  append_lines(lines, apa3_channels, apa3_slots, 3)
+  append_lines(lines, apa4_channels, apa4_slots, 4)
+  #for pos,daphne_channels in apa1_channels.items():
+  #  start = 80
+  #  slot = apa1_slots[pos]
+  #  if (pos % 2) != 0:
+  #    daphne_channels.reverse()
+
+  #  a = 0
+  #  for dc in daphne_channels:
+  #    offline_number = start + 10*(a) + (pos - 1)
+  #    lines.append(f'{slot} {link} {dc} {offline_number}\n')
+  #    a += 1
+
+
+  with open(args.o, 'w') as f:
+    f.writelines(lines)
+
 def make_v0_map(args):
   lines = []
    
@@ -57,6 +181,7 @@ if __name__ == '__main__':
 
   makers = {
    0:make_v0_map, 
+   1:make_v1_map,
   }
 
   if args.v not in makers.keys():
