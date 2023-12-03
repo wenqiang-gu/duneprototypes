@@ -20,7 +20,6 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
 
 cet_build_plugin(PDHDTPCReader art::module
                         lardataobj::RawData
-			duneprototypes::Protodune_hd_RawDecoding_PDHDDataInterfaceWIB3_tool
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
                         HDF5::HDF5
@@ -31,6 +30,7 @@ cet_build_plugin(PDHDTPCReader art::module
                         ROOT::Core
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
+			art::Utilities
                         messagefacility::MF_MessageLogger
                         ROOT_BASIC_LIB_LIST
                         BASENAME_ONLY
@@ -87,7 +87,6 @@ cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
 
 cet_build_plugin(PDHDTriggerReader art::module
                         lardataobj::RawData
-                        duneprototypes::Protodune_hd_RawDecoding_PDHDDataInterfaceWIB3_tool
                         dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2
                         HDF5::HDF5
@@ -100,6 +99,7 @@ cet_build_plugin(PDHDTriggerReader art::module
                         ROOT::Core
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
+			art::Utilities
                         messagefacility::MF_MessageLogger
                         dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2
