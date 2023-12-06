@@ -19,6 +19,7 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
 )
 
 cet_build_plugin(PDHDTPCReader art::module
+                        duneprototypes::Protodune_hd_RawDecoding_PDHDDataInterfaceWIBEth_tool
                         lardataobj::RawData
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
