@@ -21,7 +21,6 @@
 #include "detdataformats/trigger/TriggerPrimitive.hpp"
 #include "detdataformats/trigger/TriggerActivityData.hpp"
 #include "detdataformats/trigger/TriggerCandidateData.hpp"
-#include "duneprototypes/Protodune/hd/RawDecoding/PDHDDataInterface.h"
 
 #include <memory>
 #include <iostream>
