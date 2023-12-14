@@ -144,6 +144,12 @@ public:
 		  {
 		    std::cout << "crate from geo: " << crate_from_geo << std::endl;
 		  }
+		if (fDebugLevel > 1)
+		  {
+		    uint16_t slot_from_geo = 0xffff & (gid >> 32);
+		    std::cout << "slot from geo: " << slot_from_geo << std::endl;
+		  }
+		  
 
 		if (-1 == apano)
 		  {
@@ -188,12 +194,12 @@ public:
 	      {
 		if (fDebugLevel > 2)
 		  {
-		    // dump WIB frames in hex
+		    // dump WIB frames in binary
 		    std::cout << "Frame number: " << i << std::endl;
-		    //size_t wfs32 = sizeof(WIBEthFrame)/4;
+		    size_t wfs32 = sizeof(WIBEthFrame)/4;
 		    uint32_t *fdp = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIBEthFrame));
 		    std::cout << std::dec;
-		    for (size_t iwdt = 0; iwdt < 1; iwdt++)  // dumps just the first 32 bits.  use wfs32 if you want them all
+		    for (size_t iwdt = 0; iwdt < std::min(wfs32, (size_t) 4); iwdt++)  // dumps just the first 4 words.  use wfs32 if you want them all
 		      {
 			std::cout << iwdt << " : 10987654321098765432109876543210" << std::endl;
 			std::cout << iwdt << " : " << std::bitset<32>{fdp[iwdt]} << std::endl;
@@ -230,6 +236,7 @@ public:
 	    if (fDebugLevel > 0)
 	      {
 		std::cout << "PDHDDataInterfaceToolWIBEth: crate, slot, link: "  << crate << ", " << slot << ", " << link << std::endl;
+		std::cout << "PDHDDataInterfaceToolWIBEth: stream, locstream: " << stream << ", " << locstream << std::endl;
 	      }
 
 	    for (size_t iChan = 0; iChan < 64; ++iChan)
@@ -241,7 +248,11 @@ public:
 
 		size_t wibframechan = iChan + 64*locstream; 
 
-		auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, wibframechan); 
+		auto hdchaninfo = channelMap->GetChanInfoFromWIBElements (crate, slotloc, link, wibframechan);
+		if (fDebugLevel > 2)
+		  {
+		    std::cout << "PDHDDataInterfaceToolWIBEth: wibframechan, valid: " << wibframechan << " " << hdchaninfo.valid << std::endl;
+		  }
 		if (!hdchaninfo.valid) continue;
 
 		unsigned int offline_chan = hdchaninfo.offlchan;
@@ -257,6 +268,10 @@ public:
 		raw_digits.push_back(rd);
 	      }
 	  }
+      }
+    if (fDebugLevel > 0)
+      {
+	std::cout << "PDHDDataInterfaceToolWIBEth: number of raw digits found: "  << raw_digits.size() << std::endl;
       }
   }
 
