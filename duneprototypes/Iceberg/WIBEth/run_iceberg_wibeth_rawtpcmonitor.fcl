@@ -1,4 +1,7 @@
 # Decode ICEBERG data and run the TPC monitor module
+# Takes advantage of the PDHD data interface tool and module
+# Configured to use the new WIBEth frames
+# The readout window size was set for run 000001, taken December 13,2023
 
 #include "PDHDDataInterfaceWIBEth.fcl"
 #include "HDF5RawInput2.fcl"
