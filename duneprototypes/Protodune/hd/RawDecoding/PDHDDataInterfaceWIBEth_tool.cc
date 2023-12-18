@@ -143,11 +143,10 @@ public:
 		if (fDebugLevel > 1)
 		  {
 		    std::cout << "crate from geo: " << crate_from_geo << std::endl;
-		  }
-		if (fDebugLevel > 1)
-		  {
 		    uint16_t slot_from_geo = 0xffff & (gid >> 32);
 		    std::cout << "slot from geo: " << slot_from_geo << std::endl;
+		    uint16_t stream_from_geo = 0xffff & (gid >> 48);
+		    std::cout << "stream from geo: " << stream_from_geo << std::endl;
 		  }
 		  
 
