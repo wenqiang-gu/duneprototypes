@@ -3,7 +3,7 @@
 // Plugin Type: producer (Unknown Unknown)
 // File:        PDHDTPCReader_module.cc
 //
-//   Module to exercise the PDHDDataInterfaceWIB3 tool.
+//   Module to exercise the PDHDDataInterfaceWIB3 or WIBEth tools.
 //    Read raw::RawDigits into the event for a hardcoded list of APAs
 //    
 // Generated at Thu Nov 17 17:05:55 2022 by Thomas Junk using cetskelgen
@@ -26,7 +26,7 @@
 #include "lardataobj/RawData/RawDigit.h"
 #include "lardataobj/RawData/RDTimeStamp.h"
 #include "dunecore/DuneObj/RDStatus.h"
-#include "duneprototypes/Protodune/hd/RawDecoding/PDHDDataInterface.h"
+#include "dunecore/DuneObj/PDSPTPCDataInterfaceParent.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 
 #include <memory>
@@ -54,7 +54,7 @@ private:
   std::string m_InputLabel;
   std::string m_OutputInstance;
   std::vector<int> m_APAList;
-  std::unique_ptr<PDHDDataInterface> m_DecoderTool;
+  std::unique_ptr<PDSPTPCDataInterfaceParent> m_DecoderTool;
 
 };
 
@@ -64,7 +64,7 @@ PDHDTPCReader::PDHDTPCReader(fhicl::ParameterSet const& p)
   m_InputLabel(p.get<std::string>("InputLabel","daq")),
   m_OutputInstance(p.get<std::string>("OutputInstance","daq")),
   m_APAList(p.get<std::vector<int>>("APAList")),
-  m_DecoderTool{art::make_tool<PDHDDataInterface>(p.get<fhicl::ParameterSet>("DecoderToolParams"))}
+  m_DecoderTool{art::make_tool<PDSPTPCDataInterfaceParent>(p.get<fhicl::ParameterSet>("DecoderToolParams"))}
 {
   produces<std::vector<raw::RawDigit>>(m_OutputInstance);
   produces<std::vector<raw::RDStatus>>(m_OutputInstance);

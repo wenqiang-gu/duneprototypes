@@ -1,5 +1,4 @@
 #include "PDHDDataInterfaceWIBEth.fcl"
-
 #include "run_pdhd_tpc_decoder.fcl"
 
 physics.producers.tpcrawdecoder.DecoderToolParams: @local::PDHDDataInterfaceWIBEthDefaults
