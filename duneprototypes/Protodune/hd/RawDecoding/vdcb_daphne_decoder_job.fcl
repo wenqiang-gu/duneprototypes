@@ -1,0 +1,40 @@
+#include "DAPHNEReaderPDHD.fcl"
+#include "HDF5RawInput2.fcl"
+
+services:
+{
+  TimeTracker:  {}
+  HDF5RawFile2Service:  {}
+  TFileService: {
+    fileName: "vdcb_daphne_decodermodule.root"
+  } 
+  DAPHNEChannelMapService: {
+    FileName: "DAPHNE_vd_coldbox_ChannelMap_v0.txt"
+  }
+}
+
+physics:
+{
+  producers:
+  {
+    pdhddaphne: @local::DAPHNEReaderPDHD
+  }
+
+  produce: [ pdhddaphne ] 
+  output: [ out1 ]
+  trigger_paths : [ produce ]
+  end_paths: [ output ]
+}
+
+outputs:
+{
+  out1:
+  {
+    compressionLevel: 1
+    module_type: RootOutput
+    fileName: "%ifb_daphne.root"
+  }
+}
+
+source: @local::hdf5rawinput2
+process_name: vdcbdaphnedecoderjob
