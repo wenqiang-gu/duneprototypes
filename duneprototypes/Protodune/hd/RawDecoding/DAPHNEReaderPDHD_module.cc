@@ -216,10 +216,10 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
   std::cout << "Processing stream frame " << frame_number << std::endl;
   // Loop over channels
   for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
+    std::cout << b_slot << " " << b_link << " " << frame_channels[i] << std::endl;
     auto offline_channel = fChannelMap->GetOfflineChannel(
         b_slot, b_link, frame_channels[i]);
-    std::cout << b_slot << " " << b_link << " " << frame_channels[i] << " " <<
-                 offline_channel << std::endl;
+    std::cout << offline_channel << std::endl;
 
     auto & waveform = MakeWaveform(
         offline_channel,
