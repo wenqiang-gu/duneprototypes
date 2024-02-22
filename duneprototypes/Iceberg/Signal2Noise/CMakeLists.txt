@@ -10,20 +10,20 @@ art_make(
   larana_OpticalDetector_OpDigiProperties_service
   lardata_Utilities
   nusimdata::SimulationBase
-  ART_FRAMEWORK_CORE
-  ART_FRAMEWORK_PRINCIPAL
-  ART_FRAMEWORK_SERVICES_REGISTRY
-  ART_ROOT_IO_TFILE_SUPPORT
+  art::Framework_Core
+  art::Framework_Principal
+  art::Framework_Services_Registry
+  art_root_io::tfile_support
   ROOT::Core
-  ART_ROOT_IO_TFILESERVICE_SERVICE
-  ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE
+  
+  
   art::Persistency_Common
   art::Utilities
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
   cetlib::cetlib cetlib_except
-  ROOT_BASIC_LIB_LIST
+  ROOT::Core ROOT::Hist ROOT::Tree
   MODULE_LIBRARIES larana_OpticalDetector_OpDigiProperties_service
   larana_OpticalDetector_OpHitFinder
   larana_OpticalDetector
@@ -45,39 +45,39 @@ art_make(
   lardataobj_AnalysisBase
   nurandom::RandomUtils_NuRandomService_service
   nusimdata::SimulationBase
-  ART_FRAMEWORK_CORE
-  ART_FRAMEWORK_PRINCIPAL
-  ART_FRAMEWORK_SERVICES_REGISTRY
-  ART_ROOT_IO_TFILE_SUPPORT
+  art::Framework_Core
+  art::Framework_Principal
+  art::Framework_Services_Registry
+  art_root_io::tfile_support
   ROOT::Core
-  ART_ROOT_IO_TFILESERVICE_SERVICE
-  ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE
-  ART_PERSISTENCY_PROVENANCE
+  
+  
+  art::Persistency_Provenance
   art::Persistency_Common
   art::Utilities
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
   cetlib::cetlib cetlib_except
-  ROOT_BASIC_LIB_LIST
+  ROOT::Core ROOT::Hist ROOT::Tree
   SERVICE_LIBRARIES
   larcorealg_Geometry
   larcore_Geometry_Geometry_service
-  ART_FRAMEWORK_CORE
-  ART_FRAMEWORK_PRINCIPAL
-  ART_FRAMEWORK_SERVICES_REGISTRY
-  ART_ROOT_IO_TFILE_SUPPORT
+  art::Framework_Core
+  art::Framework_Principal
+  art::Framework_Services_Registry
+  art_root_io::tfile_support
   ROOT::Core
-  ART_ROOT_IO_TFILESERVICE_SERVICE
+  
   art::Persistency_Common
   art::Utilities
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
   cetlib::cetlib cetlib_except
-  CLHEP
-  ROOT_BASIC_LIB_LIST
-  )
+  CLHEP::CLHEP
+  ROOT::Core ROOT::Hist ROOT::Tree
+  ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types
 
 install_headers()
 install_fhicl()

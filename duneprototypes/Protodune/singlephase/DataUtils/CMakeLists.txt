@@ -22,22 +22,21 @@ art_make( LIBRARY_NAME ProtoDUNEDataUtils
                         larsim_MCCheater_ParticleInventoryService_service
                         nug4::ParticleNavigation 
                         nusimdata::SimulationBase
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
                         art::Persistency_Common canvas
                         art::Persistency_Provenance canvas
                         art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib cetlib_except
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 	  MODULE_LIBRARIES
 	  ProtoDUNEDataUtils
-)
+) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types
 
 install_headers()
 install_fhicl()

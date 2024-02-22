@@ -23,8 +23,8 @@ simple_plugin(VDColdboxChannelMapService "service"
               SQLite::SQLite3
               messagefacility::MF_MessageLogger
               ${CETLIB_LIBS}
-              ROOT_BASIC_LIB_LIST
-)
+              ROOT::Core ROOT::Hist ROOT::Tree
+) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use cet_build_plugin() with explicit source lists and plugin base types
 
 simple_plugin(VDColdboxTDEChannelMapService "service"
               ${ART_PERSISTENCY_ROOTDB}
@@ -33,5 +33,5 @@ simple_plugin(VDColdboxTDEChannelMapService "service"
               SQLite::SQLite3
               messagefacility::MF_MessageLogger
               ${CETLIB_LIBS}
-              ROOT_BASIC_LIB_LIST
-)
+              ROOT::Core ROOT::Hist ROOT::Tree
+) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use cet_build_plugin() with explicit source lists and plugin base types

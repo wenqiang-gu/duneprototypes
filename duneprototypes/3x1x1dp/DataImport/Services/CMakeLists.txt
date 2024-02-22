@@ -5,16 +5,16 @@ cet_build_plugin(RawData311InputDriver art::service
 			lardataobj_RawData
 			lardata_Utilities
 			larcorealg_Geometry
-			ART_FRAMEWORK_CORE
-			ART_FRAMEWORK_IO_SOURCES
-			ART_FRAMEWORK_PRINCIPAL
+			art::Framework_Core
+		        art::Framework_IO_Sources	
+			art::Framework_Principal
  			art::Persistency_Common canvas
 			art::Persistency_Provenance canvas
 			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
-			CETLIB
-			ROOT_BASIC_LIB_LIST
+			cetlib::cetlib
+			ROOT::Core ROOT::Hist ROOT::Tree
 			BASENAME_ONLY
 )
 
@@ -28,21 +28,22 @@ cet_build_plugin(dlardaq art::service
 			larcore_Geometry_Geometry_service
 			lardata_Utilities
 			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+		        art::Framework_IO_Sources	
 			
 			nusimdata::SimulationBase
-			ART_FRAMEWORK_CORE
-			ART_FRAMEWORK_PRINCIPAL
-			ART_FRAMEWORK_SERVICES_REGISTRY
-			ART_ROOT_IO_TFILE_SUPPORT
+			art::Framework_Core
+			art::Framework_Principal
+			art::Framework_Services_Registry
+			art_root_io::tfile_support
 			ROOT::Core
-			ART_ROOT_IO_TFILESERVICE_SERVICE
+			
  			art::Persistency_Common canvas
 			art::Persistency_Provenance canvas
 			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
-			CETLIB
-			ROOT_BASIC_LIB_LIST
+			cetlib::cetlib
+			ROOT::Core ROOT::Hist ROOT::Tree
 			BASENAME_ONLY
 )
 
@@ -62,19 +63,20 @@ cet_build_plugin(EventDecoder art::service
 			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			
 			nusimdata::SimulationBase
-			ART_FRAMEWORK_CORE
-			ART_FRAMEWORK_PRINCIPAL
-			ART_FRAMEWORK_SERVICES_REGISTRY
-			ART_ROOT_IO_TFILE_SUPPORT
+			art::Framework_Core
+			art::Framework_Principal
+			art::Framework_Services_Registry
+			art_root_io::tfile_support
 			ROOT::Core
-			ART_ROOT_IO_TFILESERVICE_SERVICE
+			
+		        art::Framework_IO_Sources	
  			art::Persistency_Common canvas
 			art::Persistency_Provenance canvas
 			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
-			CETLIB
-			ROOT_BASIC_LIB_LIST
+			cetlib::cetlib
+			ROOT::Core ROOT::Hist ROOT::Tree
 			BASENAME_ONLY
 )
 
@@ -93,19 +95,20 @@ cet_build_plugin(HuffDataCompressor art::service
 			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			
 			nusimdata::SimulationBase
-			ART_FRAMEWORK_CORE
-			ART_FRAMEWORK_PRINCIPAL
-			ART_FRAMEWORK_SERVICES_REGISTRY
-			ART_ROOT_IO_TFILE_SUPPORT
+			art::Framework_Core
+			art::Framework_Principal
+			art::Framework_Services_Registry
+			art_root_io::tfile_support
 			ROOT::Core
-			ART_ROOT_IO_TFILESERVICE_SERVICE
+			
  			art::Persistency_Common canvas
 			art::Persistency_Provenance canvas
 			art::Utilities canvas
 			messagefacility::MF_MessageLogger
 			
-			CETLIB
-			ROOT_BASIC_LIB_LIST
+		        art::Framework_IO_Sources	
+			cetlib::cetlib
+			ROOT::Core ROOT::Hist ROOT::Tree
 			BASENAME_ONLY
 )
 

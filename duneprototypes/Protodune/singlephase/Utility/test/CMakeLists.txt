@@ -14,8 +14,8 @@ cet_test(test_ProtoduneChannelHelper SOURCES test_ProtoduneChannelHelper.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    SQLITE3
+    SQLite::SQLite3
     Boost::filesystem
-    ROOT_BASIC_LIB_LIST
+    ROOT::Core ROOT::Hist ROOT::Tree
 )
 

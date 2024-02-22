@@ -14,7 +14,7 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
                  art_root_io::TFileService_service
                  art::Persistency_Provenance
                  messagefacility::MF_MessageLogger
-                 ROOT_BASIC_LIB_LIST
+                 ROOT::Core ROOT::Hist ROOT::Tree
                  BASENAME_ONLY
 )
 
@@ -32,12 +32,11 @@ cet_build_plugin(PDHDTPCReader art::module
                         art::Persistency_Provenance
 			art::Utilities
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 
 cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
-                        art_utilities
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
@@ -54,14 +53,13 @@ cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
                         HDF5::HDF5
              )
 
 cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
-                        art_utilities
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
@@ -78,7 +76,7 @@ cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
                         HDF5::HDF5
@@ -103,7 +101,7 @@ cet_build_plugin(PDHDTriggerReader art::module
                         messagefacility::MF_MessageLogger
                         dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
                 )
 

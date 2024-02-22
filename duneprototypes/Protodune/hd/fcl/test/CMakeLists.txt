@@ -15,7 +15,7 @@ cet_test(test_fcl_pdhdChannelFemb SOURCES test_fcl_pdhdChannelFemb.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )

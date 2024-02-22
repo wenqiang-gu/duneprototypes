@@ -1,6 +1,5 @@
 
 cet_build_plugin(VDColdboxDataInterface   art::tool
-                                     art_utilities
                                      canvas::canvas
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
@@ -12,37 +11,36 @@ cet_build_plugin(VDColdboxDataInterface   art::tool
                         dunecore::HDF5Utils
                         HDF5::HDF5
                         duneprototypes_Coldbox_vd_ChannelMap_VDColdboxChannelMapService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
-                        ART_PERSISTENCY_PROVENANCE
+                        
+                        art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        CETLIB
-                        ROOT_BASIC_LIB_LIST
+                        cetlib::cetlib
+                        ROOT::Core ROOT::Hist ROOT::Tree
              )
 
 
 simple_plugin(VDColdboxTDERawInput "source"
   duneprototypes_Coldbox_vd_ChannelMap_VDColdboxTDEChannelMapService_service
   art::Framework_Services_Registry
-  art_utilities
   canvas::canvas
   cetlib::cetlib
   cetlib_except::cetlib_except
   lardataobj_RawData
-  ART_FRAMEWORK_CORE
-  ART_FRAMEWORK_PRINCIPAL
-  ART_FRAMEWORK_SERVICES_REGISTRY
-  ART_ROOT_IO_TFILE_SUPPORT
+  art::Framework_Core
+  art::Framework_Principal
+  art::Framework_Services_Registry
+  art_root_io::tfile_support
   ROOT::Core
-  ART_ROOT_IO_TFILESERVICE_SERVICE
-  ART_PERSISTENCY_PROVENANCE
+  
+  art::Persistency_Provenance
   messagefacility::MF_MessageLogger
-  ROOT_BASIC_LIB_LIST
-)
+  ROOT::Core ROOT::Hist ROOT::Tree
+) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use cet_build_plugin() with explicit source lists and plugin base types
 
 
 cet_build_plugin(VDColdboxPDSDecoder art::module
@@ -50,16 +48,16 @@ cet_build_plugin(VDColdboxPDSDecoder art::module
                  lardataobj_RecoBase
                  dunecore::HDF5Utils
                  HDF5::HDF5
-                 ART_FRAMEWORK_CORE
-                 ART_FRAMEWORK_PRINCIPAL
-                 ART_FRAMEWORK_SERVICES_REGISTRY
-                 ART_ROOT_IO_TFILE_SUPPORT
+                 art::Framework_Core
+                 art::Framework_Principal
+                 art::Framework_Services_Registry
+                 art_root_io::tfile_support
                  ROOT::Core
-                 ART_ROOT_IO_TFILESERVICE_SERVICE
-                 ART_PERSISTENCY_PROVENANCE
+                 
+                 art::Persistency_Provenance
                  messagefacility::MF_MessageLogger
-                 CETLIB
-                 ROOT_BASIC_LIB_LIST
+                 cetlib::cetlib
+                 ROOT::Core ROOT::Hist ROOT::Tree
                  BASENAME_ONLY
 )
 

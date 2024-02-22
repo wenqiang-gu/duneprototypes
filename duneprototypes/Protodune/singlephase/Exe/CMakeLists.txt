@@ -9,10 +9,10 @@ cet_make_exec(pdChannelRange
   SOURCE pdChannelRange.cxx
   LIBRARIES
     dunecore_ArtSupport
-    ART_FRAMEWORK_CORE
+    art::Framework_Core
     art::Utilities
     art::Persistency_Common
-    fhiclcpp
+    fhiclcpp::fhiclcpp
     canvas::canvas
     cetlib::cetlib 
     cetlib_except::cetlib_except

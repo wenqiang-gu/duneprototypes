@@ -15,8 +15,8 @@ cet_test(test_VDColdboxChannelRanges SOURCES test_VDColdboxChannelRanges.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )
 
@@ -28,8 +28,8 @@ cet_test(test_VDColdboxChannelGroups SOURCES test_VDColdboxChannelGroups.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )
 
@@ -41,8 +41,8 @@ cet_test(test_VDColdboxOnlineChannel SOURCES test_VDColdboxOnlineChannel.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )
 
@@ -55,8 +55,8 @@ cet_test(test_CrpChannelRanges SOURCES test_CrpChannelRanges.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )
 
@@ -69,8 +69,8 @@ cet_test(test_CrpChannelGroups SOURCES test_CrpChannelGroups.cxx
     fhiclcpp
     cetlib::cetlib cetlib_except
     cetlib_except::cetlib_except
-    ROOT_BASIC_LIB_LIST
-    SQLITE3
+    ROOT::Core ROOT::Hist ROOT::Tree
+    SQLite::SQLite3
     Boost::filesystem
 )
 

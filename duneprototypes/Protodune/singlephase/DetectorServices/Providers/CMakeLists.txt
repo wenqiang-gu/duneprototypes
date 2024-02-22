@@ -3,22 +3,22 @@ art_make( NO_PLUGINS
           LIBRARY_NAME  ProtoDUNEspDataProviders
           LIB_LIBRARIES
                         lardataalg_DetectorInfo
-  	                wda
+  	                wda::wda
 	                nuevdb::IFDatabase
                         larcorealg_Geometry
                         art_Framework_Core
                         art::Framework_Principal
-                        ART_ROOT_IO_ROOTDB
+                        art_root_io::RootDB
                         art::Utilities
                         messagefacility::MF_MessageLogger
-                        ART_FRAMEWORK_SERVICES_REGISTRY
+                        art::Framework_Services_Registry
                         cetlib::cetlib cetlib_except
                         canvas::canvas
                         ifdh::ifdh
                         fhiclcpp::fhiclcpp
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         
-        )
+        ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types
 
 
 install_headers()

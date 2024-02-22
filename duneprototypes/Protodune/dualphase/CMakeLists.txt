@@ -6,20 +6,20 @@ cet_build_plugin(
            cetlib::cetlib
            cetlib_except::cetlib_except
            fhiclcpp::fhiclcpp
-           CLHEP
+           CLHEP::CLHEP
            larcorealg_Geometry
            larcoreobj_SummaryData
            larsim_EventGenerator
            nurandom::RandomUtils_NuRandomService_service
-           ART_FRAMEWORK_SERVICES_REGISTRY
-           ART_ROOT_IO_TFILESERVICE_SERVICE
-           ART_ROOT_IO_TFILE_SUPPORT
-           CLHEP
+           art::Framework_Services_Registry
+           larsim_MCCheater_ParticleInventoryService 
+           art_root_io::tfile_support
+           CLHEP::CLHEP
            messagefacility::MF_MessageLogger
-  	   ROOT_BASIC_LIB_LIST
-           ROOT_GEOM
-           ROOT_XMLIO
-           ROOT_GDML
+  	   ROOT::Core ROOT::Hist ROOT::Tree
+           ROOT::Geom
+           ROOT::XMLIO
+           ROOT::Gdml
 )
 if(FALSE)
 cet_build_plugin(
@@ -32,21 +32,22 @@ cet_build_plugin(
                         lardata_ArtDataHelper
                         lardata_Utilities
                         lardataobj_Simulation
-                        larsim_MCCheater_BackTrackerService_service
-           larsim_MCCheater_ParticleInventoryService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        larsim_MCCheater_BackTrackerService
+                        larsim_MCCheater_ParticleInventoryService_service
+                        larsim_MCCheater_ParticleInventoryService 
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        
                         art::Persistency_Common canvas
                         art::Persistency_Provenance canvas
                         art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         
                         cetlib::cetlib cetlib_except
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 endif()
@@ -61,19 +62,19 @@ cet_build_plugin(
                         lardata_Utilities
                         lardataobj_Simulation
                         larsim_MCCheater_BackTrackerService_service
-                        ART_FRAMEWORK_CORE
-                        ART_FRAMEWORK_PRINCIPAL
-                        ART_FRAMEWORK_SERVICES_REGISTRY
-                        ART_ROOT_IO_TFILE_SUPPORT
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
                         ROOT::Core
-                        ART_ROOT_IO_TFILESERVICE_SERVICE
+                        
                         art::Persistency_Common canvas
                         art::Persistency_Provenance canvas
                         art::Utilities canvas
                         messagefacility::MF_MessageLogger
                         
                         cetlib::cetlib cetlib_except
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 
@@ -81,6 +82,8 @@ cet_build_plugin(
 	  AnaRootParser art::module
 	  larcore_Geometry_Geometry_service
 	  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+          larsim_MCCheater_ParticleInventoryService 
+	  larsim_MCCheater_BackTrackerService
 	  larsim_MCCheater_BackTrackerService_service
           larsim_MCCheater_ParticleInventoryService_service
 	  lardata_Utilities
@@ -97,12 +100,12 @@ cet_build_plugin(
 	  dunecore::SignalShapingServiceDUNE10kt_service
 	  dunecore::SignalShapingServiceDUNE35t_service
           nusimdata::SimulationBase
-          ART_FRAMEWORK_CORE
-	  ART_FRAMEWORK_PRINCIPAL
-	  ART_FRAMEWORK_SERVICES_REGISTRY
-	  ART_ROOT_IO_TFILE_SUPPORT
+          art::Framework_Core
+	  art::Framework_Principal
+	  art::Framework_Services_Registry
+	  art_root_io::tfile_support
 	  ROOT::Core
-	  ART_ROOT_IO_TFILESERVICE_SERVICE
+	  
 	  art::Persistency_Common canvas
 	  art::Persistency_Provenance canvas
 	  art::Utilities canvas
@@ -110,10 +113,10 @@ cet_build_plugin(
 	  
 	  fhiclcpp::fhiclcpp
 	  cetlib::cetlib cetlib_except
-          ROOT_GEOM
-          ROOT_XMLIO
-          ROOT_GDML
-	  ROOT_BASIC_LIB_LIST
+          ROOT::Geom
+          ROOT::XMLIO
+          ROOT::Gdml
+	  ROOT::Core ROOT::Hist ROOT::Tree
 )
 
 

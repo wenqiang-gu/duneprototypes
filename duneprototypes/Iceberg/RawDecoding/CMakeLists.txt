@@ -16,7 +16,7 @@ cet_build_plugin(IcebergTPCRawDecoder art::module
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         dunepdlegacy_rce_dataaccess
                         z
                         BASENAME_ONLY
@@ -37,7 +37,7 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         dunepdlegacy_rce_dataaccess
                         z
                         cetlib::cetlib
@@ -45,7 +45,6 @@ cet_build_plugin(IcebergFELIXBufferDecoderMarch2021 art::module
 )
 
 cet_build_plugin(IcebergDataInterface   art::tool
-                                     art_utilities
                                      canvas::canvas
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
@@ -62,14 +61,13 @@ cet_build_plugin(IcebergDataInterface   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         dunepdlegacy_rce_dataaccess
                         z
              )
 
 
 cet_build_plugin(IcebergDataInterfaceFELIXBufferMarch2021   art::tool
-                                     art_utilities
                                      canvas::canvas
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
@@ -86,13 +84,12 @@ cet_build_plugin(IcebergDataInterfaceFELIXBufferMarch2021   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         z
              )
 
 
 cet_build_plugin(IcebergHDF5DataInterface   art::tool
-                        art_utilities
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
@@ -109,7 +106,7 @@ cet_build_plugin(IcebergHDF5DataInterface   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 			dunecore::HDF5Utils
                         HDF5::HDF5
              )
