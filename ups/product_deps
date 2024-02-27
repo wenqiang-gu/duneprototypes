@@ -176,6 +176,7 @@ defaultqual	e26
 fwdir	product_dir	config_data
 ####################################
 
+<<<<<<< HEAD
 ####################################
 # Product table.
 #
@@ -247,9 +248,9 @@ fwdir	product_dir	config_data
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-dunecalib	v09_82_02d01	-
-duneopdet	v09_82_02d01	-
-dunesim		v09_82_02d01	-
+dunecalib	v09_83_01d00	-
+duneopdet	v09_83_01d00	-
+dunesim		v09_83_01d00	-
 cetmodules	v3_22_02	-	only_for_build
 end_product_list
 ####################################

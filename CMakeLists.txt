@@ -8,7 +8,7 @@ cmake_minimum_required (VERSION 3.20 FATAL_ERROR) ### MIGRATE-CHANGED (migrate-3
 
 find_package(cetmodules REQUIRED) ### MIGRATE-ADDED (migrate-3.22.02) - find_package(cetmodules) must precede project()
 project(duneprototypes LANGUAGES CXX)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.82.02d01)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.83.01d00)
 set(${PROJECT_NAME}_FW_DIR "config_data")
 
 list(APPEND CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - prefer find_package() to find external CMake modules
