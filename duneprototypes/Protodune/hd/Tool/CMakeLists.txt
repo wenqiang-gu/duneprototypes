@@ -5,18 +5,18 @@
 
 # Add plugin for each tool.
 
-cet_build_plugin(PdhdChannelRanges   art::tool
-                 dunecore_ArtSupport
-                 art::Utilities canvas
-                 cetlib::cetlib cetlib_except
+cet_build_plugin(PdhdChannelRanges   art::tool LIBRARIES
+                 dunecore::ArtSupport
+                 art::Utilities canvas::canvas
+                 cetlib::cetlib cetlib_except::cetlib_except
                  art::Framework_Services_Registry
                  ROOT::Core ROOT::Hist ROOT::Tree
                 )
 
-cet_build_plugin(PdhdChannelGroups   art::tool
-                 dunecore_ArtSupport
-                 art::Utilities canvas
-                 cetlib::cetlib cetlib_except
+cet_build_plugin(PdhdChannelGroups   art::tool LIBRARIES
+                 dunecore::ArtSupport
+                 art::Utilities canvas::canvas
+                 cetlib::cetlib cetlib_except::cetlib_except
                  art::Framework_Services_Registry
                  ROOT::Core ROOT::Hist ROOT::Tree
                 )

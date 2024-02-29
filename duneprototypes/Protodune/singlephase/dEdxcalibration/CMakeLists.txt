@@ -3,14 +3,14 @@ cet_add_compiler_flags(CXX -Wno-pedantic)
 
 art_make( 
   LIB_LIBRARIES 
+  dunecalib::Calib
   lardataobj::RecoBase
-  larana_OpticalDetector_OpHitFinder
   larsim::MCSTReco
   lardataobj::MCBase
   larcorealg::Geometry
   larcore::Geometry_Geometry_service
   larsim::PhotonPropagation_PhotonVisibilityService_service
-  larana_OpticalDetector_OpDigiProperties_service
+  larana::OpticalDetector_OpDigiProperties_service
   lardata::Utilities
   nusimdata::SimulationBase
   art::Framework_Core
@@ -23,26 +23,26 @@ art_make(
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   ROOT::Core ROOT::Hist ROOT::Tree
-  MODULE_LIBRARIES larana_OpticalDetector_OpDigiProperties_service
-  larana_OpticalDetector_OpHitFinder
-  larana_OpticalDetector
+  MODULE_LIBRARIES larana::OpticalDetector_OpDigiProperties_service
+  dunecalib::Calib
+  larana::OpticalDetector
   larsim::PhotonPropagation_PhotonVisibilityService_service
   larsim::MCCheater_BackTrackerService_service
   larsim::MCCheater_ParticleInventoryService_service
   larevt::Filters
-  lardataalg_DetectorInfo
+  lardataalg::DetectorInfo
   lardata::RecoObjects
   lardataobj::RecoBase
   lardataobj::MCBase
-  larreco_RecoAlg
+  larreco::RecoAlg
   larcorealg::Geometry
   larcore::Geometry_Geometry_service
   larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
   lardata::Utilities
   lardataobj::RawData
-  larreco_Calorimetry
+  larreco::Calorimetry
   lardataobj::AnalysisBase
   nurandom::RandomUtils_NuRandomService_service
   nusimdata::SimulationBase
@@ -57,7 +57,7 @@ art_make(
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   ROOT::Core ROOT::Hist ROOT::Tree
   SERVICE_LIBRARIES
   larcorealg::Geometry
@@ -72,7 +72,7 @@ art_make(
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   CLHEP::CLHEP
   ROOT::Core ROOT::Hist ROOT::Tree
   ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types

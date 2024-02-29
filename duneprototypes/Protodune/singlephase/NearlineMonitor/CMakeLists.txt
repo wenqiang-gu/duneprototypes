@@ -1,5 +1,8 @@
 cet_build_plugin(SPLifetime art::module
+              LIBRARIES
               lardataobj::RecoBase
+              lardataalg::DetectorInfo
+              lardata::headers
               larcorealg::Geometry
               larcore::Geometry_Geometry_service
               larsim::MCCheater_BackTrackerService_service
@@ -15,18 +18,21 @@ cet_build_plugin(SPLifetime art::module
               art::Utilities
               canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib::cetlib cetlib_except
+              cetlib::cetlib cetlib_except::cetlib_except
               ROOT::MathCore
               ROOT::GenVector
               ROOT::Geom
               BASENAME_ONLY)
 
 cet_build_plugin(PlotTrackT0 art::module
-              lardataobj_RecoBase
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              larsim_MCCheater_BackTrackerService_service
-              larsim_MCCheater_ParticleInventoryService_service
+              LIBRARIES
+              lardataobj::RecoBase
+              lardataalg::DetectorInfo
+              lardata::headers
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              larsim::MCCheater_BackTrackerService_service
+              larsim::MCCheater_ParticleInventoryService_service
               nusimdata::SimulationBase
               art::Framework_Core
               art::Framework_Principal
@@ -37,7 +43,7 @@ cet_build_plugin(PlotTrackT0 art::module
               art::Utilities
               canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib::cetlib cetlib_except
+              cetlib::cetlib cetlib_except::cetlib_except
               ROOT::MathCore
               ROOT::GenVector
               ROOT::Geom
@@ -45,11 +51,14 @@ cet_build_plugin(PlotTrackT0 art::module
               BASENAME_ONLY)
 
 cet_build_plugin(PlotTrackDetails art::module
-              lardataobj_RecoBase
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              larsim_MCCheater_BackTrackerService_service
-              larsim_MCCheater_ParticleInventoryService_service
+              LIBRARIES
+              lardataobj::RecoBase
+              lardataalg::DetectorInfo
+              lardata::headers
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              larsim::MCCheater_BackTrackerService_service
+              larsim::MCCheater_ParticleInventoryService_service
               nusimdata::SimulationBase
               art::Framework_Core
               art::Framework_Principal
@@ -60,7 +69,7 @@ cet_build_plugin(PlotTrackDetails art::module
               art::Utilities
               canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib::cetlib cetlib_except
+              cetlib::cetlib cetlib_except::cetlib_except
               ROOT::MathCore
               ROOT::GenVector
               ROOT::Geom
@@ -68,11 +77,14 @@ cet_build_plugin(PlotTrackDetails art::module
               BASENAME_ONLY)
 
 cet_build_plugin(PlotEventDetails art::module
-      lardataobj_RecoBase
-      larcorealg_Geometry
-      larcore_Geometry_Geometry_service
-      larsim_MCCheater_BackTrackerService_service
-      larsim_MCCheater_ParticleInventoryService_service
+              LIBRARIES
+      lardataobj::RecoBase
+              lardata::headers
+              lardataalg::DetectorInfo
+      larcorealg::Geometry
+      larcore::Geometry_Geometry_service
+      larsim::MCCheater_BackTrackerService_service
+      larsim::MCCheater_ParticleInventoryService_service
       nusimdata::SimulationBase
       art::Framework_Core
       art::Framework_Principal
@@ -83,7 +95,7 @@ cet_build_plugin(PlotEventDetails art::module
       art::Utilities 
       canvas::canvas
       messagefacility::MF_MessageLogger
-      cetlib::cetlib cetlib_except
+      cetlib::cetlib cetlib_except::cetlib_except
       ROOT::MathCore
       ROOT::GenVector
       ROOT::Geom
@@ -92,7 +104,11 @@ cet_build_plugin(PlotEventDetails art::module
 )
 
 cet_build_plugin(PlotOpticalDetails art::module
-              lardataobj_RecoBase
+              LIBRARIES
+              lardataobj::RecoBase
+              lardataalg::DetectorInfo
+              lardata::headers
+              duneopdet::OpticalDetector
               art::Framework_Core
               art::Framework_Principal
               art_root_io::tfile_support
@@ -102,7 +118,7 @@ cet_build_plugin(PlotOpticalDetails art::module
               art::Utilities
               canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib::cetlib cetlib_except
+              cetlib::cetlib cetlib_except::cetlib_except
               ROOT::MathCore
               ROOT::GenVector
               ROOT::Geom
@@ -110,10 +126,12 @@ cet_build_plugin(PlotOpticalDetails art::module
               BASENAME_ONLY)
 
 cet_build_plugin(RawEventDisplay art::module
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              lardataalg_DetectorInfo
-              lardataobj_RawData
+              LIBRARIES
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              lardataalg::DetectorInfo
+              lardataobj::RawData
+              lardata::headers
               nusimdata::SimulationBase
               art::Framework_Core
               art::Framework_Principal
@@ -125,12 +143,15 @@ cet_build_plugin(RawEventDisplay art::module
               BASENAME_ONLY)
 
 cet_build_plugin(TpcMonitor art::module
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              lardataalg_DetectorInfo
-              lardataobj_RawData
+              LIBRARIES
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              lardataalg::DetectorInfo
+              lardataobj::RawData
+              lardata::headers
               nusimdata::SimulationBase
-              dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+              dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
+              dunecore::DuneObj
               art::Framework_Core
               art::Framework_Principal
               art_root_io::tfile_support
@@ -142,11 +163,14 @@ cet_build_plugin(TpcMonitor art::module
               BASENAME_ONLY)
 
 cet_build_plugin(SSPMonitor art::module
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              lardataobj_RawData
-              lardataobj_RecoBase
+              LIBRARIES
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              lardataobj::RawData
+              lardataobj::RecoBase
+              lardata::headers
               nusimdata::SimulationBase
+              dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
               art::Framework_Core
               art::Framework_Principal
               art_root_io::tfile_support
@@ -158,7 +182,10 @@ cet_build_plugin(SSPMonitor art::module
               BASENAME_ONLY)
 
 cet_build_plugin(PDSPNearlineHeader art::module
-              lardataobj_RecoBase
+              LIBRARIES
+              lardataobj::RecoBase
+              lardata::headers
+              lardataalg::DetectorInfo
               art::Framework_Core
               art::Framework_Principal
               art_root_io::tfile_support
@@ -167,16 +194,19 @@ cet_build_plugin(PDSPNearlineHeader art::module
               art::Utilities
               canvas::canvas
               messagefacility::MF_MessageLogger
-              cetlib::cetlib cetlib_except
+              cetlib::cetlib cetlib_except::cetlib_except
               ROOT::Core ROOT::Hist ROOT::Tree
               BASENAME_ONLY)
 
 cet_build_plugin(PDSPHitMonitor art::module
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              lardataobj_RawData
+              LIBRARIES
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              lardataobj::RawData
+              lardata::headers
+              lardataalg::DetectorInfo
               nusimdata::SimulationBase
-              dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+              dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
               art::Framework_Core
               art::Framework_Principal
               art_root_io::tfile_support

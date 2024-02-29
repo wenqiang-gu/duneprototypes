@@ -7,6 +7,8 @@ cet_add_compiler_flags(CXX -Wno-pedantic)
 art_make( MODULE_LIBRARIES
                         lardataalg::DetectorInfo
                         lardataobj::RawData
+                        lardata::headers
+                        larevt::SpaceCharge
                         lardataalg::DetectorInfo
 			larcorealg::Geometry
                         larcorealg::CoreUtils
@@ -23,11 +25,11 @@ art_make( MODULE_LIBRARIES
 		        art_root_io::TFileService_service	
 			art_root_io::tfile_support
 			ROOT::Gpad
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
-			cetlib::cetlib cetlib_except
+			cetlib::cetlib cetlib_except::cetlib_except
 			ROOT::Core ROOT::Hist ROOT::Tree ROOT::Graf
                         ROOT::GenVector
                         ROOT::Geom

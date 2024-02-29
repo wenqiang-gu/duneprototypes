@@ -1,10 +1,14 @@
+include_directories("${dunedaqdataformats_DIR}/../../../include")
+include_directories("${dunedetdataformats_DIR}/../../../include")
+include_directories("${nlohmann_json_DIR}/../../../include")
+include_directories("${HighFive_DIR}/../../../include")
 
-cet_build_plugin(HDColdboxDataInterface   art::tool
-                        lardataobj_RawData
-                        dunepdlegacy_Overlays
+cet_build_plugin(HDColdboxDataInterface   art::tool LIBRARIES
+                        lardataobj::RawData
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
                         HDF5::HDF5
                         art::Framework_Core
@@ -20,12 +24,12 @@ cet_build_plugin(HDColdboxDataInterface   art::tool
              )
 
 
-cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
+cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
@@ -42,8 +46,8 @@ cet_build_plugin(HDColdboxDataInterfaceWIB3   art::tool
                         HDF5::HDF5
              )
 
-cet_build_plugin(HDColdboxDAQWriter art::module
-                        lardataobj_RawData
+cet_build_plugin(HDColdboxDAQWriter art::module LIBRARIES
+                        lardataobj::RawData
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -55,6 +59,7 @@ cet_build_plugin(HDColdboxDAQWriter art::module
                         cetlib::cetlib
                         ROOT::Core ROOT::Hist ROOT::Tree
 			HDF5::HDF5
+                        dunecore::HDF5Utils
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
                         BASENAME_ONLY
 )

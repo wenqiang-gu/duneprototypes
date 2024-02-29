@@ -5,10 +5,10 @@
 #
 # Instructions to build and install fcldump.
 
-cet_make_exec(pdChannelRange
+cet_make_exec(NAME pdChannelRange
   SOURCE pdChannelRange.cxx
   LIBRARIES
-    dunecore_ArtSupport
+    dunecore::ArtSupport
     art::Framework_Core
     art::Utilities
     art::Persistency_Common

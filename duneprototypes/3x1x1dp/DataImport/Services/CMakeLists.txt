@@ -1,16 +1,16 @@
-cet_build_plugin(RawData311InputDriver art::service
+cet_build_plugin(RawData311InputDriver art::service LIBRARIES
 			EventDecoder_service
 			dlardaq_service
 
-			lardataobj_RawData
-			lardata_Utilities
-			larcorealg_Geometry
+			lardataobj::RawData
+			lardata::Utilities
+			larcorealg::Geometry
 			art::Framework_Core
 		        art::Framework_IO_Sources	
 			art::Framework_Principal
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 			
 			cetlib::cetlib
@@ -18,16 +18,16 @@ cet_build_plugin(RawData311InputDriver art::service
 			BASENAME_ONLY
 )
 
-cet_build_plugin(dlardaq art::service
-			lardataobj_RawData
-			lardataobj_RecoBase
-			larreco_RecoAlg
-			larreco_Calorimetry
-			larreco_RecoAlg_PMAlg
-			larcorealg_Geometry
-			larcore_Geometry_Geometry_service
-			lardata_Utilities
-			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+cet_build_plugin(dlardaq art::service LIBRARIES
+			lardataobj::RawData
+			lardataobj::RecoBase
+			larreco::RecoAlg
+			larreco::Calorimetry
+			larreco::RecoAlg_PMAlg
+			larcorealg::Geometry
+			larcore::Geometry_Geometry_service
+			lardata::Utilities
+			larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
 		        art::Framework_IO_Sources	
 			
 			nusimdata::SimulationBase
@@ -37,9 +37,9 @@ cet_build_plugin(dlardaq art::service
 			art_root_io::tfile_support
 			ROOT::Core
 			
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 			
 			cetlib::cetlib
@@ -48,19 +48,19 @@ cet_build_plugin(dlardaq art::service
 )
 
 
-cet_build_plugin(EventDecoder art::service
+cet_build_plugin(EventDecoder art::service LIBRARIES
 			dlardaq_service
 			HuffDataCompressor_service
 			
-			lardataobj_RawData
-			lardataobj_RecoBase
-			larreco_RecoAlg
-			larreco_Calorimetry
-			larreco_RecoAlg_PMAlg
-			larcorealg_Geometry
-			larcore_Geometry_Geometry_service
-			lardata_Utilities
-			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+			lardataobj::RawData
+			lardataobj::RecoBase
+			larreco::RecoAlg
+			larreco::Calorimetry
+			larreco::RecoAlg_PMAlg
+			larcorealg::Geometry
+			larcore::Geometry_Geometry_service
+			lardata::Utilities
+			larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
 			
 			nusimdata::SimulationBase
 			art::Framework_Core
@@ -70,9 +70,9 @@ cet_build_plugin(EventDecoder art::service
 			ROOT::Core
 			
 		        art::Framework_IO_Sources	
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 			
 			cetlib::cetlib
@@ -81,18 +81,18 @@ cet_build_plugin(EventDecoder art::service
 )
 
 
-cet_build_plugin(HuffDataCompressor art::service
+cet_build_plugin(HuffDataCompressor art::service LIBRARIES
 			dlardaq_service
 
-			lardataobj_RawData
-			lardataobj_RecoBase
-			larreco_RecoAlg
-			larreco_Calorimetry
-			larreco_RecoAlg_PMAlg
-			larcorealg_Geometry
-			larcore_Geometry_Geometry_service
-			lardata_Utilities
-			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+			lardataobj::RawData
+			lardataobj::RecoBase
+			larreco::RecoAlg
+			larreco::Calorimetry
+			larreco::RecoAlg_PMAlg
+			larcorealg::Geometry
+			larcore::Geometry_Geometry_service
+			lardata::Utilities
+			larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
 			
 			nusimdata::SimulationBase
 			art::Framework_Core
@@ -101,9 +101,9 @@ cet_build_plugin(HuffDataCompressor art::service
 			art_root_io::tfile_support
 			ROOT::Core
 			
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 			
 		        art::Framework_IO_Sources	

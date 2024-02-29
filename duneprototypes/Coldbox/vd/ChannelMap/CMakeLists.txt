@@ -11,7 +11,7 @@ install_fw( LIST ${channel_map_file} )
 # Add plugin for each service
 
 if( DEFINED ENV{CANVAS_DIR} )
-  set( persistency_lib art::Utilities canvas)
+  set( persistency_lib art::Utilities canvas::canvas)
 else()
   set( persistency_lib art::Utilities)
 endif()

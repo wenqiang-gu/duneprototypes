@@ -1,68 +1,66 @@
 art_make( 
   LIB_LIBRARIES 
-  lardataobj_RecoBase
-  larana_OpticalDetector_OpHitFinder
-  larsim_MCSTReco
-  lardataobj_MCBase
-  larcorealg_Geometry
-  larcore_Geometry_Geometry_service
-  larsim_PhotonPropagation_PhotonVisibilityService_service
-  larana_OpticalDetector_OpDigiProperties_service
-  lardata_Utilities
+  lardataobj::RecoBase
+  larana::OpticalDetector_OpHitFinder
+  larsim::MCSTReco
+  lardataobj::MCBase
+  larcorealg::Geometry
+  larcore::Geometry_Geometry_service
+  larsim::PhotonPropagation_PhotonVisibilityService_service
+  larana::OpticalDetector_OpDigiProperties_service
+  lardata::Utilities
   nusimdata::SimulationBase
   art::Framework_Core
   art::Framework_Principal
   art::Framework_Services_Registry
   art_root_io::tfile_support
   ROOT::Core
-  
-  
   art::Persistency_Common
   art::Utilities
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   ROOT::Core ROOT::Hist ROOT::Tree
-  MODULE_LIBRARIES larana_OpticalDetector_OpDigiProperties_service
-  larana_OpticalDetector_OpHitFinder
-  larana_OpticalDetector
-  larsim_PhotonPropagation_PhotonVisibilityService_service
-  larsim_MCCheater_BackTrackerService_service
-  larsim_MCCheater_ParticleInventoryService_service
-  larevt_Filters
-  lardata_RecoObjects
-  lardataalg_DetectorInfo
-  lardataobj_RecoBase
-  lardataobj_MCBase
-  larreco_RecoAlg
-  larcorealg_Geometry
-  larcore_Geometry_Geometry_service
-  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-  lardata_Utilities
-  lardataobj_RawData
-  larreco_Calorimetry
-  lardataobj_AnalysisBase
+
+  MODULE_LIBRARIES larana::OpticalDetector_OpDigiProperties_service
+  larana::OpticalDetector_OpHitFinder
+  larana::OpticalDetector
+  larsim::PhotonPropagation_PhotonVisibilityService_service
+  larsim::MCCheater_BackTrackerService_service
+  larsim::MCCheater_ParticleInventoryService_service
+  larevt::Filters
+  lardata::RecoObjects
+  lardataalg::DetectorInfo
+  lardataobj::RecoBase
+  lardataobj::MCBase
+  larreco::RecoAlg
+  larcorealg::Geometry
+  larcore::Geometry_Geometry_service
+  larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
+  lardata::Utilities
+  lardataobj::RawData
+  larreco::Calorimetry
+  lardataobj::AnalysisBase
   nurandom::RandomUtils_NuRandomService_service
   nusimdata::SimulationBase
   art::Framework_Core
   art::Framework_Principal
   art::Framework_Services_Registry
   art_root_io::tfile_support
-  ROOT::Core
-  
-  
+  ROOT::Core  
   art::Persistency_Provenance
   art::Persistency_Common
   art::Utilities
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   ROOT::Core ROOT::Hist ROOT::Tree
+
   SERVICE_LIBRARIES
-  larcorealg_Geometry
-  larcore_Geometry_Geometry_service
+  larcorealg::Geometry
+  larcore::Geometry_Geometry_service
   art::Framework_Core
   art::Framework_Principal
   art::Framework_Services_Registry
@@ -74,7 +72,7 @@ art_make(
   canvas::canvas
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
-  cetlib::cetlib cetlib_except
+  cetlib::cetlib cetlib_except::cetlib_except
   CLHEP::CLHEP
   ROOT::Core ROOT::Hist ROOT::Tree
   ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types

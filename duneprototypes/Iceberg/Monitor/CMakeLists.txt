@@ -1,10 +1,12 @@
-cet_build_plugin(IcebergTpcMonitor art::module
-              larcorealg_Geometry
-              larcore_Geometry_Geometry_service
-              lardataalg_DetectorInfo
-              lardataobj_RawData
+cet_build_plugin(IcebergTpcMonitor art::module LIBRARIES
+              larcorealg::Geometry
+              larcore::Geometry_Geometry_service
+              lardataalg::DetectorInfo
+              lardataobj::RawData
+              lardata::headers
               nusimdata::SimulationBase
-              dunepdlegacy_Services_ChannelMap_IcebergChannelMapService_service
+              dunepdlegacy::Services_ChannelMap_IcebergChannelMapService_service
+              dunecore::DuneObj
               art::Framework_Core
               art::Framework_Principal
               art::Framework_Services_Registry
@@ -16,7 +18,6 @@ cet_build_plugin(IcebergTpcMonitor art::module
               cetlib::cetlib
               ROOT::Core ROOT::Hist ROOT::Tree
               BASENAME_ONLY)
-
 install_headers()
 install_fhicl()
 install_source()

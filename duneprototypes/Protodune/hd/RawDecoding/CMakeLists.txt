@@ -1,5 +1,9 @@
+include_directories("${dunedaqdataformats_DIR}/../../../include")
+include_directories("${dunedetdataformats_DIR}/../../../include")
+include_directories("${nlohmann_json_DIR}/../../../include")
+include_directories("${HighFive_DIR}/../../../include")
 
-cet_build_plugin(DAPHNEReaderPDHD art::module
+cet_build_plugin(DAPHNEReaderPDHD art::module LIBRARIES
                  #PDHDReadoutUtils
                  lardataobj::RawData
 		 dunecore::HDF5Utils_HDF5RawFile2Service_service
@@ -18,7 +22,7 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
                  BASENAME_ONLY
 )
 
-cet_build_plugin(PDHDTPCReader art::module
+cet_build_plugin(PDHDTPCReader art::module LIBRARIES
                         lardataobj::RawData
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
@@ -36,12 +40,12 @@ cet_build_plugin(PDHDTPCReader art::module
                         BASENAME_ONLY
 )
 
-cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
+cet_build_plugin(PDHDDataInterfaceWIB3   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
@@ -59,12 +63,12 @@ cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
                         HDF5::HDF5
              )
 
-cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
+cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
@@ -83,7 +87,7 @@ cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
              )
 	   
 
-cet_build_plugin(PDHDTriggerReader art::module
+cet_build_plugin(PDHDTriggerReader art::module LIBRARIES
                         lardataobj::RawData
                         dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2

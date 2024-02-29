@@ -1,13 +1,18 @@
+include_directories("${dunedaqdataformats_DIR}/../../../include")
+include_directories("${dunedetdataformats_DIR}/../../../include")
+include_directories("${nlohmann_json_DIR}/../../../include")
+include_directories("${HighFive_DIR}/../../../include")
 
-cet_build_plugin(VDColdboxDataInterface   art::tool
+cet_build_plugin(VDColdboxDataInterface   art::tool LIBRARIES
                                      canvas::canvas
                                      cetlib::cetlib
                                      cetlib_except::cetlib_except
-                        lardataobj_RawData
-                        dunepdlegacy_Overlays
+                        lardataobj::RawData
+                        dunepdlegacy::Overlays
+                        dunecore::DuneObj
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
-                        dunepdlegacy_Services_ChannelMap_PdspChannelMapService_service
+                        dunepdlegacy::Services_ChannelMap_PdspChannelMapService_service
                         dunecore::HDF5Utils
                         HDF5::HDF5
                         duneprototypes_Coldbox_vd_ChannelMap_VDColdboxChannelMapService_service
@@ -26,11 +31,12 @@ cet_build_plugin(VDColdboxDataInterface   art::tool
 
 simple_plugin(VDColdboxTDERawInput "source"
   duneprototypes_Coldbox_vd_ChannelMap_VDColdboxTDEChannelMapService_service
+  dunecore::DuneObj
   art::Framework_Services_Registry
   canvas::canvas
   cetlib::cetlib
   cetlib_except::cetlib_except
-  lardataobj_RawData
+  lardataobj::RawData
   art::Framework_Core
   art::Framework_Principal
   art::Framework_Services_Registry
@@ -43,9 +49,9 @@ simple_plugin(VDColdboxTDERawInput "source"
 ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use cet_build_plugin() with explicit source lists and plugin base types
 
 
-cet_build_plugin(VDColdboxPDSDecoder art::module
-                 lardataobj_RawData
-                 lardataobj_RecoBase
+cet_build_plugin(VDColdboxPDSDecoder art::module LIBRARIES
+                 lardataobj::RawData
+                 lardataobj::RecoBase
                  dunecore::HDF5Utils
                  HDF5::HDF5
                  art::Framework_Core

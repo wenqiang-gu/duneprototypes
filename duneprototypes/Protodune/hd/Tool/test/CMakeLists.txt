@@ -5,26 +5,26 @@
 
 # Build test for each tool.
 
-cet_test(test_PdhdChannelRanges SOURCES test_PdhdChannelRanges.cxx
+cet_test(test_PdhdChannelRanges SOURCE test_PdhdChannelRanges.cxx
   LIBRARIES
-    dunecore_ArtSupport
+    dunecore::ArtSupport
     art::Utilities
     canvas::canvas
-    fhiclcpp
-    cetlib::cetlib cetlib_except
+    fhiclcpp::fhiclcpp
+    cetlib::cetlib
     cetlib_except::cetlib_except
     ROOT::Core ROOT::Hist ROOT::Tree
     SQLite::SQLite3
     Boost::filesystem
 )
 
-cet_test(test_PdhdChannelGroups SOURCES test_PdhdChannelGroups.cxx
+cet_test(test_PdhdChannelGroups SOURCE test_PdhdChannelGroups.cxx
   LIBRARIES
-    dunecore_ArtSupport
+    dunecore::ArtSupport
     art::Utilities
     canvas::canvas
-    fhiclcpp
-    cetlib::cetlib cetlib_except
+    fhiclcpp::fhiclcpp
+    cetlib::cetlib 
     cetlib_except::cetlib_except
     ROOT::Core ROOT::Hist ROOT::Tree
     SQLite::SQLite3

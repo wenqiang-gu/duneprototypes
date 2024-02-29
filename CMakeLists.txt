@@ -27,7 +27,7 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
 
 cet_report_compiler_flags() ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - add args: REPORT_THRESHOLD VERBOSE
 
-find_package( Boost REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(...) -> find_package(REQUIRED ...)
+find_package( Boost REQUIRED COMPONENTS system ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(...) -> find_package(REQUIRED ...)
 find_package( art REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(art ...) -> find_package(art REQUIRED ...)
 find_package( art_root_io REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(art_root_io ...) -> find_package(art_root_io REQUIRED ...)
 find_package( canvas_root_io REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(canvas_root_io ...) -> find_package(canvas_root_io REQUIRED ...)
@@ -40,6 +40,7 @@ find_package( dunecore REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_u
 find_package( lardataobj REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(lardataobj ...) -> find_package(lardataobj REQUIRED ...)
 find_package( lardataalg REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(lardataalg ...) -> find_package(lardataalg REQUIRED ...)
 find_package( lardata REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(lardata ...) -> find_package(lardata REQUIRED ...)
+find_package( larana REQUIRED )
 find_package( larevt REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(larevt ...) -> find_package(larevt REQUIRED ...)
 find_package( larsim REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(larsim ...) -> find_package(larsim REQUIRED ...)
 find_package( duneopdet REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(duneopdet ...) -> find_package(duneopdet REQUIRED ...)
@@ -60,8 +61,8 @@ find_package( ifdhc REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_
 find_package( ifbeam REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(ifbeam ...) -> find_package(ifbeam REQUIRED ...)
 find_package( Geant4 REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(...) -> find_package(REQUIRED ...)
 find_package( nlohmann_json REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(nlohmann_json ...) -> find_package(nlohmann_json REQUIRED ...)
-#find_package( highfive REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(highfive ...) -> find_package(highfive REQUIRED ...)
 find_package( HDF5 REQUIRED EXPORT )
+find_package( HighFive REQUIRED ) ### MIGRATE-CHANGED (migrate-3.22.02) - find_ups_product(highfive ...) -> find_package(highfive REQUIRED ...)
 find_package( nuevdb REQUIRED )
 # macros for artdaq_dictionary and simple_plugin
 include(ArtDictionary)

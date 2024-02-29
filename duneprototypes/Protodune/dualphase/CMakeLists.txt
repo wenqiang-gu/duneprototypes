@@ -1,18 +1,19 @@
 
 
 cet_build_plugin(
-           CRTGen art::module
+           CRTGen art::module LIBRARIES
            nusimdata::SimulationBase
            cetlib::cetlib
            cetlib_except::cetlib_except
            fhiclcpp::fhiclcpp
            CLHEP::CLHEP
-           larcorealg_Geometry
-           larcoreobj_SummaryData
-           larsim_EventGenerator
+           larcorealg::Geometry
+           larcoreobj::SummaryData
+           larcore::headers
+           larsim::EventGenerator
            nurandom::RandomUtils_NuRandomService_service
            art::Framework_Services_Registry
-           larsim_MCCheater_ParticleInventoryService 
+           larsim::MCCheater_ParticleInventoryService_service
            art_root_io::tfile_support
            CLHEP::CLHEP
            messagefacility::MF_MessageLogger
@@ -23,80 +24,78 @@ cet_build_plugin(
 )
 if(FALSE)
 cet_build_plugin(
-			Purity art::module
-			dunesim_DetSim
-                        lardataobj_RecoBase
-                        larreco_Calorimetry
-                        larcorealg_Geometry
-                        larcore_Geometry_Geometry_service
-                        lardata_ArtDataHelper
-                        lardata_Utilities
-                        lardataobj_Simulation
-                        larsim_MCCheater_BackTrackerService
-                        larsim_MCCheater_ParticleInventoryService_service
-                        larsim_MCCheater_ParticleInventoryService 
+			Purity art::module LIBRARIES
+			dunesim::DetSim
+                        lardataobj::RecoBase
+                        larreco::Calorimetry
+                        larcorealg::Geometry
+                        larcore::Geometry_Geometry_service
+                        lardata::ArtDataHelper
+                        lardata::Utilities
+                        lardataobj::Simulation
+                        larsim::MCCheater_BackTrackerService_service
+                        larsim::MCCheater_ParticleInventoryService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
                         art_root_io::tfile_support
                         ROOT::Core
                         
-                        art::Persistency_Common canvas
-                        art::Persistency_Provenance canvas
-                        art::Utilities canvas
+                        art::Persistency_Common
+                        art::Persistency_Provenance
+                        art::Utilities canvas::canvas
                         messagefacility::MF_MessageLogger
                         
-                        cetlib::cetlib cetlib_except
+                        cetlib::cetlib cetlib_except::cetlib_except
                         ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 endif()
 cet_build_plugin(
-			DEdxdp art::module
-			dunesim_DetSim
-                        lardataobj_RecoBase
-                        larreco_Calorimetry
-                        larcorealg_Geometry
-                        larcore_Geometry_Geometry_service
-                        lardata_ArtDataHelper
-                        lardata_Utilities
-                        lardataobj_Simulation
-                        larsim_MCCheater_BackTrackerService_service
+			DEdxdp art::module LIBRARIES
+			dunesim::DetSim
+                        lardataobj::RecoBase
+                        larreco::Calorimetry
+                        larcorealg::Geometry
+                        larcore::Geometry_Geometry_service
+                        lardata::ArtDataHelper
+                        lardata::Utilities
+                        lardataobj::Simulation
+                        larsim::MCCheater_BackTrackerService_service
                         art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
                         art_root_io::tfile_support
                         ROOT::Core
                         
-                        art::Persistency_Common canvas
-                        art::Persistency_Provenance canvas
-                        art::Utilities canvas
+                        art::Persistency_Common
+                        art::Persistency_Provenance
+                        art::Utilities canvas::canvas
                         messagefacility::MF_MessageLogger
                         
-                        cetlib::cetlib cetlib_except
+                        cetlib::cetlib cetlib_except::cetlib_except
                         ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 
 cet_build_plugin(
-	  AnaRootParser art::module
-	  larcore_Geometry_Geometry_service
-	  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-          larsim_MCCheater_ParticleInventoryService 
-	  larsim_MCCheater_BackTrackerService
-	  larsim_MCCheater_BackTrackerService_service
-          larsim_MCCheater_ParticleInventoryService_service
-	  lardata_Utilities
-	  larevt_Filters
-	  lardataobj_RawData
-	  lardataobj_RecoBase
-	  lardata_RecoObjects
-	  lardata_ArtDataHelper
-	  lardataalg_DetectorInfo
-	  larcorealg_Geometry
-	  larcorealg_GeoAlgo
-	  larreco_RecoAlg
-	  larpandora_LArPandoraInterface
+	  AnaRootParser art::module LIBRARIES
+	  larcore::Geometry_Geometry_service
+	  larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
+	  larsim::MCCheater_BackTrackerService_service
+          larsim::MCCheater_ParticleInventoryService_service
+	  lardata::Utilities
+	  larevt::Filters
+	  lardataobj::RawData
+	  lardataobj::RecoBase
+	  lardata::RecoObjects
+	  lardata::ArtDataHelper
+	  lardataalg::DetectorInfo
+	  larcorealg::Geometry
+	  larcorealg::GeoAlgo
+          larcore::headers
+	  larreco::RecoAlg
+	  larpandora::LArPandoraInterface
 	  dunecore::SignalShapingServiceDUNE10kt_service
 	  dunecore::SignalShapingServiceDUNE35t_service
           nusimdata::SimulationBase
@@ -105,14 +104,14 @@ cet_build_plugin(
 	  art::Framework_Services_Registry
 	  art_root_io::tfile_support
 	  ROOT::Core
-	  
-	  art::Persistency_Common canvas
-	  art::Persistency_Provenance canvas
-	  art::Utilities canvas
+
+	  art::Persistency_Common
+	  art::Persistency_Provenance
+	  art::Utilities canvas::canvas
 	  messagefacility::MF_MessageLogger
 	  
 	  fhiclcpp::fhiclcpp
-	  cetlib::cetlib cetlib_except
+	  cetlib::cetlib cetlib_except::cetlib_except
           ROOT::Geom
           ROOT::XMLIO
           ROOT::Gdml

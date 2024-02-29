@@ -1,15 +1,16 @@
 cet_build_plugin(ImportSingle311Event art::module
-			EventDecoder_service
+			LIBRARIES
+                        EventDecoder_service
 
-			lardataobj_RawData
-			lardataobj_RecoBase
-			larreco_RecoAlg
-			larreco_Calorimetry
-			larreco_RecoAlg_PMAlg
-			larcorealg_Geometry
-			larcore_Geometry_Geometry_service
-			lardata_Utilities
-			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
+			lardataobj::RawData
+			lardataobj::RecoBase
+			larreco::RecoAlg
+			larreco::Calorimetry
+			larreco::RecoAlg_PMAlg
+			larcorealg::Geometry
+			larcore::Geometry_Geometry_service
+			lardata::Utilities
+			larsim::Simulation nug4::ParticleNavigation lardataobj::Simulation
 			
 			nusimdata::SimulationBase
 			art::Framework_Core
@@ -18,9 +19,9 @@ cet_build_plugin(ImportSingle311Event art::module
 			art_root_io::tfile_support
 			ROOT::Core
 			art_root_io::TFileService_service
- 			art::Persistency_Common canvas
-			art::Persistency_Provenance canvas
-			art::Utilities canvas
+ 			art::Persistency_Common
+			art::Persistency_Provenance
+			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 			ROOT::Core ROOT::Hist ROOT::Tree
 			BASENAME_ONLY
