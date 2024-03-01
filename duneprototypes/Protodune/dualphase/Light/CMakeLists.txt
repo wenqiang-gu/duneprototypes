@@ -23,7 +23,7 @@ art_make( BASENAME_ONLY MODULE_LIBRARIES
   ROOT::Geom
   cetlib::cetlib cetlib_except::cetlib_except
   ROOT::Core ROOT::Hist ROOT::Tree
-  ) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use art_make_library(), art_dictonary(), and cet_build_plugin() with explicit source lists and plugin base types
+  )
 
 install_fhicl()
 install_headers()

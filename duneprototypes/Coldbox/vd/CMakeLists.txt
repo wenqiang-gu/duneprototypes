@@ -46,7 +46,7 @@ simple_plugin(VDColdboxTDERawInput "source"
   art::Persistency_Provenance
   messagefacility::MF_MessageLogger
   ROOT::Core ROOT::Hist ROOT::Tree
-) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.22.02) - deprecated: use cet_build_plugin() with explicit source lists and plugin base types
+)
 
 
 cet_build_plugin(VDColdboxPDSDecoder art::module LIBRARIES
