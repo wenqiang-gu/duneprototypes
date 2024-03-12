@@ -10,7 +10,7 @@ services:
   } 
   DAPHNEChannelMapService: {
     #FileName: "DAPHNE_test_ChannelMap_v0.txt"
-    FileName: "DAPHNE_test4_ChannelMap_v1.txt"
+    FileName: "DAPHNE_test5_ChannelMap_v1.txt"
     IgnoreLinks: true
   }
 }
