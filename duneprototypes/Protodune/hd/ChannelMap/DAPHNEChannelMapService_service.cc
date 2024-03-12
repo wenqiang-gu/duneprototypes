@@ -1,7 +1,8 @@
 #include "DAPHNEChannelMapService.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-dune::DAPHNEChannelMapService::DAPHNEChannelMapService(fhicl::ParameterSet const& pset) {
+dune::DAPHNEChannelMapService::DAPHNEChannelMapService(fhicl::ParameterSet const& pset)
+  : fChannelMap(pset.get<bool>("IgnoreLinks", false)) {
 
   std::string channelMapFile = pset.get<std::string>("FileName");
 

@@ -23,6 +23,7 @@ public:
   }*/
 
   DAPHNEChannelMap();  // constructor
+  DAPHNEChannelMap(bool ignore_links=false);  // constructor
   void ReadMapFromFile(std::string &fullname);
   unsigned int GetOfflineChannel(unsigned int slot, unsigned int link,
                                  unsigned int frame_chan) const;
@@ -43,5 +44,7 @@ private:
         "DAPHNEChannelMap offline Channel out of range");
     }
   };
+
+  bool fIgnoreLinks;
 };
 #endif

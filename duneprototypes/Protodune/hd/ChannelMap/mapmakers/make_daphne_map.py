@@ -2,10 +2,10 @@ from argparse import ArgumentParser as ap
 import numpy as np
 
 def append_lines(lines, apa_channels, apa_slots, apa_number):
-  apa_starts = {1:80, 2:120, 3:0, 4:40}
+  apa_starts = {2:80, 1:120, 4:0, 3:40}
   link = 0
   for pos,daphne_channels in apa_channels.items():
-    start = apa_starts[apa_number]#80
+    start = apa_starts[apa_number]
     slot = apa_slots[pos]
     if (apa_number in [1, 2]) and ((pos % 2) != 0): ##Beam right side 
       daphne_channels.reverse()
@@ -32,9 +32,9 @@ def make_v1_map(args):
     4:[16, 14, 13, 11],
     5:[7, 5, 2, 0],
     6:[6, 4, 3, 1],
-    7:[16, 14, 13, 11],
+    7:[26, 24, 23, 21],
     8:[17, 15, 12, 10],
-    9:[6, 4, 3, 1], ##Note: this is different to the spreadsheet
+    9:[17, 15, 12, 10], 
     10:[7, 5, 2, 0], ##
   }
   apa1_slots = {
@@ -86,6 +86,7 @@ def make_v1_map(args):
   apa4_slots = {i:12 for i in range(1, 11)} 
   apa4_slots[5] = 13
 
+  ##TODO -- CHECK THIS DESCRIPTION
   ## The 'Daphne' channels above are in order of the 'module channels' (1, 2, 3, 4)
   ## So APA 1, Position 1 has module channels (1, 2, 3, 4) == daphne channels (7, 4, 2, 0)
   ##
@@ -100,9 +101,9 @@ def make_v1_map(args):
   ## while the beam-left/Jura side APAs (3 & 4)  'Left' means 'more upstream'.
 
   ## The APAs are situated as follows in the volume looking down in Y
-  '''   | APA 4 | APA 3 |
+  '''   | APA 3 | APA 4 |
         |----Cathode----|  Upstream (Lower Z) -----> Downstream (Higher Z)
-        | APA 2 | APA 1 |'''
+        | APA 1 | APA 2 |'''
 
   link = 0
   append_lines(lines, apa1_channels, apa1_slots, 1)

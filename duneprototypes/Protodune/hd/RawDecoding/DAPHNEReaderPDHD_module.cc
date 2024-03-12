@@ -145,19 +145,26 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
   b_link = frame->daq_header.link_id;
   b_slot = frame->daq_header.slot_id;
 
-  auto offline_channel = fChannelMap->GetOfflineChannel(
-      b_slot, b_link, b_channel_0);
+  try {
+    auto offline_channel = fChannelMap->GetOfflineChannel(
+        b_slot, b_link, b_channel_0);
 
-  auto & waveform = MakeWaveform(
-      offline_channel,
-      static_cast<size_t>(frame->s_num_adcs),
-      frame->get_timestamp(),
-      wf_map);
+    auto & waveform = MakeWaveform(
+        offline_channel,
+        static_cast<size_t>(frame->s_num_adcs),
+        frame->get_timestamp(),
+        wf_map);
 
-  fTree->Fill();
-  for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
-    //std::cout << "\t" << frame->get_adc(j) << std::endl;
-    waveform.push_back(frame->get_adc(j));
+    fTree->Fill();
+    for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
+      //std::cout << "\t" << frame->get_adc(j) << std::endl;
+      waveform.push_back(frame->get_adc(j));
+    }
+  }
+  catch (const std::range_error & err) {
+    std::cout << "WARNING: Could not find offline channel for " <<
+                 b_slot << " " << b_link << " " << b_channel_0 << std::endl;
+    return;
   }
 }
 
@@ -213,29 +220,36 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     frame->header.channel_1,
     frame->header.channel_2,
     frame->header.channel_3};
-  std::cout << "Processing stream frame " << frame_number << std::endl;
+  //std::cout << "Processing stream frame " << frame_number << std::endl;
   // Loop over channels
   for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
-    auto offline_channel = fChannelMap->GetOfflineChannel(
-        b_slot, b_link, frame_channels[i]);
-    std::cout << b_slot << " " << b_link << " " << frame_channels[i] << " " <<
-                 offline_channel << std::endl;
+    try {
+      auto offline_channel = fChannelMap->GetOfflineChannel(
+          b_slot, b_link, frame_channels[i]);
+      //std::cout << b_slot << " " << b_link << " " << frame_channels[i] << " " <<
+      //             offline_channel << std::endl;
 
-    auto & waveform = MakeWaveform(
-        offline_channel,
-        frame->s_adcs_per_channel,
-        frame->get_timestamp(),
-        wf_map,
-        true);
+      auto & waveform = MakeWaveform(
+          offline_channel,
+          frame->s_adcs_per_channel,
+          frame->get_timestamp(),
+          wf_map,
+          true);
 
-    // Loop over ADC values in the frame for channel i 
-    std::cout << "\tChannel " << i << std::endl;
-    for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
-      //std::cout << "\t" << frame->get_adc(j) << std::endl;
-      waveform.push_back(frame->get_adc(j, i));
+      // Loop over ADC values in the frame for channel i 
+      //std::cout << "\tChannel " << i << std::endl;
+      for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
+        //std::cout << "\t" << frame->get_adc(j) << std::endl;
+        waveform.push_back(frame->get_adc(j, i));
+      }
+    }
+    catch (const std::range_error & err) {
+      std::cout << "WARNING: Could not find offline channel for " <<
+                   b_slot << " " << b_link << " " << b_channel_0 << std::endl;
+      continue;
     }
   }
-  std::cout << std::endl;
+  //std::cout << std::endl;
 }
 
 void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
@@ -247,16 +261,16 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
   //Get the HDF5 file to be opened
   auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo2>(fFileInfoLabel);
-  const std::string & file_name = infoHandle->GetFileName();
-  uint32_t runno = infoHandle->GetRun();
   size_t   evtno = infoHandle->GetEvent();
   size_t   seqno = infoHandle->GetSequence();
 
   dunedaq::hdf5libs::HDF5RawDataFile::record_id_t record_id
       = std::make_pair(evtno, seqno);
 
-  std::cout << file_name << " " << runno << " " << evtno << " " << seqno <<
-               std::endl;
+  //uint32_t runno = infoHandle->GetRun();
+  //const std::string & file_name = infoHandle->GetFileName();
+  //std::cout << file_name << " " << runno << " " << evtno << " " << seqno <<
+  //           std::endl;
 
   //Open the HDF5 file and get source ids
   art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
@@ -269,7 +283,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
     if (!CheckSourceIsDetector(source_id)) continue;
 
     //Loop over geo ids
-    std::cout << "Source: " << source_id << std::endl;
+    //std::cout << "Source: " << source_id << std::endl;
     auto geo_ids = raw_file->get_geo_ids_for_source_id(record_id, source_id);
     for (const auto &geo_id : geo_ids) {
       //TODO -- Wrap This
@@ -283,10 +297,10 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       if (subdetector_string != fSubDetString) continue;
 
       uint16_t crate_from_geo = 0xffff & (geo_id >> 16);
-      std::cout << subdetector_string << " " << crate_from_geo << std::endl;
+      //std::cout << subdetector_string << " " << crate_from_geo << std::endl;
       b_crate = crate_from_geo;
 
-      std::cout << "Getting fragment" << std::endl;
+      //std::cout << "Getting fragment" << std::endl;
       auto frag = raw_file->get_frag_ptr(record_id, source_id);
       auto frag_size = frag->get_size();
       size_t frag_header_size = sizeof(FragmentHeader); // make this a const class member
@@ -294,7 +308,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       // Too small to even have a header
       if (frag_size <= frag_header_size) continue;
 
-      std::cout << frag->get_header() << std::endl;
+     // std::cout << frag->get_header() << std::endl;
 
       //Checking which type of DAPHNE Frame to use
       auto frag_type = frag->get_fragment_type();
@@ -311,8 +325,8 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
              GetNFrames<DAPHNEFrame>(frag_size, frag_header_size));
       auto frame_size = (use_stream_frame ?
                          sizeof(DAPHNEStreamFrame) : sizeof(DAPHNEFrame));
-      std::cout << "NFrames: " << n_frames << " Headder TS: " <<
-                   frag->get_header().trigger_timestamp << std::endl;
+      //std::cout << "NFrames: " << n_frames << " Headder TS: " <<
+      //           frag->get_header().trigger_timestamp << std::endl;
       for (size_t i = 0; i < n_frames; ++i) {
         if (use_stream_frame) {
           ProcessStreamFrame(frag, frame_size, i, wf_map);
@@ -326,7 +340,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
   //Convert map to vector for output
   for (auto & chan_wf_vector : wf_map) {//Loop over channels
-    std::cout << "Inserting " << chan_wf_vector.first << " " << chan_wf_vector.second.size() << std::endl;
+    //std::cout << "Inserting " << chan_wf_vector.first << " " << chan_wf_vector.second.size() << std::endl;
     opdet_waveforms.insert(opdet_waveforms.end(),
                            chan_wf_vector.second.begin(),
                            chan_wf_vector.second.end());
