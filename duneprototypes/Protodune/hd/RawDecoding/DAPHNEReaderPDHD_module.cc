@@ -251,7 +251,7 @@ raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
 
   auto & waveform = wf_map.at(offline_chan).back();
   //Reserve more adcs at once for efficiency
-//  waveform.reserve(waveform.size() + n_adcs);
+  waveform.reserve(waveform.size() + n_adcs);
   return waveform;
 }
 
@@ -314,7 +314,6 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
       //std::cout << "\t" << frame->get_adc(j) << std::endl;
       waveform.push_back(frame->get_adc(j, i));
       _adc_value[j]=frame->get_adc(j, i);
-//      _adc_valueV[_NFrames][j]=frame->get_adc(j, i);
     }
 
     if(fExportWaveformTree) fWaveformTree->Fill();
@@ -393,7 +392,6 @@ Daphe Fragment header format:
 Frag Header: check_word: 11112222, version: 5, size: 21864, trigger_number: 2522, run_number: 24496, trigger_timestamp: 106886658719868713, window_begin: 106886658719866569, window_end: 106886658720128713, error_bits: 0, fragment_type: 3, sequence_number: 0, detector_id: 2, element_id: subsystem: Detector_Readout id: 14
 */
       _TriggerNumber=frag->get_header().trigger_number;
-//      _Fragment=frag->get_header().fragment_type;
       _TimeStamp=frag->get_header().trigger_timestamp;
      _Window_begin=frag->get_header().window_begin;
      _Window_end=frag->get_header().window_end;
@@ -439,10 +437,7 @@ Frag Header: check_word: 11112222, version: 5, size: 21864, trigger_number: 2522
     //Remove elements from wf_map to save memory
     chan_wf_vector.second.clear();
   }
-  std::cout << "EventNumber " << _Event << std::endl;
-//  if(static_cast<std::vector<int>::size_type>(_NFrames)!=_OfflineChannelV.size()) std::cout << "WARNING ERROR" << std::endl;
-  
-//  if(fExportWaveformTree) fWaveformTree->Fill();
+  //std::cout << "EventNumber " << _Event << std::endl;
 
   evt.put(
       std::make_unique<decltype(opdet_waveforms)>(std::move(opdet_waveforms)),
