@@ -20,7 +20,7 @@ public:
   unsigned int GetOfflineChannel(
    unsigned int slot,
    unsigned int link,
-   unsigned int daphne_channel) const;
+   unsigned int daphne_channel);
 
 private:
 
