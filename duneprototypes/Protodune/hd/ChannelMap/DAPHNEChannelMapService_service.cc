@@ -25,7 +25,7 @@ dune::DAPHNEChannelMapService::DAPHNEChannelMapService(fhicl::ParameterSet const
 unsigned int dune::DAPHNEChannelMapService::GetOfflineChannel(
     unsigned int slot,
     unsigned int link,
-    unsigned int daphne_channel) const {
+    unsigned int daphne_channel) {
 
   return fChannelMap.GetOfflineChannel(slot, link, daphne_channel);
 }
