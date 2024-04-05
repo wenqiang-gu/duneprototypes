@@ -44,6 +44,7 @@ using WaveformVector = std::vector<raw::OpDetWaveform>;
 
 class DAPHNEReaderPDHD;
 
+const Int_t kMaxFrames = 50;
 
 class DAPHNEReaderPDHD : public art::EDProducer {
 public:
@@ -86,9 +87,30 @@ private:
       bool is_stream=false);
 
   TTree * fTree;
+  TTree * fWaveformTree;
   size_t b_slot, b_crate, b_link;
   bool b_is_stream;
-  size_t b_channel_0, b_channel_1, b_channel_2, b_channel_3; 
+  size_t b_channel_0, b_channel_1, b_channel_2, b_channel_3;
+
+  bool fExportWaveformTree;
+  //vars per event
+  int _Run;
+  int _SubRun;
+  int _Event;
+  int _TriggerNumber;
+  long int _TimeStamp;
+  long int _Window_end;
+  long int _Window_begin;
+  int _NFrames;
+  int _Slot;
+  int _Crate;
+  int _DaphneChannel;
+  int _OfflineChannel;
+  long int _FrameTimestamp;
+  short _adc_value[1024];
+  int _TriggerSampleValue;
+  int _Threshold;
+  int _Baseline;
 };
 }
 
@@ -105,6 +127,29 @@ void pdhd::DAPHNEReaderPDHD::beginJob() {
   fTree->Branch("channel_2", &b_channel_2);
   fTree->Branch("channel_3", &b_channel_3);
 
+  if(fExportWaveformTree)
+  {
+    fWaveformTree = tfs->make<TTree>("WaveformTree","Waveforms Tree");
+    fWaveformTree->Branch("Run"    , &_Run    , "Run/I"    );
+    fWaveformTree->Branch("Event"     , &_Event     , "Event/I"     );
+    fWaveformTree->Branch("TriggerNumber" , &_TriggerNumber , "TriggerNumber/I"    );
+    fWaveformTree->Branch("TimeStamp" , &_TimeStamp , "TimeStamp/l"    );
+    fWaveformTree->Branch("Window_begin" , &_Window_begin , "Window_begin/l"    );
+    fWaveformTree->Branch("Window_end" , &_Window_end , "Window_end/l"    );
+
+    fWaveformTree->Branch("Slot"      , &_Slot     , "Slot/I");
+    fWaveformTree->Branch("Crate"      , &_Crate    , "Crate/I"     );
+    fWaveformTree->Branch("DaphneChannel"  ,& _DaphneChannel     , "DaphneChannel/I"     );
+    fWaveformTree->Branch("OfflineChannel" , &_OfflineChannel    , "OfflineChannel/I"    );
+    fWaveformTree->Branch("FrameTimestamp" ,& _FrameTimestamp , "FrameTimestamp/l"    );
+    fWaveformTree->Branch("adc_channel"    , _adc_value          , "adc_value[1024]/S");
+
+    fWaveformTree->Branch("TriggerSampleValue"  , &_TriggerSampleValue, "TriggerSampleValue/I"     ); //only for self-trigger
+    fWaveformTree->Branch("Threshold"  , &_Threshold  , "Threshold/I"     ); //only for self-trigger
+    fWaveformTree->Branch("Baseline"  , &_Baseline   , "Baseline/I"     ); //only for self-trigger
+
+  }
+
 }
 
 pdhd::DAPHNEReaderPDHD::DAPHNEReaderPDHD(fhicl::ParameterSet const& p)
@@ -112,7 +157,8 @@ pdhd::DAPHNEReaderPDHD::DAPHNEReaderPDHD(fhicl::ParameterSet const& p)
     fInputLabel(p.get<std::string>("InputLabel", "daq")),
     fOutputLabel(p.get<std::string>("OutputLabel", "daq")),
     fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
-    fSubDetString(p.get<std::string>("SubDetString","HD_PDS"))
+    fSubDetString(p.get<std::string>("SubDetString","HD_PDS")),
+    fExportWaveformTree(p.get<bool>("ExportWaveformTree",true))
 {
   produces<std::vector<raw::OpDetWaveform>> (fOutputLabel);
   produces<std::vector<recob::OpHit>> (fOutputLabel);
@@ -144,28 +190,41 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
   b_channel_0 = frame->get_channel();
   b_link = frame->daq_header.link_id;
   b_slot = frame->daq_header.slot_id;
-
+//  std::cout << "Process Frame link, slot, channel : " << b_link << " "<< b_slot <<  " " << b_channel_0 << std::endl;
+//std::cout << "NSAmples:  " << frame->s_num_adcs << std::endl;
+  auto offline_channel=-1;
   try {
-    auto offline_channel = fChannelMap->GetOfflineChannel(
+     offline_channel = fChannelMap->GetOfflineChannel(
         b_slot, b_link, b_channel_0);
-
-    auto & waveform = MakeWaveform(
-        offline_channel,
-        static_cast<size_t>(frame->s_num_adcs),
-        frame->get_timestamp(),
-        wf_map);
-
-    fTree->Fill();
-    for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
-      //std::cout << "\t" << frame->get_adc(j) << std::endl;
-      waveform.push_back(frame->get_adc(j));
-    }
   }
   catch (const std::range_error & err) {
     std::cout << "WARNING: Could not find offline channel for " <<
                  b_slot << " " << b_link << " " << b_channel_0 << std::endl;
-    return;
   }
+//       std::cout << frame->header.channel <<  " "<< frame->header.pds_reserved_1 <<  " "<< frame->header.trigger_sample_value 
+//    <<"  " << frame->header.threshold <<" " << frame->header.baseline << std::endl;
+//    word_t channel : 6, pds_reserved_1 : 10, trigger_sample_value : 16;
+//    word_t threshold : 16, baseline : 16;
+
+  _Slot=b_slot;
+  _DaphneChannel=b_channel_0;
+  _OfflineChannel=offline_channel;
+  _FrameTimestamp=frame->get_timestamp();
+  _TriggerSampleValue=frame->header.trigger_sample_value;
+  _Threshold=frame->header.threshold;
+  _Baseline=frame->header.baseline;
+
+  auto & waveform = MakeWaveform(
+      offline_channel,
+      static_cast<size_t>(frame->s_num_adcs),
+      frame->get_timestamp(),
+      wf_map);
+  for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
+    waveform.push_back(frame->get_adc(j));
+   _adc_value[j]=frame->get_adc(j);
+  }
+  if(fExportWaveformTree) fWaveformTree->Fill();
+
 }
 
 
@@ -189,12 +248,10 @@ raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
         raw::OpDetWaveform(timestamp, offline_chan));
   }
 
-  //std::cout << offline_chan << " " << std::setprecision(20) << timestamp << std::endl;
 
   auto & waveform = wf_map.at(offline_chan).back();
-
   //Reserve more adcs at once for efficiency
-  waveform.reserve(waveform.size() + n_adcs);
+//  waveform.reserve(waveform.size() + n_adcs);
   return waveform;
 }
 
@@ -220,39 +277,55 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     frame->header.channel_1,
     frame->header.channel_2,
     frame->header.channel_3};
-  //std::cout << "Processing stream frame " << frame_number << std::endl;
+//  std::cout << "Processing stream frame " << frame_number << " containing " <<frame->s_channels_per_frame << " channels." << std::endl;
   // Loop over channels
   for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
-    try {
-      auto offline_channel = fChannelMap->GetOfflineChannel(
-          b_slot, b_link, frame_channels[i]);
-      //std::cout << b_slot << " " << b_link << " " << frame_channels[i] << " " <<
-      //             offline_channel << std::endl;
+//    std::cout << "Processing slot, link, channel: " << b_slot << " " << b_link << " " << frame_channels[i] << ", NSamples : "<< frame->s_adcs_per_channel <<std::endl;
+    auto offline_channel = -1;
 
-      auto & waveform = MakeWaveform(
+    try {
+      offline_channel = fChannelMap->GetOfflineChannel(
+        b_slot, b_link, frame_channels[i]);
+    }
+    catch (const std::range_error & err) {
+      std::cout << "WARNING: Could not find offline channel for " <<
+                   b_slot << " " << b_link << " " << b_channel_0 << std::endl;
+    }
+
+    _Slot=b_slot;
+    _DaphneChannel=frame_channels[i];
+    _OfflineChannel=offline_channel;
+    _FrameTimestamp=frame->get_timestamp();
+    _TriggerSampleValue=0;
+    _Threshold=0;
+    _Baseline=0;
+
+
+    auto & waveform = MakeWaveform(
           offline_channel,
           frame->s_adcs_per_channel,
           frame->get_timestamp(),
           wf_map,
           true);
 
-      // Loop over ADC values in the frame for channel i 
-      //std::cout << "\tChannel " << i << std::endl;
-      for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
-        //std::cout << "\t" << frame->get_adc(j) << std::endl;
-        waveform.push_back(frame->get_adc(j, i));
-      }
+    // Loop over ADC values in the frame for channel i 
+    //std::cout << "\tChannel " << i << std::endl;
+    for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
+      //std::cout << "\t" << frame->get_adc(j) << std::endl;
+      waveform.push_back(frame->get_adc(j, i));
+      _adc_value[j]=frame->get_adc(j, i);
+//      _adc_valueV[_NFrames][j]=frame->get_adc(j, i);
     }
-    catch (const std::range_error & err) {
-      std::cout << "WARNING: Could not find offline channel for " <<
-                   b_slot << " " << b_link << " " << b_channel_0 << std::endl;
-      continue;
-    }
+
+    if(fExportWaveformTree) fWaveformTree->Fill();
+
   }
   //std::cout << std::endl;
 }
 
 void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
+
+//std::cout << "RUNNIN NEW EVENT ==================" << std::endl;
   using dunedaq::daqdataformats::FragmentHeader;
 
   std::vector<raw::OpDetWaveform> opdet_waveforms;
@@ -263,6 +336,12 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
   auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo2>(fFileInfoLabel);
   size_t   evtno = infoHandle->GetEvent();
   size_t   seqno = infoHandle->GetSequence();
+
+  _Run=infoHandle->GetRun();
+  _Event=infoHandle->GetEvent();
+  _TriggerNumber=0;
+  _TimeStamp=0;
+  _NFrames=0;
 
   dunedaq::hdf5libs::HDF5RawDataFile::record_id_t record_id
       = std::make_pair(evtno, seqno);
@@ -297,18 +376,30 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       if (subdetector_string != fSubDetString) continue;
 
       uint16_t crate_from_geo = 0xffff & (geo_id >> 16);
-      //std::cout << subdetector_string << " " << crate_from_geo << std::endl;
+//      std::cout << "Substring: " << subdetector_string << " crate:" << crate_from_geo << std::endl;
       b_crate = crate_from_geo;
+      _Crate=b_crate;
 
-      //std::cout << "Getting fragment" << std::endl;
       auto frag = raw_file->get_frag_ptr(record_id, source_id);
       auto frag_size = frag->get_size();
       size_t frag_header_size = sizeof(FragmentHeader); // make this a const class member
+//      std::cout << "Getting fragment, FRAG SIZE" << frag_size << std::endl;
 
       // Too small to even have a header
       if (frag_size <= frag_header_size) continue;
 
-     // std::cout << frag->get_header() << std::endl;
+/*
+Daphe Fragment header format:
+Frag Header: check_word: 11112222, version: 5, size: 21864, trigger_number: 2522, run_number: 24496, trigger_timestamp: 106886658719868713, window_begin: 106886658719866569, window_end: 106886658720128713, error_bits: 0, fragment_type: 3, sequence_number: 0, detector_id: 2, element_id: subsystem: Detector_Readout id: 14
+*/
+      _TriggerNumber=frag->get_header().trigger_number;
+//      _Fragment=frag->get_header().fragment_type;
+      _TimeStamp=frag->get_header().trigger_timestamp;
+     _Window_begin=frag->get_header().window_begin;
+     _Window_end=frag->get_header().window_end;
+
+
+//      std::cout << "Frag Header: " <<frag->get_header() << std::endl;
 
       //Checking which type of DAPHNE Frame to use
       auto frag_type = frag->get_fragment_type();
@@ -325,8 +416,8 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
              GetNFrames<DAPHNEFrame>(frag_size, frag_header_size));
       auto frame_size = (use_stream_frame ?
                          sizeof(DAPHNEStreamFrame) : sizeof(DAPHNEFrame));
-      //std::cout << "NFrames: " << n_frames << " Headder TS: " <<
-      //           frag->get_header().trigger_timestamp << std::endl;
+//      std::cout << "NFrames: " << n_frames << " Headder TS: " <<
+//                 frag->get_header().trigger_timestamp << std::endl;
       for (size_t i = 0; i < n_frames; ++i) {
         if (use_stream_frame) {
           ProcessStreamFrame(frag, frame_size, i, wf_map);
@@ -335,6 +426,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
           ProcessFrame(frag, frame_size, i, wf_map);
         }
       }
+
     }
   }
 
@@ -347,6 +439,10 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
     //Remove elements from wf_map to save memory
     chan_wf_vector.second.clear();
   }
+  std::cout << "EventNumber " << _Event << std::endl;
+//  if(static_cast<std::vector<int>::size_type>(_NFrames)!=_OfflineChannelV.size()) std::cout << "WARNING ERROR" << std::endl;
+  
+//  if(fExportWaveformTree) fWaveformTree->Fill();
 
   evt.put(
       std::make_unique<decltype(opdet_waveforms)>(std::move(opdet_waveforms)),
@@ -357,6 +453,7 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       std::make_unique<decltype(optical_hits)>(std::move(optical_hits)),
       fOutputLabel
   );
+
 }
 
 DEFINE_ART_MODULE(pdhd::DAPHNEReaderPDHD)
