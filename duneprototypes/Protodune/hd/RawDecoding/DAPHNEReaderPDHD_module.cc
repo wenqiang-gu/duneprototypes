@@ -44,7 +44,8 @@ using WaveformVector = std::vector<raw::OpDetWaveform>;
 
 class DAPHNEReaderPDHD;
 
-const Int_t kMaxFrames = 50;
+  // clang complained -- commenting out
+  //const Int_t kMaxFrames = 50;
 
 class DAPHNEReaderPDHD : public art::EDProducer {
 public:
@@ -95,7 +96,8 @@ private:
   bool fExportWaveformTree;
   //vars per event
   int _Run;
-  int _SubRun;
+  // clang complained -- commenting out
+  //int _SubRun;
   int _Event;
   int _TriggerNumber;
   long int _TimeStamp;
