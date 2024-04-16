@@ -153,5 +153,21 @@ vdcb_crp2_data_services: {
 vdcb_crp2_data_services.DetectorPropertiesService.NumberTimeSamples: 10000
 vdcb_crp2_data_services.DetectorPropertiesService.ReadOutWindowSize: 10000
 
+#
+# Bottom CRP services
+# 
+vdcb_crp4_services: @local::vdcb_crp1_top_services
+vdcb_crp4_services.Geometry: @local::dunecrpcb_geo
+vdcb_crp4_services.DetectorPropertiesService.Efield: [0.438, 1, 1]
+vdcb_crp4_services.DetectorPropertiesService.NumberTimeSamples: 6000
+vdcb_crp4_services.DetectorPropertiesService.ReadOutWindowSize: 6000
+vdcb_crp4_services.DetectorClocksService.ClockSpeedTPC: 1.953125 # 512ns per sample
+
+# data services for CRP4 (bottom only)
+vdcb_crp4_data_services: {
+  @table::vdcb_crp4_services
+  @table::vdcb_dataprep_base_services
+}
+
 
 END_PROLOG
