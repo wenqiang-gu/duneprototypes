@@ -177,6 +177,7 @@ fwdir	product_dir	config_data
 ####################################
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ####################################
 # Product table.
 #
@@ -230,30 +231,13 @@ fwdir	product_dir	config_data
 #   It will not be an error if the specified product is not available to
 #   be set up.
 #
-##################
-# Notes.
-#
-# * Under older versions of the product table format ("<table_format=1>"
-#   or unspecified), -nq- had the same meaning as `-' above. When
-#   updating a product_deps file these entries should be reviewed when
-#   <table_format=2> is selected.
-#
-# * "<format>" is a valid alias for "<table_format>".
-#
-# * Under most circumstances (the parent is anything other than
-#   cetmodules), an entry for cetmodules is required.
-#
-# * It is an error for more than one non-(<qual-trigger> == "-default-")
-#   entry to match for a given product.
-#
-####################################
-product		version		qual	flags		<table_format=2>
-dunecalib	v09_83_01d00	-
-duneopdet	v09_83_01d00	-
-dunesim		v09_83_01d00	-
-cetmodules	v3_22_02	-	only_for_build
+
+product                 version
+cetmodules	        v3_24_01	-	only_for_build
+duneopdet               v09_89_01d00
+dunecalib               v09_89_01d00
+dunesim                 v09_89_01d00
 end_product_list
-####################################
 
 ####################################
 # Qualifier table.

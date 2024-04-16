@@ -9,7 +9,9 @@ services:
     fileName: "pdhd_daphne_decodermodule.root"
   } 
   DAPHNEChannelMapService: {
-    FileName: "DAPHNE_test_ChannelMap_v0.txt"
+    #FileName: "DAPHNE_test_ChannelMap_v0.txt"
+    FileName: "DAPHNE_test5_ChannelMap_v1.txt"
+    IgnoreLinks: true
   }
 }
 
