@@ -1,0 +1,12 @@
+# defaults for the PDHDTriggerReader3 module
+
+BEGIN_PROLOG
+
+PDHDTriggerReader3Defaults:
+{
+  module_type: "PDHDTriggerReader3"
+  InputLabel:  "daq"
+  OutputInstance: "daq"
+}
+
+END_PROLOG

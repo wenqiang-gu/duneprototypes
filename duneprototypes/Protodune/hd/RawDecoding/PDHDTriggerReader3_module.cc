@@ -16,7 +16,7 @@
 #include "lardataobj/RawData/RDTimeStamp.h"
 #include "dunecore/DuneObj/RDStatus.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
-#include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
+#include "dunecore/HDF5Utils/HDF5RawFile3Service.h"
 #include "detdataformats/trigger/TriggerPrimitive.hpp"
 #include "detdataformats/trigger/TriggerActivityData.hpp"
 #include "detdataformats/trigger/TriggerCandidateData.hpp"
@@ -24,19 +24,19 @@
 #include <memory>
 #include <iostream>
 
-class PDHDTriggerReader;
+class PDHDTriggerReader3;
 
-class PDHDTriggerReader : public art::EDProducer {
+class PDHDTriggerReader3 : public art::EDProducer {
 public:
-  explicit PDHDTriggerReader(fhicl::ParameterSet const& p);
+  explicit PDHDTriggerReader3(fhicl::ParameterSet const& p);
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  PDHDTriggerReader(PDHDTriggerReader const&) = delete;
-  PDHDTriggerReader(PDHDTriggerReader&&) = delete;
-  PDHDTriggerReader& operator=(PDHDTriggerReader const&) = delete;
-  PDHDTriggerReader& operator=(PDHDTriggerReader&&) = delete;
+  PDHDTriggerReader3(PDHDTriggerReader3 const&) = delete;
+  PDHDTriggerReader3(PDHDTriggerReader3&&) = delete;
+  PDHDTriggerReader3& operator=(PDHDTriggerReader3 const&) = delete;
+  PDHDTriggerReader3& operator=(PDHDTriggerReader3&&) = delete;
 
   // Required functions.
   void produce(art::Event& e) override;
@@ -49,7 +49,7 @@ private:
 };
 
 
-PDHDTriggerReader::PDHDTriggerReader(fhicl::ParameterSet const& p)
+PDHDTriggerReader3::PDHDTriggerReader3(fhicl::ParameterSet const& p)
   : EDProducer{p},
   fInputLabel(p.get<std::string>("InputLabel","daq")),
   fOutputInstance(p.get<std::string>("OutputInstance","daq")),
@@ -63,7 +63,7 @@ PDHDTriggerReader::PDHDTriggerReader(fhicl::ParameterSet const& p)
 
 
 
-void PDHDTriggerReader::produce(art::Event& e)
+void PDHDTriggerReader3::produce(art::Event& e)
 {
 
   // As a user of TP data, I can imagine wanting an std::map given to my art module that has the TP SourceIDs as the map keys, and vectors of TriggerPrimitives as the map values.
@@ -87,7 +87,7 @@ void PDHDTriggerReader::produce(art::Event& e)
 
 
   // Fetches SourceIDs for the set of Fragments that have TriggerPrimitive data in them.
-  art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
+  art::ServiceHandle<dune::HDF5RawFile3Service> rawFileService;
   auto rf = rawFileService->GetPtr();
  
   auto tp_sourceids = rf->get_source_ids_for_fragment_type(rid, dunedaq::daqdataformats::FragmentType::kTriggerPrimitive);
@@ -186,4 +186,4 @@ void PDHDTriggerReader::produce(art::Event& e)
   
 }
 
-DEFINE_ART_MODULE(PDHDTriggerReader)
+DEFINE_ART_MODULE(PDHDTriggerReader3)
