@@ -1,0 +1,15 @@
+# defaults for the PDHDDataInterfaceWIBEth3 tool
+
+BEGIN_PROLOG
+
+PDHDDataInterfaceWIBEth3Defaults:
+{
+   tool_type: "PDHDDataInterfaceWIBEth3"
+   FileInfoLabel: "daq"
+   MaxChan:  10000000
+   DefaultCrate: 1
+   DebugLevel: 0
+   SubDetectorString: "HD_TPC"
+}
+
+END_PROLOG
