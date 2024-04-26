@@ -6,4 +6,19 @@ source: @local::hdf5rawinput3
 
 physics.producers.tpcrawdecoder.DecoderToolParams: @local::PDHDDataInterfaceWIBEth3Defaults
 
-services.PD2HDChannelMapService.FileName: "PD2HDChannelMap_WIBEth_electronics_v1.txt"
+# redefine services block since we don't want to instantiate
+# the HDF5RawFile2Service which is included in run_pdhd_tpc_decoder.fcl
+
+services:
+{
+  TimeTracker:  {}
+  TFileService:
+  {
+    fileName: "pdhdtpcdecodermoduleTFile.root"
+  }
+  HDF5RawFile3Service:  {}
+  PD2HDChannelMapService:
+   {
+     FileName: "PD2HDChannelMap_WIBEth_electronics_v1.txt"
+   }
+}
