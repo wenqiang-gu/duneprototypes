@@ -1,5 +1,9 @@
+include_directories("${dunedaqdataformats_DIR}/../../../include")
+include_directories("${dunedetdataformats_DIR}/../../../include")
+include_directories("${nlohmann_json_DIR}/../../../include")
+include_directories("${HighFive_DIR}/../../../include")
 
-cet_build_plugin(DAPHNEReaderPDHD art::module
+cet_build_plugin(DAPHNEReaderPDHD art::module LIBRARIES
                  #PDHDReadoutUtils
                  lardataobj::RawData
 		 dunecore::HDF5Utils_HDF5RawFile2Service_service
@@ -14,11 +18,11 @@ cet_build_plugin(DAPHNEReaderPDHD art::module
                  art_root_io::TFileService_service
                  art::Persistency_Provenance
                  messagefacility::MF_MessageLogger
-                 ROOT_BASIC_LIB_LIST
+                 ROOT::Core ROOT::Hist ROOT::Tree
                  BASENAME_ONLY
 )
 
-cet_build_plugin(PDHDTPCReader art::module
+cet_build_plugin(PDHDTPCReader art::module LIBRARIES
                         lardataobj::RawData
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
@@ -32,17 +36,16 @@ cet_build_plugin(PDHDTPCReader art::module
                         art::Persistency_Provenance
 			art::Utilities
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
 )
 
-cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
-                        art_utilities
+cet_build_plugin(PDHDDataInterfaceWIB3   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
@@ -54,19 +57,18 @@ cet_build_plugin(PDHDDataInterfaceWIB3   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
                         HDF5::HDF5
              )
 
-cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
-                        art_utilities
+cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         lardataobj::RawData
-                        dunepdlegacy_Overlays
+                        dunepdlegacy::Overlays
                         artdaq_core::artdaq-core_Data
                         artdaq_core::artdaq-core_Utilities
                         duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
@@ -78,14 +80,37 @@ cet_build_plugin(PDHDDataInterfaceWIBEth   art::tool
                         art_root_io::TFileService_service
                         art::Persistency_Provenance
                         messagefacility::MF_MessageLogger
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
 			dunecore::HDF5Utils_HDF5RawFile2Service_service
 			dunecore::dunedaqhdf5utils2
+                        HDF5::HDF5
+             )
+
+cet_build_plugin(PDHDDataInterfaceWIBEth3   art::tool LIBRARIES
+                        canvas::canvas
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
+                        lardataobj::RawData
+                        dunepdlegacy::Overlays
+                        artdaq_core::artdaq-core_Data
+                        artdaq_core::artdaq-core_Utilities
+                        duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
+			art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
+                        ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Provenance
+                        messagefacility::MF_MessageLogger
+                        ROOT::Core ROOT::Hist ROOT::Tree
+			dunecore::HDF5Utils_HDF5RawFile3Service_service
+			dunecore::dunedaqhdf5utils3
                         HDF5::HDF5
              )
 	   
 
-cet_build_plugin(PDHDTriggerReader art::module
+cet_build_plugin(PDHDTriggerReader art::module LIBRARIES
                         lardataobj::RawData
                         dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2
@@ -101,12 +126,32 @@ cet_build_plugin(PDHDTriggerReader art::module
                         art::Persistency_Provenance
 			art::Utilities
                         messagefacility::MF_MessageLogger
-                        dunecore::HDF5Utils_HDF5RawFile2Service_service
                         dunecore::dunedaqhdf5utils2
-                        ROOT_BASIC_LIB_LIST
+                        ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
                 )
 
+cet_build_plugin(PDHDTriggerReader3 art::module LIBRARIES
+                        lardataobj::RawData
+                        dunecore::HDF5Utils_HDF5RawFile3Service_service
+                        dunecore::dunedaqhdf5utils2
+                        HDF5::HDF5
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support
+                        artdaq_core::artdaq-core_Data
+                        artdaq_core::artdaq-core_Utilities
+                        ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Provenance
+			art::Utilities
+                        messagefacility::MF_MessageLogger
+                        dunecore::dunedaqhdf5utils3
+                        ROOT::Core ROOT::Hist ROOT::Tree
+                        BASENAME_ONLY
+                )
+	      
 #cet_make_library(PDHDReadoutUtils
 #                 SOURCE PDHDReadoutUtils.cxx
 #                 LIBRARIES INTERFACE
