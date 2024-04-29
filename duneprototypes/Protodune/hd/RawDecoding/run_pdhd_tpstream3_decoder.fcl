@@ -1,0 +1,40 @@
+#include "HDF5TPStreamInput3.fcl"
+#include "PDHDTriggerReader3.fcl"
+
+services:
+{
+  TimeTracker:  {}
+  TFileService: 
+  {
+    fileName: "TPStreamReaderTFile.root"
+  } 
+  HDF5RawFile3Service:  {}
+}
+
+physics:
+{
+  producers:
+  {
+    tprawdecoder: @local::PDHDTriggerReader3Defaults
+  }
+
+  produce: [ tprawdecoder ] 
+  output: [ out1 ]
+  trigger_paths : [ produce ]
+  end_paths: [ output ]
+} 	     
+
+outputs:
+{
+  out1:
+  {
+    compressionLevel: 1
+    module_type: RootOutput
+    fileName: "%ifb_decode.root"
+  }
+}
+
+source: @local::hdf5tpstreaminput3
+
+process_name: tpstreamreader
+
