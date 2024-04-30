@@ -17,7 +17,6 @@
 #include "dunecore/DuneObj/RDStatus.h"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
-#include "daqdataformats/v3_4_1/Fragment.hpp"
 #include "detdataformats/trigger/TriggerObjectOverlay.hpp"
 #include "detdataformats/trigger/TriggerPrimitive.hpp"
 #include "detdataformats/trigger/TriggerActivityData.hpp"
