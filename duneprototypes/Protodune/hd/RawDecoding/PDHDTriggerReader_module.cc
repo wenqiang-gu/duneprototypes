@@ -18,6 +18,7 @@
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
 #include "daqdataformats/v3_4_1/Fragment.hpp"
+#include "detdataformats/trigger/TriggerObjectOverlay.hpp"
 #include "detdataformats/trigger/TriggerPrimitive.hpp"
 #include "detdataformats/trigger/TriggerActivityData.hpp"
 #include "detdataformats/trigger/TriggerCandidateData.hpp"
@@ -56,9 +57,18 @@ PDHDTriggerReader::PDHDTriggerReader(fhicl::ParameterSet const& p)
   fOutputInstance(p.get<std::string>("OutputInstance","daq")),
   fDebugLevel(p.get<int>("DebugLevel",0))
 {
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerPrimitive>>>(fOutputInstance);
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerActivityData>>>(fOutputInstance);
-  produces<std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerCandidateData>>>(fOutputInstance);
+  produces<std::vector<dunedaq::trgdataformats::TriggerPrimitive>>(fOutputInstance);
+
+  //TriggerActivity objects are TriggerActivityData with a list of the contained TPs.
+  //Implement that as Assn between TriggerActivityData and TriggerPrimitive here
+  produces<std::vector<dunedaq::trgdataformats::TriggerActivityData>>(fOutputInstance);
+  //produces<art::Assns<dunedaq::trgdataformats::TriggerActivityData,dunedaq::trgdataformats::TriggerPrimitive>>(fOutputInstance);
+
+  //TriggerCandidate objects are TriggerCandidateData with a list of the contained TAs.
+  //Implement that as Assn between TriggerCandidateData and TriggerActivityData here
+  produces<std::vector<dunedaq::trgdataformats::TriggerCandidateData>>(fOutputInstance);
+  //produces<art::Assns<dunedaq::trgdataformats::TriggerCandidateData,dunedaq::trgdataformats::TriggerActivityData>>(fOutputInstance);
+
   consumes<raw::DUNEHDF5FileInfo2>(fInputLabel);  // the tool actually does the consuming of this product
 }
 
@@ -67,10 +77,9 @@ PDHDTriggerReader::PDHDTriggerReader(fhicl::ParameterSet const& p)
 void PDHDTriggerReader::produce(art::Event& e)
 {
 
-  // As a user of TP data, I can imagine wanting an std::map given to my art module that has the TP SourceIDs as the map keys, and vectors of TriggerPrimitives as the map values.
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerPrimitive>> source_trig_map;
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerActivityData>> source_trigact_map;  
-  std::map<dunedaq::daqdataformats::SourceID, std::vector<dunedaq::trgdataformats::TriggerCandidateData>> source_trigcan_map;  
+  std::vector<dunedaq::trgdataformats::TriggerPrimitive> tp_col;
+  std::vector<dunedaq::trgdataformats::TriggerActivityData> ta_col;
+  std::vector<dunedaq::trgdataformats::TriggerCandidateData> tc_col;
 
   auto infoHandle = e.getHandle<raw::DUNEHDF5FileInfo2>(fInputLabel);
   const std::string & file_name = infoHandle->GetFileName();
@@ -105,7 +114,7 @@ void PDHDTriggerReader::produce(art::Event& e)
  
   for (auto const& source_id : tp_sourceids)
     {
-      // Only want trigger info
+      // Perform a check to make sure we are only grabbing information from the trigger
       if (source_id.subsystem != dunedaq::daqdataformats::SourceID::Subsystem::kTrigger) continue;
       
       auto frag_ptr = rf->get_frag_ptr(rid, source_id);
@@ -115,23 +124,23 @@ void PDHDTriggerReader::produce(art::Event& e)
       if (frag_size <= fhs) continue; // Too small to even have a header
       
       size_t tps = sizeof(dunedaq::trgdataformats::TriggerPrimitive);
-      size_t no_of_tps = (frag_size - fhs) / tps; 
+      size_t this_sid_no_of_tps = (frag_size - fhs) / tps;
+      size_t current_no_of_tps = tp_col.size();
       void* frag_payload_ptr = frag_ptr->get_data();
 
       
       // Now you can take the block of data where frag_payload_ptr points to and copy this block of data into a vector of TriggerPrimitives,
       // trig_vector
-      source_trig_map[source_id].resize(no_of_tps);
-      memcpy(&source_trig_map.at(source_id).at(0), frag_payload_ptr, no_of_tps * tps);
+      tp_col.resize(curent_no_of_tps+this_sid_no_of_tps);
+      memcpy(&source_trig_map.at(source_id).at(current_no_of_tps), frag_payload_ptr, this_sid_no_of_tps * tps);
 
-      const auto &trig_vector = source_trig_map.at(source_id);
-      for (size_t i = 0; i < no_of_tps; ++i)
-	{
-	  if (fDebugLevel > 0)
+      for (size_t i = current_no_of_tps; i < tp_col.size(); ++i)
+      {
+	    if (fDebugLevel > 0)
 	    {
-	      std::cout << source_id << "   ;    " << i << "    ;    "  << trig_vector.at(i).channel << "    ;    " << trig_vector.at(i).time_start << "  ;  " << trig_vector.at(i).version << std::endl;
+	      std::cout << source_id << "   ;    " << i << "    ;    "  << tp_col.at(i).channel << "    ;    " << tp_col.at(i).time_start << "  ;  " << tp_col.at(i).version << std::endl;
 	    }
-	} 
+      }
       
     
     } // for (auto const& source_id : tp_sourceids)
@@ -148,13 +157,27 @@ void PDHDTriggerReader::produce(art::Event& e)
 
       if (frag_size <= fhs) continue;
 
-      size_t tas = sizeof(dunedaq::trgdataformats::TriggerActivityData);
-      size_t no_of_tas = (frag_size - fhs) / tas;
-      void* frag_payload_ptr = frag_ptr->get_data();
+      //loop over the data, one TA at a time
+      long remaining_data_size = (long)get_data_size();
+      void* data_ptr = frag_ptr->get_data();
+      while(remaining_data_size>0) {
+          //create our overlay object
+          const dunedaq::trgdataformats::TriggerActivity& overlay =
+                  *reinterpret_cast<const dunedaq::trgdataformats::TriggerActivity*>(data_ptr);
 
-      source_trigact_map[source_id].resize(no_of_tas);
-      memcpy(&source_trigact_map.at(source_id).at(0), frag_payload_ptr, no_of_tas * tas);
+          //get its size
+          auto this_size = sizeof(overlay::data_t) + //size of TriggerActivityData
+                   sizeof(uint64_t) + //n_inputs is uint64_t
+                   overlay.n_inputs*sizeof(overlay::input_t); //size of TP inputs
 
+          //put our TA data on the output collection
+          ta_col.emplace_back(overlay.data);
+
+          //move the read position forward
+          remaining_data_size = remaining_data_size-(long)this_size;
+          data_ptr += this_size;
+
+      } //end while(remaining_data_size>0)
     }
 
       
@@ -169,21 +192,34 @@ void PDHDTriggerReader::produce(art::Event& e)
 
       if (frag_size <= fhs) continue;
 
-      size_t tcs = sizeof(dunedaq::trgdataformats::TriggerCandidateData);
-      size_t no_of_tcs = (frag_size - fhs) / tcs;
-      void* frag_payload_ptr = frag_ptr->get_data();
+      //loop over the data, one TA at a time
+      long remaining_data_size = (long)get_data_size();
+      void* data_ptr = frag_ptr->get_data();
+      while(remaining_data_size>0) {
+          //create our overlay object
+          const dunedaq::trgdataformats::TriggerCandidate& overlay =
+                  *reinterpret_cast<const dunedaq::trgdataformats::TriggerCandidate*>(data_ptr);
 
-      source_trigcan_map[source_id].resize(no_of_tcs);
-      memcpy(&source_trigcan_map.at(source_id).at(0), frag_payload_ptr, no_of_tcs * tcs);
+          //get its size
+          auto this_size = sizeof(overlay::data_t) + //size of TriggerCandidateData
+                  sizeof(uint64_t) + //n_inputs is uint64_t
+                  overlay.n_inputs*sizeof(overlay::input_t); //size of TA inputs
 
+          //put our TC data on the output collection
+          tc_col.emplace_back(overlay.data);
+
+          //move the read position forward
+          remaining_data_size = remaining_data_size-(long)this_size;
+          data_ptr += this_size;
+
+      } //end while(remaining_data_size>0)
     }
 
 
 
-  e.put(std::make_unique<decltype(source_trig_map)>(std::move(source_trig_map)),fOutputInstance);
-  e.put(std::make_unique<decltype(source_trigact_map)>(std::move(source_trigact_map)),fOutputInstance);
-  e.put(std::make_unique<decltype(source_trigcan_map)>(std::move(source_trigcan_map)),fOutputInstance);
-
+  e.put(std::make_unique<std::vector<dunedaq::trgdataformats::TriggerPrimitive>>(std::move(tp_col)),fOutputInstance);
+  e.put(std::make_unique<std::vector<dunedaq::trgdataformats::TriggerActivityData>>(std::move(ta_col)),fOutputInstance);
+  e.put(std::make_unique<std::vector<dunedaq::trgdataformats::TriggerCandidateData>>(std::move(tc_col)),fOutputInstance);
   
 }
 
