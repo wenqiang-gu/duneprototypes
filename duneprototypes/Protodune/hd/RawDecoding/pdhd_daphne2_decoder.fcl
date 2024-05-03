@@ -1,0 +1,43 @@
+#include "DAPHNEReaderPDHD.fcl"
+#include "HDF5RawInput2.fcl"
+
+services:
+{
+  TimeTracker:  {}
+  HDF5RawFile2Service:  {}
+  TFileService: {
+    fileName: "pdhd_daphne_decodermodule.root"
+  } 
+  DAPHNEChannelMapService: {
+    #FileName: "DAPHNE_test_ChannelMap_v0.txt"
+    FileName: "DAPHNE_test5_ChannelMap_v1.txt"
+    IgnoreLinks: true
+  }
+}
+
+physics:
+{
+  producers:
+  {
+    pdhddaphne: @local::DAPHNEReaderPDHD
+  }
+
+  produce: [ pdhddaphne ] 
+  output: [ out1 ]
+  trigger_paths : [ produce ]
+  end_paths: [ output ]
+}
+
+outputs:
+{
+  out1:
+  {
+    compressionLevel: 1
+    module_type: RootOutput
+    fileName: "%ifb_daphne.root"
+  }
+}
+
+source: @local::hdf5rawinput2
+process_name: pdhddaphnedecoderjob
+physics.producers.pdhddaphne.FrameVersion: 2
