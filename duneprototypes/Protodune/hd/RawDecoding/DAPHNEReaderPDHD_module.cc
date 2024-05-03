@@ -38,6 +38,8 @@ using dunedaq::daqdataformats::Fragment;
 using dunedaq::daqdataformats::FragmentType;
 using DAPHNEStreamFrame = dunedaq::fddetdataformats::DAPHNEStreamFrame;
 using DAPHNEFrame = dunedaq::fddetdataformats::DAPHNEFrame;
+using DAPHNEStreamFrame = dunedaq::fddetdataformats::DAPHNEStreamFrame;
+using DAPHNEFrame = dunedaq::fddetdataformats::DAPHNEFrame;
 
 //For brevity 
 using WaveformVector = std::vector<raw::OpDetWaveform>;
@@ -132,23 +134,23 @@ void pdhd::DAPHNEReaderPDHD::beginJob() {
   if(fExportWaveformTree)
   {
     fWaveformTree = tfs->make<TTree>("WaveformTree","Waveforms Tree");
-    fWaveformTree->Branch("Run"    , &_Run    , "Run/I"    );
-    fWaveformTree->Branch("Event"     , &_Event     , "Event/I"     );
-    fWaveformTree->Branch("TriggerNumber" , &_TriggerNumber , "TriggerNumber/I"    );
-    fWaveformTree->Branch("TimeStamp" , &_TimeStamp , "TimeStamp/l"    );
-    fWaveformTree->Branch("Window_begin" , &_Window_begin , "Window_begin/l"    );
-    fWaveformTree->Branch("Window_end" , &_Window_end , "Window_end/l"    );
+    fWaveformTree->Branch("Run", &_Run, "Run/I");
+    fWaveformTree->Branch("Event", &_Event, "Event/I");
+    fWaveformTree->Branch("TriggerNumber", &_TriggerNumber, "TriggerNumber/I");
+    fWaveformTree->Branch("TimeStamp", &_TimeStamp, "TimeStamp/l");
+    fWaveformTree->Branch("Window_begin", &_Window_begin, "Window_begin/l");
+    fWaveformTree->Branch("Window_end", &_Window_end, "Window_end/l");
 
-    fWaveformTree->Branch("Slot"      , &_Slot     , "Slot/I");
-    fWaveformTree->Branch("Crate"      , &_Crate    , "Crate/I"     );
-    fWaveformTree->Branch("DaphneChannel"  ,& _DaphneChannel     , "DaphneChannel/I"     );
-    fWaveformTree->Branch("OfflineChannel" , &_OfflineChannel    , "OfflineChannel/I"    );
-    fWaveformTree->Branch("FrameTimestamp" ,& _FrameTimestamp , "FrameTimestamp/l"    );
-    fWaveformTree->Branch("adc_channel"    , _adc_value          , "adc_value[1024]/S");
+    fWaveformTree->Branch("Slot", &_Slot, "Slot/I");
+    fWaveformTree->Branch("Crate", &_Crate, "Crate/I");
+    fWaveformTree->Branch("DaphneChannel",& _DaphneChannel, "DaphneChannel/I");
+    fWaveformTree->Branch("OfflineChannel", &_OfflineChannel, "OfflineChannel/I");
+    fWaveformTree->Branch("FrameTimestamp",& _FrameTimestamp, "FrameTimestamp/l");
+    fWaveformTree->Branch("adc_channel", _adc_value, "adc_value[1024]/S");
 
-    fWaveformTree->Branch("TriggerSampleValue"  , &_TriggerSampleValue, "TriggerSampleValue/I"     ); //only for self-trigger
-    fWaveformTree->Branch("Threshold"  , &_Threshold  , "Threshold/I"     ); //only for self-trigger
-    fWaveformTree->Branch("Baseline"  , &_Baseline   , "Baseline/I"     ); //only for self-trigger
+    fWaveformTree->Branch("TriggerSampleValue", &_TriggerSampleValue, "TriggerSampleValue/I"); //only for self-trigger
+    fWaveformTree->Branch("Threshold", &_Threshold, "Threshold/I"); //only for self-trigger
+    fWaveformTree->Branch("Baseline", &_Baseline, "Baseline/I"); //only for self-trigger
 
   }
 
@@ -208,13 +210,13 @@ void pdhd::DAPHNEReaderPDHD::ProcessFrame(
 //    word_t channel : 6, pds_reserved_1 : 10, trigger_sample_value : 16;
 //    word_t threshold : 16, baseline : 16;
 
-  _Slot=b_slot;
-  _DaphneChannel=b_channel_0;
-  _OfflineChannel=offline_channel;
-  _FrameTimestamp=frame->get_timestamp();
-  _TriggerSampleValue=frame->header.trigger_sample_value;
-  _Threshold=frame->header.threshold;
-  _Baseline=frame->header.baseline;
+  _Slot = b_slot;
+  _DaphneChannel = b_channel_0;
+  _OfflineChannel = offline_channel;
+  _FrameTimestamp = frame->get_timestamp();
+  _TriggerSampleValue = frame->header.trigger_sample_value;
+  _Threshold = frame->header.threshold;
+  _Baseline = frame->header.baseline;
 
   auto & waveform = MakeWaveform(
       offline_channel,
@@ -294,13 +296,13 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
                    b_slot << " " << b_link << " " << b_channel_0 << std::endl;
     }
 
-    _Slot=b_slot;
-    _DaphneChannel=frame_channels[i];
-    _OfflineChannel=offline_channel;
-    _FrameTimestamp=frame->get_timestamp();
-    _TriggerSampleValue=0;
-    _Threshold=0;
-    _Baseline=0;
+    _Slot = b_slot;
+    _DaphneChannel = frame_channels[i];
+    _OfflineChannel = offline_channel;
+    _FrameTimestamp = frame->get_timestamp();
+    _TriggerSampleValue = 0;
+    _Threshold = 0;
+    _Baseline = 0;
 
 
     auto & waveform = MakeWaveform(
@@ -315,7 +317,7 @@ void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
     for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
       //std::cout << "\t" << frame->get_adc(j) << std::endl;
       waveform.push_back(frame->get_adc(j, i));
-      _adc_value[j]=frame->get_adc(j, i);
+      _adc_value[j] = frame->get_adc(j, i);
     }
 
     if(fExportWaveformTree) fWaveformTree->Fill();
@@ -338,11 +340,11 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
   size_t   evtno = infoHandle->GetEvent();
   size_t   seqno = infoHandle->GetSequence();
 
-  _Run=infoHandle->GetRun();
-  _Event=infoHandle->GetEvent();
-  _TriggerNumber=0;
-  _TimeStamp=0;
-  _NFrames=0;
+  _Run = infoHandle->GetRun();
+  _Event = infoHandle->GetEvent();
+  _TriggerNumber = 0;
+  _TimeStamp = 0;
+  _NFrames = 0;
 
   dunedaq::hdf5libs::HDF5RawDataFile::record_id_t record_id
       = std::make_pair(evtno, seqno);
@@ -393,10 +395,10 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 Daphe Fragment header format:
 Frag Header: check_word: 11112222, version: 5, size: 21864, trigger_number: 2522, run_number: 24496, trigger_timestamp: 106886658719868713, window_begin: 106886658719866569, window_end: 106886658720128713, error_bits: 0, fragment_type: 3, sequence_number: 0, detector_id: 2, element_id: subsystem: Detector_Readout id: 14
 */
-      _TriggerNumber=frag->get_header().trigger_number;
-      _TimeStamp=frag->get_header().trigger_timestamp;
-     _Window_begin=frag->get_header().window_begin;
-     _Window_end=frag->get_header().window_end;
+      _TriggerNumber = frag->get_header().trigger_number;
+      _TimeStamp = frag->get_header().trigger_timestamp;
+      _Window_begin = frag->get_header().window_begin;
+      _Window_end = frag->get_header().window_end;
 
 
 //      std::cout << "Frag Header: " <<frag->get_header() << std::endl;
