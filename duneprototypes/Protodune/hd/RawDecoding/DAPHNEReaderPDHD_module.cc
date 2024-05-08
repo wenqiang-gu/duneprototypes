@@ -17,6 +17,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "duneprototypes/Protodune/hd/ChannelMap/DAPHNEChannelMapService.h"
+#include "art/Utilities/make_tool.h" 
 
 
 
@@ -26,6 +27,8 @@
 #include "detdataformats/daphne/DAPHNEStreamFrame2.hpp"
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
+
+#include "DAPHNEInterfaceBase.h"
 
 #include "lardataobj/RawData/OpDetWaveform.h"
 #include "lardataobj/RecoBase/OpHit.h"
@@ -70,56 +73,9 @@ public:
 
 private:
 
-  art::ServiceHandle<dune::DAPHNEChannelMapService> fChannelMap;
+  std::unique_ptr<daphne::DAPHNEInterfaceBase> fDAPHNETool;
   std::string fInputLabel, fOutputLabel, fFileInfoLabel, fSubDetString;
-  int fFrameVersion;
-
-  bool CheckSourceIsDetector(const SourceID & id);
-
-  template <class T> size_t GetNFrames(size_t frag_size, size_t frag_header_size);
-
-  void UnpackFragment(
-    std::unique_ptr<Fragment> & frag,
-    //size_t frame_size,
-    //size_t frame_number,
-    std::unordered_map<unsigned int, WaveformVector> & wf_map);
-
-  template <typename T>
-  void ProcessFrame(
-      T * frame,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map);
-
-  template <typename T>
-  void ProcessFrames(
-      std::unique_ptr<Fragment> & frag,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map);
-  template <typename T>
-  void ProcessStreamFrames(
-      std::unique_ptr<Fragment> & frag,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map);
-  /*void ProcessFrame(
-      std::unique_ptr<Fragment> & frag, size_t frame_size, size_t i,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map);*/
-
-  template <typename T>
-  void ProcessStreamFrame(
-      T * frame,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map);
-
-  raw::OpDetWaveform & MakeWaveform(
-      unsigned int offline_chan,
-      size_t n_adcs,
-      raw::TimeStamp_t timestamp,
-      std::unordered_map<unsigned int, WaveformVector> & wf_map,
-      bool is_stream=false);
-
-  const std::vector<int> fValidVersions = {1, 2};
-  void CheckVersion();
-  TTree * fTree;
   TTree * fWaveformTree;
-  size_t b_slot, b_crate, b_link;
-  bool b_is_stream;
-  size_t b_channel_0, b_channel_1, b_channel_2, b_channel_3;
 
   bool fExportWaveformTree;
   //vars per event
@@ -146,16 +102,6 @@ private:
 
 void pdhd::DAPHNEReaderPDHD::beginJob() {
   art::ServiceHandle<art::TFileService> tfs;
-  fTree = tfs->make<TTree>("beamana","beam analysis tree");
-
-  fTree->Branch("slot", &b_slot);
-  fTree->Branch("crate", &b_crate);
-  fTree->Branch("link", &b_link);
-  fTree->Branch("is_stream", &b_is_stream);
-  fTree->Branch("channel_0", &b_channel_0);
-  fTree->Branch("channel_1", &b_channel_1);
-  fTree->Branch("channel_2", &b_channel_2);
-  fTree->Branch("channel_3", &b_channel_3);
 
   if(fExportWaveformTree)
   {
@@ -182,322 +128,30 @@ void pdhd::DAPHNEReaderPDHD::beginJob() {
 
 }
 
-//Need to make sure we have a good version
-void pdhd::DAPHNEReaderPDHD::CheckVersion() {
-  if (std::find(fValidVersions.begin(), fValidVersions.end(), fFrameVersion) ==
-      fValidVersions.end()) {
-    throw cet::exception("DAPHNEReaderPDHD") <<
-        "Provided invalid version " << fFrameVersion;
-  }
-}
-
 pdhd::DAPHNEReaderPDHD::DAPHNEReaderPDHD(fhicl::ParameterSet const& p)
   : EDProducer{p}, 
+    fDAPHNETool{
+        art::make_tool<daphne::DAPHNEInterfaceBase>(
+            p.get<fhicl::ParameterSet>("DAPHNEInterface"))},
     fInputLabel(p.get<std::string>("InputLabel", "daq")),
     fOutputLabel(p.get<std::string>("OutputLabel", "daq")),
     fFileInfoLabel(p.get<std::string>("FileInfoLabel", "daq")),
     fSubDetString(p.get<std::string>("SubDetString","HD_PDS")),
-    fFrameVersion(p.get<int>("FrameVersion", 1)),
     fExportWaveformTree(p.get<bool>("ExportWaveformTree",true)) {
   produces<std::vector<raw::OpDetWaveform>> (fOutputLabel);
   produces<std::vector<recob::OpHit>> (fOutputLabel);
-
-  //Check the frame version from fcl
-  CheckVersion();
-}
-
-
-bool pdhd::DAPHNEReaderPDHD::CheckSourceIsDetector(const SourceID & id) {
-  return (id.subsystem == SourceID::Subsystem::kDetectorReadout);
-}
-
-template<typename T>
-size_t pdhd::DAPHNEReaderPDHD::GetNFrames(size_t frag_size, size_t frag_header_size) {
-  return (frag_size - frag_header_size)/sizeof(T);
-}
-
-//Get number of non-streaming Frames then loop over them and process each one
-template<typename T>
-void pdhd::DAPHNEReaderPDHD::ProcessFrames(
-  std::unique_ptr<Fragment> & frag,
-  std::unordered_map<unsigned int, WaveformVector> & wf_map) {
-
-  auto frame_size = sizeof(T);
-  auto n_frames = GetNFrames<T>(frag->get_size(), sizeof(FragmentHeader));
-  for (size_t i = 0; i < n_frames; ++i) {
-    auto frame
-        = reinterpret_cast<T*>(
-            static_cast<uint8_t*>(frag->get_data()) + i*frame_size);
-    ProcessFrame<T>(frame, wf_map);
-  }
-}
-
-//Get number of streaming Frames then loop over them and process each one
-template<typename T>
-void pdhd::DAPHNEReaderPDHD::ProcessStreamFrames(
-  std::unique_ptr<Fragment> & frag,
-  std::unordered_map<unsigned int, WaveformVector> & wf_map) {
-
-  auto frame_size = sizeof(T);
-  auto n_frames = GetNFrames<T>(frag->get_size(), sizeof(FragmentHeader));
-  for (size_t i = 0; i < n_frames; ++i) {
-    auto frame
-        = reinterpret_cast<T*>(
-            static_cast<uint8_t*>(frag->get_data()) + i*frame_size);
-    ProcessStreamFrame<T>(frame, wf_map);
-  }
-}
-
-
-//Determine if we're streaming, and pick the corresponding frame type
-//and processing method
-void pdhd::DAPHNEReaderPDHD::UnpackFragment(
-    std::unique_ptr<Fragment> & frag,
-    std::unordered_map<unsigned int, WaveformVector> & wf_map) {
-
-  bool is_stream = (frag->get_fragment_type() != FragmentType::kDAPHNE);
-  if (fFrameVersion == 1 && !is_stream) {
-    ProcessFrames<DAPHNEFrame>(frag, wf_map);
-  }
-  else if (fFrameVersion == 1 && is_stream) {
-    ProcessStreamFrames<DAPHNEStreamFrame>(frag, wf_map);
-  }
-  else if (fFrameVersion == 2 && !is_stream) {
-    ProcessFrames<DAPHNEFrame2>(frag, wf_map);
-  }
-  else if (fFrameVersion == 2 && is_stream) {
-    ProcessStreamFrames<DAPHNEStreamFrame2>(frag, wf_map);
-  }
-  else {
-    throw cet::exception("DAPHNEReaderPDHD") <<
-        "Somehow didn't pass frame version and stream check?? " <<
-        fFrameVersion << " " << is_stream;
-  }
-}
-
-template <typename T>
-void pdhd::DAPHNEReaderPDHD::ProcessFrame(
-    T * frame,
-    std::unordered_map<unsigned int, WaveformVector> & wf_map) {
-
-  b_is_stream = false;
-  b_channel_1 = 0;
-  b_channel_2 = 0;
-  b_channel_3 = 0;
-  b_channel_0 = frame->get_channel();
-  b_link = frame->daq_header.link_id;
-  b_slot = frame->daq_header.slot_id;
-  //std::cout << "Process Frame link, slot, channel : " << b_link << " "<< b_slot <<  " " << b_channel_0 << std::endl;
-  //std::cout << "NSAmples:  " << frame->s_num_adcs << std::endl;
-  auto offline_channel=-1;
-  try {
-     offline_channel = fChannelMap->GetOfflineChannel(
-        b_slot, b_link, b_channel_0);
-  }
-  catch (const std::range_error & err) {
-    //Just throw a warning so users can check out the rest of the data
-    //maybe we can configure this to crash for keepup reco
-    std::cout << "WARNING: Could not find offline channel for " <<
-                 b_slot << " " << b_link << " " << b_channel_0 << std::endl;
-  }
-  //       std::cout << frame->header.channel <<  " "<< frame->header.pds_reserved_1 <<  " "<< frame->header.trigger_sample_value 
-  //    <<"  " << frame->header.threshold <<" " << frame->header.baseline << std::endl;
-  //    word_t channel : 6, pds_reserved_1 : 10, trigger_sample_value : 16;
-  //    word_t threshold : 16, baseline : 16;
-
-  _Slot = b_slot;
-  _DaphneChannel = b_channel_0;
-  _OfflineChannel = offline_channel;
-  _FrameTimestamp = frame->get_timestamp();
-  _TriggerSampleValue = frame->header.trigger_sample_value;
-  _Threshold = frame->header.threshold;
-  _Baseline = frame->header.baseline;
-
-  //Make output waveform and fill
-  auto & waveform = MakeWaveform(
-      offline_channel,
-      static_cast<size_t>(frame->s_num_adcs),
-      frame->get_timestamp(),
-      wf_map);
-  for (size_t j = 0; j < static_cast<size_t>(frame->s_num_adcs); ++j) {
-    waveform.push_back(frame->get_adc(j));
-   _adc_value[j]=frame->get_adc(j);
-  }
-  if(fExportWaveformTree) fWaveformTree->Fill();
-
-}
-
-
-raw::OpDetWaveform & pdhd::DAPHNEReaderPDHD::MakeWaveform(
-    unsigned int offline_chan,
-    size_t n_adcs,
-    raw::TimeStamp_t timestamp,
-    std::unordered_map<unsigned int, WaveformVector> & wf_map,
-    bool is_stream) {
-
-  //If needed, make a new element in the map
-  if (wf_map.find(offline_chan) == wf_map.end()) {
-    wf_map.emplace(offline_chan, WaveformVector());
-  }
-
-  //If is_stream, we just want to change the waveform
-  //If not, or if this is the first time hitting this channel,
-  //add a new waveform to the vector
-  if (wf_map.at(offline_chan).size() == 0 || !is_stream) {
-    wf_map.at(offline_chan).emplace_back(
-        raw::OpDetWaveform(timestamp, offline_chan));
-  }
-
-
-  auto & waveform = wf_map.at(offline_chan).back();
-  //Reserve more adcs at once for efficiency
-  waveform.reserve(waveform.size() + n_adcs);
-  return waveform;
-}
-
-template <typename T>
-void pdhd::DAPHNEReaderPDHD::ProcessStreamFrame(
-    T * frame,
-    std::unordered_map<unsigned int, WaveformVector> & wf_map) {
-  b_link = frame->daq_header.link_id;
-  b_slot = frame->daq_header.slot_id;
-  b_channel_0 = frame->header.channel_0;
-  b_channel_1 = frame->header.channel_1;
-  b_channel_2 = frame->header.channel_2;
-  b_channel_3 = frame->header.channel_3;
-  fTree->Fill();
-
-
-  //Each streaming frame comes with data from 4 channels
-  std::array<size_t, 4> frame_channels = {
-    frame->header.channel_0,
-    frame->header.channel_1,
-    frame->header.channel_2,
-    frame->header.channel_3};
-  //  std::cout << "Processing stream frame " << frame_number << " containing " <<frame->s_channels_per_frame << " channels." << std::endl;
-  // Loop over channels
-  for (size_t i = 0; i < frame->s_channels_per_frame; ++i) {
-  //    std::cout << "Processing slot, link, channel: " << b_slot << " " << b_link << " " << frame_channels[i] << ", NSamples : "<< frame->s_adcs_per_channel <<std::endl;
-    auto offline_channel = -1;
-
-    try {
-      offline_channel = fChannelMap->GetOfflineChannel(
-        b_slot, b_link, frame_channels[i]);
-    }
-    catch (const std::range_error & err) {
-      std::cout << "WARNING: Could not find offline channel for " <<
-                   b_slot << " " << b_link << " " << b_channel_0 << std::endl;
-    }
-
-    _Slot = b_slot;
-    _DaphneChannel = frame_channels[i];
-    _OfflineChannel = offline_channel;
-    _FrameTimestamp = frame->get_timestamp();
-    _TriggerSampleValue = 0;
-    _Threshold = 0;
-    _Baseline = 0;
-
-
-    //Make output
-    auto & waveform = MakeWaveform(
-          offline_channel,
-          frame->s_adcs_per_channel,
-          frame->get_timestamp(),
-          wf_map,
-          true);
-
-    // Loop over ADC values in the frame for channel i 
-    //std::cout << "\tChannel " << i << std::endl;
-    for (size_t j = 0; j < static_cast<size_t>(frame->s_adcs_per_channel); ++j) {
-      //std::cout << "\t" << frame->get_adc(j) << std::endl;
-      waveform.push_back(frame->get_adc(j, i));
-      _adc_value[j] = frame->get_adc(j, i);
-    }
-
-    if(fExportWaveformTree) fWaveformTree->Fill();
-
-  }
-  //std::cout << std::endl;
 }
 
 void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
 //std::cout << "RUNNIN NEW EVENT ==================" << std::endl;
-  //using dunedaq::daqdataformats::FragmentHeader;
 
   std::vector<raw::OpDetWaveform> opdet_waveforms;
   std::unordered_map<unsigned int, WaveformVector> wf_map;
   std::vector<recob::OpHit> optical_hits;
 
-  //Get the HDF5 file to be opened
-  auto infoHandle = evt.getHandle<raw::DUNEHDF5FileInfo2>(fFileInfoLabel);
-  size_t   evtno = infoHandle->GetEvent();
-  size_t   seqno = infoHandle->GetSequence();
-
-  _Run = infoHandle->GetRun();
-  _Event = infoHandle->GetEvent();
-  _TriggerNumber = 0;
-  _TimeStamp = 0;
-  _NFrames = 0;
-
-  dunedaq::hdf5libs::HDF5RawDataFile::record_id_t record_id
-      = std::make_pair(evtno, seqno);
-
-  //uint32_t runno = infoHandle->GetRun();
-  //const std::string & file_name = infoHandle->GetFileName();
-  //std::cout << file_name << " " << runno << " " << evtno << " " << seqno <<
-  //           std::endl;
-
-  //Open the HDF5 file and get source ids
-  art::ServiceHandle<dune::HDF5RawFile2Service> rawFileService;
-  auto raw_file = rawFileService->GetPtr();
-  auto source_ids = raw_file->get_source_ids(record_id);
-
-  //Loop over source ids
-  for (const auto & source_id : source_ids)  {
-    // only want detector readout data (i.e. not trigger info)
-    if (!CheckSourceIsDetector(source_id)) continue;
-
-    //Loop over geo ids
-    //std::cout << "Source: " << source_id << std::endl;
-    auto geo_ids = raw_file->get_geo_ids_for_source_id(record_id, source_id);
-    for (const auto &geo_id : geo_ids) {
-      //TODO -- Wrap This
-      dunedaq::detdataformats::DetID::Subdetector det_idenum
-          = static_cast<dunedaq::detdataformats::DetID::Subdetector>(
-              0xffff & geo_id);
-
-      //Check that it's photon detectors
-      auto subdetector_string
-          = dunedaq::detdataformats::DetID::subdetector_to_string(det_idenum);
-      if (subdetector_string != fSubDetString) continue;
-
-      uint16_t crate_from_geo = 0xffff & (geo_id >> 16);
-//      std::cout << "Substring: " << subdetector_string << " crate:" << crate_from_geo << std::endl;
-      b_crate = crate_from_geo;
-      _Crate=b_crate;
-
-      auto frag = raw_file->get_frag_ptr(record_id, source_id);
-      auto frag_size = frag->get_size();
-      size_t frag_header_size = sizeof(FragmentHeader); // make this a const class member
-//      std::cout << "Getting fragment, FRAG SIZE" << frag_size << std::endl;
-
-      // Too small to even have a header
-      if (frag_size <= frag_header_size) continue;
-
-/*
-Daphe Fragment header format:
-Frag Header: check_word: 11112222, version: 5, size: 21864, trigger_number: 2522, run_number: 24496, trigger_timestamp: 106886658719868713, window_begin: 106886658719866569, window_end: 106886658720128713, error_bits: 0, fragment_type: 3, sequence_number: 0, detector_id: 2, element_id: subsystem: Detector_Readout id: 14
-*/
-      _TriggerNumber = frag->get_header().trigger_number;
-      _TimeStamp = frag->get_header().trigger_timestamp;
-      _Window_begin = frag->get_header().window_begin;
-      _Window_end = frag->get_header().window_end;
-
-      UnpackFragment(frag, wf_map);
-
-    }
-  }
+  //Process the event
+  fDAPHNETool->Process(evt, fFileInfoLabel, fSubDetString, wf_map);
 
   //Convert map to vector for output
   for (auto & chan_wf_vector : wf_map) {//Loop over channels
