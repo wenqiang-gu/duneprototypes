@@ -19,16 +19,8 @@
 #include "duneprototypes/Protodune/hd/ChannelMap/DAPHNEChannelMapService.h"
 #include "art/Utilities/make_tool.h" 
 
-
-
-#include "detdataformats/daphne/DAPHNEFrame.hpp"
-#include "detdataformats/daphne/DAPHNEStreamFrame.hpp"
-#include "detdataformats/daphne/DAPHNEFrame2.hpp"
-#include "detdataformats/daphne/DAPHNEStreamFrame2.hpp"
-#include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
-#include "dunecore/HDF5Utils/HDF5RawFile2Service.h"
-
 #include "DAPHNEInterfaceBase.h"
+#include "DAPHNEUtils.h"
 
 #include "lardataobj/RawData/OpDetWaveform.h"
 #include "lardataobj/RecoBase/OpHit.h"
@@ -37,15 +29,6 @@
 
 #include <memory>
 namespace pdhd {
-
-using dunedaq::daqdataformats::SourceID;
-using dunedaq::daqdataformats::Fragment;
-using dunedaq::daqdataformats::FragmentHeader;
-using dunedaq::daqdataformats::FragmentType;
-using DAPHNEStreamFrame = dunedaq::fddetdataformats::DAPHNEStreamFrame;
-using DAPHNEFrame = dunedaq::fddetdataformats::DAPHNEFrame;
-using DAPHNEStreamFrame2 = dunedaq::fddetdataformats::Daphnestreamframe2;
-using DAPHNEFrame2 = dunedaq::fddetdataformats::Daphneframe2;
 
 //For brevity 
 using WaveformVector = std::vector<raw::OpDetWaveform>;
@@ -70,10 +53,12 @@ public:
   // Required functions.
   void produce(art::Event& e) override;
   void beginJob() override;
+  void endJob() override;
 
 private:
 
   std::unique_ptr<daphne::DAPHNEInterfaceBase> fDAPHNETool;
+  daphne::utils::DAPHNETree * fDAPHNETree = nullptr;
   std::string fInputLabel, fOutputLabel, fFileInfoLabel, fSubDetString;
   TTree * fWaveformTree;
 
@@ -103,29 +88,11 @@ private:
 void pdhd::DAPHNEReaderPDHD::beginJob() {
   art::ServiceHandle<art::TFileService> tfs;
 
-  if(fExportWaveformTree)
-  {
+  if (fExportWaveformTree) {
     fWaveformTree = tfs->make<TTree>("WaveformTree","Waveforms Tree");
-    fWaveformTree->Branch("Run", &_Run, "Run/I");
-    fWaveformTree->Branch("Event", &_Event, "Event/I");
-    fWaveformTree->Branch("TriggerNumber", &_TriggerNumber, "TriggerNumber/I");
-    fWaveformTree->Branch("TimeStamp", &_TimeStamp, "TimeStamp/l");
-    fWaveformTree->Branch("Window_begin", &_Window_begin, "Window_begin/l");
-    fWaveformTree->Branch("Window_end", &_Window_end, "Window_end/l");
 
-    fWaveformTree->Branch("Slot", &_Slot, "Slot/I");
-    fWaveformTree->Branch("Crate", &_Crate, "Crate/I");
-    fWaveformTree->Branch("DaphneChannel",& _DaphneChannel, "DaphneChannel/I");
-    fWaveformTree->Branch("OfflineChannel", &_OfflineChannel, "OfflineChannel/I");
-    fWaveformTree->Branch("FrameTimestamp",& _FrameTimestamp, "FrameTimestamp/l");
-    fWaveformTree->Branch("adc_channel", _adc_value, "adc_value[1024]/S");
-
-    fWaveformTree->Branch("TriggerSampleValue", &_TriggerSampleValue, "TriggerSampleValue/I"); //only for self-trigger
-    fWaveformTree->Branch("Threshold", &_Threshold, "Threshold/I"); //only for self-trigger
-    fWaveformTree->Branch("Baseline", &_Baseline, "Baseline/I"); //only for self-trigger
-
+    fDAPHNETree = new daphne::utils::DAPHNETree(fWaveformTree);
   }
-
 }
 
 pdhd::DAPHNEReaderPDHD::DAPHNEReaderPDHD(fhicl::ParameterSet const& p)
@@ -146,12 +113,12 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
 //std::cout << "RUNNIN NEW EVENT ==================" << std::endl;
 
-  std::vector<raw::OpDetWaveform> opdet_waveforms;
+  WaveformVector opdet_waveforms;
   std::unordered_map<unsigned int, WaveformVector> wf_map;
   std::vector<recob::OpHit> optical_hits;
 
   //Process the event
-  fDAPHNETool->Process(evt, fFileInfoLabel, fSubDetString, wf_map);
+  fDAPHNETool->Process(evt, fFileInfoLabel, fSubDetString, wf_map, fDAPHNETree);
 
   //Convert map to vector for output
   for (auto & chan_wf_vector : wf_map) {//Loop over channels
@@ -174,6 +141,10 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
       fOutputLabel
   );
 
+}
+
+void pdhd::DAPHNEReaderPDHD::endJob() {
+  if (fDAPHNETree != nullptr) delete fDAPHNETree;
 }
 
 DEFINE_ART_MODULE(pdhd::DAPHNEReaderPDHD)

@@ -19,6 +19,7 @@ cet_build_plugin(DAPHNEReaderPDHD art::module LIBRARIES
                  art::Persistency_Provenance
                  messagefacility::MF_MessageLogger
                  ROOT::Core ROOT::Hist ROOT::Tree
+                 DAPHNEUtils
                  BASENAME_ONLY
 )
 
@@ -151,7 +152,14 @@ cet_build_plugin(PDHDTriggerReader3 art::module LIBRARIES
                         ROOT::Core ROOT::Hist ROOT::Tree
                         BASENAME_ONLY
                 )
-	      
+
+cet_make_library(LIBRARY_NAME DAPHNEUtils INTERFACE
+                 SOURCE DAPHNEUtils.cxx
+                 LIBRARIES
+                 lardataobj::RawData
+                 ROOT::Core ROOT::Hist ROOT::Tree
+
+)
 cet_build_plugin(DAPHNEInterface1   art::tool LIBRARIES
                         canvas::canvas
                         cetlib::cetlib
@@ -162,6 +170,7 @@ cet_build_plugin(DAPHNEInterface1   art::tool LIBRARIES
                         #artdaq_core::artdaq-core_Utilities
                         #duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
                         duneprototypes_Protodune_hd_ChannelMap_DAPHNEChannelMapService_service
+                        DAPHNEUtils
 			art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
@@ -186,6 +195,7 @@ cet_build_plugin(DAPHNEInterface2   art::tool LIBRARIES
                         #artdaq_core::artdaq-core_Utilities
                         #duneprototypes_Protodune_hd_ChannelMap_PD2HDChannelMapService_service
                         duneprototypes_Protodune_hd_ChannelMap_DAPHNEChannelMapService_service
+                        DAPHNEUtils
 			art::Framework_Core
                         art::Framework_Principal
                         art::Framework_Services_Registry
