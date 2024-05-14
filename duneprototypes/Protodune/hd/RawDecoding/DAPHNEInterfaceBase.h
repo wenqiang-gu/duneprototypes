@@ -25,6 +25,7 @@ class DAPHNEInterfaceBase {
       std::unordered_map<unsigned int, std::vector<raw::OpDetWaveform>> & wf_map,
       utils::DAPHNETree * daphne_tree) = 0;
 
+  virtual ~DAPHNEInterfaceBase() = default;
  protected:
   art::ServiceHandle<dune::DAPHNEChannelMapService> fChannelMap;
 };

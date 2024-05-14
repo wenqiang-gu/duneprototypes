@@ -40,5 +40,4 @@ outputs:
 
 source: @local::hdf5rawinput3
 process_name: pdhddaphnedecoderjob
-physics.producers.pdhddaphne.FrameVersion: 2
 physics.producers.pdhddaphne.DAPHNEInterface: { tool_type: "DAPHNEInterface2" }

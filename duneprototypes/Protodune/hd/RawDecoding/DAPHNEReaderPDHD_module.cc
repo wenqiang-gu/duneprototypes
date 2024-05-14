@@ -64,24 +64,24 @@ private:
 
   bool fExportWaveformTree;
   //vars per event
-  int _Run;
+  //int _Run;
   // clang complained -- commenting out
   //int _SubRun;
-  int _Event;
-  int _TriggerNumber;
-  long int _TimeStamp;
-  long int _Window_end;
-  long int _Window_begin;
-  int _NFrames;
-  int _Slot;
-  int _Crate;
-  int _DaphneChannel;
-  int _OfflineChannel;
-  long int _FrameTimestamp;
-  short _adc_value[1024];
-  int _TriggerSampleValue;
-  int _Threshold;
-  int _Baseline;
+  //int _Event;
+  //int _TriggerNumber;
+  //long int _TimeStamp;
+  //long int _Window_end;
+  //long int _Window_begin;
+  //int _NFrames;
+  //int _Slot;
+  //int _Crate;
+  //int _DaphneChannel;
+  //int _OfflineChannel;
+  //long int _FrameTimestamp;
+  //short _adc_value[1024];
+  //int _TriggerSampleValue;
+  //int _Threshold;
+  //int _Baseline;
 };
 }
 
