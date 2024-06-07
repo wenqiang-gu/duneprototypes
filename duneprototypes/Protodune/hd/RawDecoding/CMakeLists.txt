@@ -3,6 +3,22 @@ include_directories("${dunedetdataformats_DIR}/../../../include")
 include_directories("${nlohmann_json_DIR}/../../../include")
 include_directories("${HighFive_DIR}/../../../include")
 
+cet_build_plugin(PDHDTimingRawDecoder art::module LIBRARIES
+		 dunecore::HDF5Utils_HDF5RawFile3Service_service
+		 dunecore::dunedaqhdf5utils2
+                 HDF5::HDF5
+                 art::Framework_Core
+                 art::Framework_Principal
+                 art::Framework_Services_Registry
+                 art_root_io::tfile_support
+                 ROOT::Core
+                 art_root_io::TFileService_service
+                 art::Persistency_Provenance
+                 messagefacility::MF_MessageLogger
+                 ROOT::Core ROOT::Hist ROOT::Tree
+                 BASENAME_ONLY
+)
+
 cet_build_plugin(DAPHNEReaderPDHD art::module LIBRARIES
                  #PDHDReadoutUtils
                  lardataobj::RawData
