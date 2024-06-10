@@ -15,6 +15,7 @@ cet_build_plugin(PDHDTimingRawDecoder art::module LIBRARIES
                  art_root_io::TFileService_service
                  art::Persistency_Provenance
                  messagefacility::MF_MessageLogger
+		 lardataobj::RawData
                  ROOT::Core ROOT::Hist ROOT::Tree
                  BASENAME_ONLY
 )

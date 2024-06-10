@@ -17,6 +17,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Utilities/make_tool.h"
+#include "lardataobj/RawData/RDTimeStamp.h"
 
 #include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
 #include "dunecore/HDF5Utils/HDF5RawFile3Service.h"
@@ -52,7 +53,7 @@ private:
 pdhd::PDHDTimingRawDecoder::PDHDTimingRawDecoder(fhicl::ParameterSet const& p)
   : EDProducer{p},
     fOutputLabel(p.get<std::string>("OutputLabel")) {
-  produces<std::vector<uint64_t>> (fOutputLabel);
+  produces<std::vector<raw::RDTimeStamp>> (fOutputLabel);
 }
 
 void pdhd::PDHDTimingRawDecoder::produce(art::Event& event) {
@@ -62,13 +63,14 @@ void pdhd::PDHDTimingRawDecoder::produce(art::Event& event) {
   std::vector<std::string> record_header_paths = raw_file->get_trigger_record_header_dataset_paths();
 
   // Run through each trigger record header and get the timestamp.
-  std::vector<uint64_t> timestamps;
+  std::vector<raw::RDTimeStamp> timestamps;
   for (std::string& header_path : record_header_paths) {
       auto trh_ptr = raw_file->get_trh_ptr(header_path);
-      timestamps.push_back(trh_ptr->get_trigger_timestamp());
+      uint64_t timestamp = trh_ptr->get_trigger_timestamp();
+      timestamps.push_back(raw::RDTimeStamp(timestamp));
   }
 
-  event.put(std::make_unique<std::vector<uint64_t>>(std::move(timestamps)), fOutputLabel);
+  event.put(std::make_unique<std::vector<raw::RDTimeStamp>>(std::move(timestamps)), fOutputLabel);
 }
 
 DEFINE_ART_MODULE(pdhd::PDHDTimingRawDecoder)
