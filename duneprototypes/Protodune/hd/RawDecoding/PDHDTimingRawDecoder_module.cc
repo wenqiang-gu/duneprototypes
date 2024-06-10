@@ -18,6 +18,9 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Utilities/make_tool.h"
 
+#include "dunecore/DuneObj/DUNEHDF5FileInfo2.h"
+#include "dunecore/HDF5Utils/HDF5RawFile3Service.h"
+
 #include "TTree.h"
 #include "art_root_io/TFileService.h"
 
