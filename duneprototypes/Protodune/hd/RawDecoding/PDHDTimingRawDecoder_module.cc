@@ -16,13 +16,8 @@
 #include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "duneprototypes/Protodune/hd/ChannelMap/DAPHNEChannelMapService.h"
-#include "art/Utilities/make_tool.h" 
+#include "art/Utilities/make_tool.h"
 
-#include "DAPHNEInterfaceBase.h"
-#include "DAPHNEUtils.h"
-
-#include "lardataobj/RawData/OpDetWaveform.h"
 #include "TTree.h"
 #include "art_root_io/TFileService.h"
 
@@ -44,38 +39,33 @@ public:
   PDHDTimingRawDecoder& operator=(PDHDTimingRawDecoder&&) = delete;
 
   // Required functions.
-  void produce(art::Event& e) override;
-  //void beginJob() override;
-  //void endJob() override;
+  void produce(art::Event& event) override;
 
 private:
   std::string fOutputLabel;
 };
 }
 
-//void pdhd::PDHDTimingRawDecoder::beginJob() {
-//}
-
 pdhd::PDHDTimingRawDecoder::PDHDTimingRawDecoder(fhicl::ParameterSet const& p)
   : EDProducer{p},
     fOutputLabel(p.get<std::string>("OutputLabel")) {
-  //
-  //TODO-- replace with the correct class
-  //produces<std::vector<raw::OpDetWaveform>> (fOutputLabel);
+  produces<std::vector<uint64_t>> (fOutputLabel);
 }
 
-//Actually place functionality here
-void pdhd::PDHDTimingRawDecoder::produce(art::Event& evt) {
+void pdhd::PDHDTimingRawDecoder::produce(art::Event& event) {
+  // Get the HDF5 file.
+  art::ServiceHandle<dune::HDF5RawFile3Service> rawFileService;
+  auto raw_file = rawFileService->GetPtr();
+  std::vector<std::string> record_header_paths = raw_file->get_trigger_record_header_dataset_paths();
 
-  //Change this to w/e class
-  evt.put(
-      std::make_unique<decltype(opdet_waveforms)>(std::move(opdet_waveforms)),
-      fOutputLabel
-  );
+  // Run through each trigger record header and get the timestamp.
+  std::vector<uint64_t> timestamps;
+  for (std::string& header_path : record_header_paths) {
+      auto trh_ptr = raw_file->get_trh_ptr(header_path);
+      timestamps.push_back(trh_ptr->get_trigger_timestamp());
+  }
 
+  event.put(std::make_unique<std::vector<uint64_t>>(std::move(timestamps)), fOutputLabel);
 }
-
-//void pdhd::PDHDTimingRawDecoder::endJob() {
-//}
 
 DEFINE_ART_MODULE(pdhd::PDHDTimingRawDecoder)
