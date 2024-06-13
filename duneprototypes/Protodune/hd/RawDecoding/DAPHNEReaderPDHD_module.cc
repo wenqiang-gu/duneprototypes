@@ -23,7 +23,6 @@
 #include "DAPHNEUtils.h"
 
 #include "lardataobj/RawData/OpDetWaveform.h"
-#include "lardataobj/RecoBase/OpHit.h"
 #include "TTree.h"
 #include "art_root_io/TFileService.h"
 
@@ -106,7 +105,6 @@ pdhd::DAPHNEReaderPDHD::DAPHNEReaderPDHD(fhicl::ParameterSet const& p)
     fSubDetString(p.get<std::string>("SubDetString","HD_PDS")),
     fExportWaveformTree(p.get<bool>("ExportWaveformTree",true)) {
   produces<std::vector<raw::OpDetWaveform>> (fOutputLabel);
-  produces<std::vector<recob::OpHit>> (fOutputLabel);
 }
 
 void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
@@ -115,7 +113,6 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
   WaveformVector opdet_waveforms;
   std::unordered_map<unsigned int, WaveformVector> wf_map;
-  std::vector<recob::OpHit> optical_hits;
 
   //Process the event
   fDAPHNETool->Process(evt, fFileInfoLabel, fSubDetString, wf_map, fDAPHNETree);
@@ -133,11 +130,6 @@ void pdhd::DAPHNEReaderPDHD::produce(art::Event& evt) {
 
   evt.put(
       std::make_unique<decltype(opdet_waveforms)>(std::move(opdet_waveforms)),
-      fOutputLabel
-  );
-
-  evt.put(
-      std::make_unique<decltype(optical_hits)>(std::move(optical_hits)),
       fOutputLabel
   );
 
