@@ -34,6 +34,7 @@ private:
   std::string fSubDetectorString;  // two values seen in the data:  HD_TPC and VD_Bottom_TPC
   typedef std::vector<raw::RawDigit> RawDigits;
   typedef std::vector<raw::RDTimeStamp> RDTimeStamps;
+  typedef std::vector<raw::RDStatus> RDStatuses;
 
 public:
 
@@ -87,11 +88,7 @@ public:
 	    std::cout << logname << " Tool called with requested APA:" << "apano: " << i << std::endl;
 	  }
 
-	getFragmentsForEvent(rid, raw_digits, rd_timestamps, apano);
-
-	//Currently putting in dummy values for the RD Statuses
-	rdstatuses.clear();
-	rdstatuses.emplace_back(false, false, 0);
+	getFragmentsForEvent(rid, raw_digits, rd_timestamps, apano, rdstatuses);
       }
 
     return 0;
@@ -111,7 +108,11 @@ public:
 
 
   // This is designed to get data from one APA. 
-  void getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile::record_id_t &rid, RawDigits& raw_digits, RDTimeStamps &timestamps, int apano)
+  void getFragmentsForEvent(dunedaq::hdf5libs::HDF5RawDataFile::record_id_t &rid,
+                            RawDigits& raw_digits,
+                            RDTimeStamps &timestamps,
+                            int apano,
+                            RDStatuses & rdstatuses)
   {
     using dunedaq::fddetdataformats::WIBEthFrame;
     art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;
@@ -182,6 +183,14 @@ public:
  
 	    auto frag = rf->get_frag_ptr(rid, source_id);
 	    auto frag_size = frag->get_size();
+            auto frag_timestamp = frag->get_trigger_timestamp();
+            auto frag_window_begin = frag->get_window_begin();
+            auto frag_window_end = frag->get_window_end();
+
+            auto total_wib_ticks = std::lround(
+                (frag_window_end - frag_window_begin)*16./512.
+            );
+
 	    size_t fhs = sizeof(dunedaq::daqdataformats::FragmentHeader);
 	    if (frag_size <= fhs) continue; // Too small to even have a header
 	    size_t n_frames = (frag_size - fhs)/sizeof(WIBEthFrame);
@@ -193,8 +202,15 @@ public:
 	    std::vector<raw::RawDigit::ADCvector_t> adc_vectors(64);   // 64 channels per WIBEth frame
 	    unsigned int slot = 0, link = 0, crate = 0, stream = 0, locstream = 0;
           
+            //We expect to have extra wib ticks, so figure out how many
+            //in total we cut out.
+            auto leftover_wib_ticks = n_frames*64 - total_wib_ticks;
+            uint64_t latest_time = 0;
+
+            bool any_bad = false;
 	    for (size_t i = 0; i < n_frames; ++i)
 	      {
+                std::bitset<8> condition;
 		if (fDebugLevel > 2)
 		  {
 		    // dump WIB frames in binary
@@ -211,10 +227,96 @@ public:
 		  }
 
 		auto frame = reinterpret_cast<WIBEthFrame*>(static_cast<uint8_t*>(frag->get_data()) + i*sizeof(WIBEthFrame));
+
+                //Get the timestamps from the WIB Frames.
+                //Best practice is to ensure that the
+                //timestamps are consistent with the Trigger timestamp
+
+                //Jake Calcutt -- per Roger Huang on Slack:
+                //"It would be a good check to put in. If they ever don't match,
+                //the recommended action is to mark the data as bad"
+                auto link0_timestamp = frame->header.colddata_timestamp_0;
+                auto link1_timestamp = frame->header.colddata_timestamp_1;
+                auto frame_timestamp = frame->get_timestamp();
+                auto frame_size = 64*512/16;
+
+                if (fDebugLevel > 0) {
+                  std::cout << "Frame " << i << " timestamps:" <<
+                               "\n\tlink0: " << link0_timestamp <<
+                               "\n\tlink1: " << link1_timestamp <<
+                               "\n\tmaster:" << frame_timestamp <<
+                               "\n\tw_begin: " << frag_window_begin <<
+                               "\n\ttrigger: " << frag_timestamp <<
+                               "\n\tw_end: " << frag_window_end << std::endl;
+                }
+
+                //If this is non-zero, mark bad 
+                bool frame_good = (frame->header.crc_err == 0);
+                condition[0] = !(frame->header.crc_err == 0);
+
+                //These should be self-consistent
+                frame_good &= (link0_timestamp == link1_timestamp);
+                condition[1] = !(link0_timestamp == link1_timestamp);
+                //Lower 15 bits of the timestamps should match the "master" timestamPp
+                frame_good &= (link0_timestamp == (frame_timestamp & 0x7FFF));
+                condition[2] = !(link0_timestamp == (frame_timestamp & 0x7FFF));
+                //We shouldn't have a frame that is entirely outside of the readout window
+                //(64 ticks x 512 ns per tick)/16ns ticks before the fragment window
+                frame_good &= ((frame_timestamp + frame_size) > frag_window_begin);
+                condition[3] = !((frame_timestamp + frame_size) > frag_window_begin);
+                frame_good &= (frame_timestamp < frag_window_end);
+                condition[4] = !(frame_timestamp < frag_window_end);
+
+                //If one frame's bad, make note
+                any_bad |= !frame_good;
+
+                //Should also check that none of the frames come out of order
+                //TODO -- figure out a way to order them if not good
+                if (frame_timestamp < latest_time) {
+                  std::cout << "Frame " << i <<
+                               " is earlier than the so-far latest time " <<
+                               latest_time << std::endl;
+                }
+                else if (frame_timestamp == latest_time) {
+                  std::cout << "Frame " << i <<
+                               " is same as the so-far latest time " <<
+                               latest_time << std::endl;
+                }
+                else {
+                  latest_time = frame_timestamp;
+                }
+
+                //Determine if we're in the first frame
+                bool first_frame = (frag_window_begin > frame_timestamp);
+                int start_tick = 0;
+                if (first_frame) {
+                  //Turn these into doubles so we can go negative
+                  start_tick = std::lround(
+                      (frag_window_begin*16./512 - frame_timestamp*16./512.)
+                  );
+                  if (fDebugLevel > 0)
+                    std::cout << "\tFirst frame. Start tick:" << start_tick << std::endl;
+
+                  if (i != 0) {
+                    std::cout << "WARNING. FIRST FRAME BY TIME, BUT NOT BY ITERATION" << std::endl;
+                  }
+                  leftover_wib_ticks -= start_tick;
+                }
+
 		int adcvs = adc_vectors.size();  // convert to int
+                int last_tick = 64;
+                //if the readout time is past the frame, don't change anything
+                //if frame is past readout time, determine where to stop
+                if (frame_timestamp + 512.*64/16 > frag_window_end) {
+                  //Account for the ticks at the front
+                  last_tick -= leftover_wib_ticks;
+                  if (fDebugLevel > 0)
+                    std::cout << "Last frame. last tick: " << last_tick << std::endl;
+                }
+
 		for (int jChan = 0; jChan < adcvs; ++jChan)   // these are ints because get_adc wants ints.
 		  {
-		    for (int kSample=0; kSample<64; ++kSample)
+		    for (int kSample = start_tick; kSample < last_tick; ++kSample)
 		      {
 			adc_vectors[jChan].push_back(frame->get_adc(jChan,kSample));
 		      }
@@ -242,6 +344,7 @@ public:
 		std::cout << "PDHDDataInterfaceToolWIBEth: stream, locstream: " << stream << ", " << locstream << std::endl;
 	      }
 
+            
 	    for (size_t iChan = 0; iChan < 64; ++iChan)
 	      {
 		const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
@@ -269,6 +372,14 @@ public:
 		raw::RawDigit rd(offline_chan, v_adc.size(), v_adc);
 		rd.SetPedestal(median, sigma);
 		raw_digits.push_back(rd);
+
+                //Add a status so we can tell if it's bad or not
+                //
+                //Constructor is (corrupt_data_dropped, corrupt_data_kept, statword)
+                //We're not dropping, so first is false
+                //If any frame is NOT GOOD then make that flag true
+                //Also set the statword to 1 implicitly
+                rdstatuses.emplace_back(false, any_bad, any_bad);
 	      }
 	  }
       }
