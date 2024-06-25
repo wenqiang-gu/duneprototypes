@@ -207,9 +207,19 @@ public:
             auto leftover_wib_ticks = n_frames*64 - total_wib_ticks;
             uint64_t latest_time = 0;
 
+            //For bookkeeping if we need to reorder
+            std::vector<std::pair<uint64_t, size_t>> timestamp_indices;
+
+            //This will track if we see any problems
             bool any_bad = false;
+
+            //For reordering
+            std::vector<std::vector<raw::RawDigit::ADCvector_t>> temp_adcs;
 	    for (size_t i = 0; i < n_frames; ++i)
 	      {
+                //Makes a 64-channel wide vector
+                temp_adcs.emplace_back(64);
+
                 std::bitset<8> condition;
 		if (fDebugLevel > 2)
 		  {
@@ -286,6 +296,9 @@ public:
                   latest_time = frame_timestamp;
                 }
 
+                //Store the frame_timestamp and the index
+                timestamp_indices.emplace_back(frame_timestamp, i);
+
                 //Determine if we're in the first frame
                 bool first_frame = (frag_window_begin > frame_timestamp);
                 int start_tick = 0;
@@ -319,6 +332,7 @@ public:
 		    for (int kSample = start_tick; kSample < last_tick; ++kSample)
 		      {
 			adc_vectors[jChan].push_back(frame->get_adc(jChan,kSample));
+                        temp_adcs.back()[jChan].push_back(frame->get_adc(jChan,kSample));
 		      }
 		  }
               
@@ -345,6 +359,58 @@ public:
 	      }
 
             
+            //Copy the vector to see if it was reordered
+            auto unordered = timestamp_indices;
+
+            //Sort the indices according to the timestamp
+            std::sort(timestamp_indices.begin(), timestamp_indices.end(),
+                      [](const auto & a, const auto & b)
+                          {return a.first < b.first;});
+
+            //Check if any value is different
+            bool reordered = false;
+            for (size_t i = 0; i < timestamp_indices.size(); ++i) {
+              reordered |= (timestamp_indices[i] != unordered[i]);
+            }
+
+            //If we need to reorder, go through and correct the adcs
+            if (reordered) {
+              std::cout << "Sorted: " << std::endl;
+
+              //Use this to move through full adc vectors in increments of
+              //the frame sizes
+              size_t sample_start = 0;
+
+              //Loop over frame in correct order
+              for (size_t i = 0; i < timestamp_indices.size(); ++i) {
+                const auto & ti = timestamp_indices[i];
+                const auto & u = unordered[i];
+                std::cout << "\t" << ti.first << " " << ti.second <<
+                             " " << u.first << " " << u.second << std::endl;
+
+                //Get the next frame
+                auto & this_adcs = temp_adcs[ti.second];
+                if (this_adcs.empty()) {
+                  throw cet::exception("PDHDDataInterfaceWIBEth3_tool.cc") <<
+                      "Somehow the reordering vector is empty at index " <<
+                      ti.second;
+                }
+
+                //Use first one -- should be safe because of above exception
+                size_t frame_samples = this_adcs[0].size();
+                //Go over channels in this frame
+                for (size_t jChan = 0; jChan < this_adcs.size(); ++jChan) {
+                  //For this channel, look over the samples
+                  for (size_t kSample = 0; kSample < frame_samples; ++kSample) {
+                    //And set the corresponding one in the output vector
+                    adc_vectors[jChan][kSample + sample_start] = this_adcs[jChan][kSample];
+                  }
+                }
+                //Move forward in the output vector by the length of this frame
+                sample_start += frame_samples;
+              }
+            }
+
 	    for (size_t iChan = 0; iChan < 64; ++iChan)
 	      {
 		const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
@@ -377,9 +443,18 @@ public:
                 //
                 //Constructor is (corrupt_data_dropped, corrupt_data_kept, statword)
                 //We're not dropping, so first is false
-                //If any frame is NOT GOOD then make that flag true
-                //Also set the statword to 1 implicitly
-                rdstatuses.emplace_back(false, any_bad, any_bad);
+                //If any frame is NOT GOOD or are out of order
+                //then make the corrupt_data_kep flag true
+                //
+                //Finally make a statword to describe what happened.
+                //For now: any bad, set first (binary) digit 
+                //         if needs to be reodered, set second digit
+                std::bitset<2> statword;
+                statword[0] = (any_bad ? 1 : 0);
+                statword[1] = (reordered ? 1 : 0);
+                rdstatuses.emplace_back(false,
+                                        statword.any(),
+                                        statword.to_ulong());
 	      }
 	  }
       }
