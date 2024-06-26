@@ -411,6 +411,29 @@ public:
               }
             }
 
+            //Check that no frames are dropped,they should be 2048 DTS ticks apart
+            //64 WIB tick * 512 ns/WIB tick / (16 ns/DTS tick) = 2048 DTS ticks
+            auto prev_timestamp = timestamp_indices[0].first;
+            bool skipped_frames = false;
+            for (size_t i = 1; i < timestamp_indices.size(); ++i) {
+              auto this_timestamp = timestamp_indices[i].first;
+              auto delta = this_timestamp - prev_timestamp;
+              if (fDebugLevel > 0)
+                std::cout << i << " " << this_timestamp << " " <<
+                             delta << std::endl;
+              prev_timestamp = this_timestamp;
+
+              //For now, set this if the difference isn't 2048
+              skipped_frames |= (delta != 2048);
+
+              if (delta != 2048)
+                std::cout << "WARNING. APPARENT SKIPPED FRAME " << i << 
+                             " timestamp delta: " << delta << std::endl;
+              //TODO -- implement the patching,
+              //but wait until we have bad data to work with
+              //so we can properly test
+            }
+
 	    for (size_t iChan = 0; iChan < 64; ++iChan)
 	      {
 		const raw::RawDigit::ADCvector_t & v_adc = adc_vectors[iChan];
@@ -449,9 +472,11 @@ public:
                 //Finally make a statword to describe what happened.
                 //For now: any bad, set first (binary) digit 
                 //         if needs to be reodered, set second digit
-                std::bitset<2> statword;
+                //         if any frames appeared to be skipped, set third digit
+                std::bitset<3> statword;
                 statword[0] = (any_bad ? 1 : 0);
                 statword[1] = (reordered ? 1 : 0);
+                statword[2] = (skipped_frames ? 1 : 0);
                 rdstatuses.emplace_back(false,
                                         statword.any(),
                                         statword.to_ulong());
