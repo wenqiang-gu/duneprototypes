@@ -64,6 +64,9 @@ private:
   int m_Event, m_Run, m_Subrun;
   std::vector<unsigned int> m_StatWord;
 
+  void SetRDTSFlags(
+      const std::vector<raw::RawDigit> & raw_digits,
+      std::vector<raw::RDTimeStamp> & rd_timestamps);
   void FillTree(const art::Event& e,
                 const std::vector<raw::RDStatus> & rdstatuscol);
 };
@@ -100,6 +103,15 @@ void PDHDTPCReader::FillTree(const art::Event& e,
   m_StatusTree->Fill();
 }
 
+void PDHDTPCReader::SetRDTSFlags(
+    const std::vector<raw::RawDigit> & raw_digits,
+    std::vector<raw::RDTimeStamp> & rd_timestamps) {
+  //Needed for FEMBFilter when Raw Digits get dropped
+  for (size_t i = 0; i < raw_digits.size(); ++i) {
+    rd_timestamps[i].SetFlags(raw_digits[i].Channel());
+  }
+}
+
 void PDHDTPCReader::produce(art::Event& e)
 {
   std::vector<raw::RawDigit> rawdigitcol;
@@ -108,6 +120,9 @@ void PDHDTPCReader::produce(art::Event& e)
   art::Assns<raw::RawDigit,raw::RDTimeStamp> rdtacol;
 
   m_DecoderTool->retrieveDataForSpecifiedAPAs(e, rawdigitcol, rdtscol, rdstatuscol, m_APAList);
+
+  SetRDTSFlags(rawdigitcol, rdtscol);
+
   if (m_OutputStatusTree) FillTree(e, rdstatuscol);
 
   // make associations between raw digits and RDTimestamps
