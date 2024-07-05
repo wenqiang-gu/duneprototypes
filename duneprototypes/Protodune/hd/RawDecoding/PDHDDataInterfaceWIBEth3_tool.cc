@@ -215,6 +215,8 @@ public:
 
             //For reordering
             std::vector<std::vector<raw::RawDigit::ADCvector_t>> temp_adcs;
+            //Tracks whether a given frame has hit the end
+            bool reached_end = false;
 	    for (size_t i = 0; i < n_frames; ++i)
 	      {
                 //Makes a 64-channel wide vector
@@ -272,10 +274,18 @@ public:
                 condition[2] = !(link0_timestamp == (frame_timestamp & 0x7FFF));
                 //We shouldn't have a frame that is entirely outside of the readout window
                 //(64 ticks x 512 ns per tick)/16ns ticks before the fragment window
-                frame_good &= ((frame_timestamp + frame_size) > frag_window_begin);
-                condition[3] = !((frame_timestamp + frame_size) > frag_window_begin);
+                auto frame_end = frame_timestamp + frame_size;
+
+                frame_good &= (frame_end > frag_window_begin);
+                condition[3] = !(frame_end > frag_window_begin);
+
                 frame_good &= (frame_timestamp < frag_window_end);
                 condition[4] = !(frame_timestamp < frag_window_end);
+
+                //Check if any frame has hit the end
+                reached_end |= ((frame_end >= frag_window_end) &&
+                                (frame_timestamp < frag_window_end) &&
+                                (frame_timestamp >= frag_window_begin));
 
                 //If one frame's bad, make note
                 any_bad |= !frame_good;
@@ -470,13 +480,16 @@ public:
                 //then make the corrupt_data_kep flag true
                 //
                 //Finally make a statword to describe what happened.
-                //For now: any bad, set first (binary) digit 
-                //         if needs to be reodered, set second digit
-                //         if any frames appeared to be skipped, set third digit
-                std::bitset<3> statword;
+                //For now: any bad, set first bit 
+                //         if it was be reodered, set second bit
+                //         if any frames appeared to be skipped, set third bit
+                //         if the frames did not reach the end of the readout window
+                //              set that the fourth bit
+                std::bitset<4> statword;
                 statword[0] = (any_bad ? 1 : 0);
                 statword[1] = (reordered ? 1 : 0);
                 statword[2] = (skipped_frames ? 1 : 0);
+                statword[3] = (reached_end ? 0 : 1); //Considered good (0) if we hit the end
                 rdstatuses.emplace_back(false,
                                         statword.any(),
                                         statword.to_ulong());
