@@ -21,6 +21,8 @@ cet_build_plugin(PDHDTimingRawDecoder art::module LIBRARIES
 )
 
 cet_build_plugin(PDHDFEMBFilter art::module LIBRARIES
+		 dunecore::HDF5Utils_HDF5RawFile3Service_service
+		 dunecore::dunedaqhdf5utils2
                  art::Framework_Core
                  art::Framework_Principal
                  art::Framework_Services_Registry

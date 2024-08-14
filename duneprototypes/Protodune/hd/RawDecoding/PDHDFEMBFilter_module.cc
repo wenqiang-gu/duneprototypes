@@ -57,77 +57,80 @@ PDHDFEMBFilter::PDHDFEMBFilter::PDHDFEMBFilter(fhicl::ParameterSet const & pset)
 
 bool PDHDFEMBFilter::filter(art::Event & evt) {
 
-  if (!evt.isRealData()) {
-    //Filter is designed for Data only. Don't want to filter on MC
-    return true;
-  }
+  std::cout << "[wgu] PDHDFEMBFilter::filter" << std::endl;
+  return false;
 
-  //const std::string myname = "PDHDFEMBFilter::filter: ";
-  art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;   
+  // if (!evt.isRealData()) {
+  //   //Filter is designed for Data only. Don't want to filter on MC
+  //   return true;
+  // }
+
+  // //const std::string myname = "PDHDFEMBFilter::filter: ";
+  // art::ServiceHandle<dune::PD2HDChannelMapService> channelMap;   
  
-  //We'll drop raw digits after a while, so allow for that
-  if (!fSkipDigitCheck) {
-    auto digits = evt.getValidHandle<RawDigitVector>(fRawDigitLabel);
+  // //We'll drop raw digits after a while, so allow for that
+  // if (!fSkipDigitCheck) {
+  //   auto digits = evt.getValidHandle<RawDigitVector>(fRawDigitLabel);
 
-    if (fRequireAllChannels && (digits->size() != channelMap->GetNChannels())) {
-      if (fLogLevel > 0)
-        std::cout << "Have " << digits->size() << " digits but expected " <<
-                     channelMap->GetNChannels() << std::endl;
-      return false;
-    }
+  //   if (fRequireAllChannels && (digits->size() != channelMap->GetNChannels())) {
+  //     if (fLogLevel > 0)
+  //       std::cout << "Have " << digits->size() << " digits but expected " <<
+  //                    channelMap->GetNChannels() << std::endl;
+  //     return false;
+  //   }
 
-    if (fRequireSameSize) {
-      bool first = true;
-      size_t size = 0;
-      for (const auto & d : (*digits)) {
-        //Get the size from first digit vector
-        if (first) {
-          size = d.Samples();
-          first = false;
-          continue;
-        }
+  //   if (fRequireSameSize) {
+  //     bool first = true;
+  //     size_t size = 0;
+  //     for (const auto & d : (*digits)) {
+  //       //Get the size from first digit vector
+  //       if (first) {
+  //         size = d.Samples();
+  //         first = false;
+  //         continue;
+  //       }
 
-        //If any subsequent vectors are of different size return false;
-        if (d.Samples() != size) {
-          if (fLogLevel > 0)
-            std::cout << "Found at least 2 different-sized Raw Digit vectors " <<
-                         size << " " << d.Samples() << std::endl;
-          return false;
-        }
-      }
-    }
-  }
+  //       //If any subsequent vectors are of different size return false;
+  //       if (d.Samples() != size) {
+  //         if (fLogLevel > 0)
+  //           std::cout << "Found at least 2 different-sized Raw Digit vectors " <<
+  //                        size << " " << d.Samples() << std::endl;
+  //         return false;
+  //       }
+  //     }
+  //   }
+  // }
 
-  //Check the statuses
-  auto statuses = evt.getValidHandle<RDStatusVector>(fRawDigitLabel);
+  // //Check the statuses
+  // auto statuses = evt.getValidHandle<RDStatusVector>(fRawDigitLabel);
 
-  //Check that we have all channels for these
-  if (fRequireAllChannels && (statuses->size() != channelMap->GetNChannels())) {
-    if (fLogLevel > 0)
-      std::cout << "Have " << statuses->size() << " statuses but expected " <<
-                   channelMap->GetNChannels() << std::endl;
-    return false;
-  }
+  // //Check that we have all channels for these
+  // if (fRequireAllChannels && (statuses->size() != channelMap->GetNChannels())) {
+  //   if (fLogLevel > 0)
+  //     std::cout << "Have " << statuses->size() << " statuses but expected " <<
+  //                  channelMap->GetNChannels() << std::endl;
+  //   return false;
+  // }
 
-  //Check that none of the stat word digits are unallowed
-  if (fCheckStatWords) {
-    if (fLogLevel > 0)
-      std::cout << "Checking stat words" << std::endl;
-    for (const auto & status : (*statuses)) {
-      if (fLogLevel > 0)
-        std::cout << "Checking against stat word: " << status.GetStatWord() <<
-                     std::endl;
+  // //Check that none of the stat word digits are unallowed
+  // if (fCheckStatWords) {
+  //   if (fLogLevel > 0)
+  //     std::cout << "Checking stat words" << std::endl;
+  //   for (const auto & status : (*statuses)) {
+  //     if (fLogLevel > 0)
+  //       std::cout << "Checking against stat word: " << status.GetStatWord() <<
+  //                    std::endl;
 
-      bool bad = (std::bitset<32>(status.GetStatWord()) & fStatusMask).any();
-      if (bad) {
-        if (fLogLevel > 0)
-          std::cout << "Failed status word check" << std::endl;
-        return false;
-      }
-    }
-  }
-  
-  return true;
+  //     bool bad = (std::bitset<32>(status.GetStatWord()) & fStatusMask).any();
+  //     if (bad) {
+  //       if (fLogLevel > 0)
+  //         std::cout << "Failed status word check" << std::endl;
+  //       return false;
+  //     }
+  //   }
+  // }
+  // 
+  // return true;
 }
 
 void PDHDFEMBFilter::beginJob() {
